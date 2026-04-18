@@ -82,6 +82,25 @@ public static class UiResources
     public static string Action_ErrorNoStopReasons => GetString(nameof(Action_ErrorNoStopReasons));
     public static string Action_ErrorStateChangeFailed => GetString(nameof(Action_ErrorStateChangeFailed));
     public static string Action_StopDurationSeconds => GetString(nameof(Action_StopDurationSeconds));
+    public static string Action_PlacementsTitle => GetString(nameof(Action_PlacementsTitle));
+    public static string Action_NoPlacementsForMachine => GetString(nameof(Action_NoPlacementsForMachine));
+    public static string Action_PlacementStatusPlaced => GetString(nameof(Action_PlacementStatusPlaced));
+    public static string Action_PlacementStatusInSetup => GetString(nameof(Action_PlacementStatusInSetup));
+    public static string Action_PlacementStatusSetupPaused => GetString(nameof(Action_PlacementStatusSetupPaused));
+    public static string Action_PlacementStatusInWork => GetString(nameof(Action_PlacementStatusInWork));
+    public static string Action_PlacementStatusWorkPaused => GetString(nameof(Action_PlacementStatusWorkPaused));
+    public static string Action_PlacementStatusClosed => GetString(nameof(Action_PlacementStatusClosed));
+    public static string Action_PlacementSetup => GetString(nameof(Action_PlacementSetup));
+    public static string Action_PlacementWork => GetString(nameof(Action_PlacementWork));
+    public static string Action_PlacementPauseSetup => GetString(nameof(Action_PlacementPauseSetup));
+    public static string Action_PlacementSwitchToWork => GetString(nameof(Action_PlacementSwitchToWork));
+    public static string Action_PlacementResumeSetup => GetString(nameof(Action_PlacementResumeSetup));
+    public static string Action_PlacementStartWork => GetString(nameof(Action_PlacementStartWork));
+    public static string Action_PlacementPauseWork => GetString(nameof(Action_PlacementPauseWork));
+    public static string Action_PlacementResumeWork => GetString(nameof(Action_PlacementResumeWork));
+    public static string Action_PlacementClose => GetString(nameof(Action_PlacementClose));
+    public static string Action_ConfirmedShort => GetString(nameof(Action_ConfirmedShort));
+    public static string Action_ScrapShort => GetString(nameof(Action_ScrapShort));
 
     public static string Tab_Department => GetString(nameof(Tab_Department));
     public static string Tab_OperatorsMachines => GetString(nameof(Tab_OperatorsMachines));

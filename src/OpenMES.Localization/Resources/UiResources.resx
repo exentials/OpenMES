@@ -268,4 +268,23 @@
   <data name="Action_ScanOrTypeBarcode" xml:space="preserve"><value>Scan barcode or type order number...</value></data>
   <data name="Action_Order" xml:space="preserve"><value>Order</value></data>
   <data name="Action_Confirmed" xml:space="preserve"><value>Confirmed</value></data>
+  <data name="Action_PlacementsTitle" xml:space="preserve"><value>Placed work orders</value></data>
+  <data name="Action_NoPlacementsForMachine" xml:space="preserve"><value>No work orders are placed on this machine.</value></data>
+  <data name="Action_PlacementStatusPlaced" xml:space="preserve"><value>Placed</value></data>
+  <data name="Action_PlacementStatusInSetup" xml:space="preserve"><value>Setup in progress</value></data>
+  <data name="Action_PlacementStatusSetupPaused" xml:space="preserve"><value>Setup paused</value></data>
+  <data name="Action_PlacementStatusInWork" xml:space="preserve"><value>Work in progress</value></data>
+  <data name="Action_PlacementStatusWorkPaused" xml:space="preserve"><value>Work paused</value></data>
+  <data name="Action_PlacementStatusClosed" xml:space="preserve"><value>Closed</value></data>
+  <data name="Action_PlacementSetup" xml:space="preserve"><value>Setup</value></data>
+  <data name="Action_PlacementWork" xml:space="preserve"><value>Work</value></data>
+  <data name="Action_PlacementPauseSetup" xml:space="preserve"><value>Pause setup</value></data>
+  <data name="Action_PlacementSwitchToWork" xml:space="preserve"><value>Switch to work</value></data>
+  <data name="Action_PlacementResumeSetup" xml:space="preserve"><value>Resume setup</value></data>
+  <data name="Action_PlacementStartWork" xml:space="preserve"><value>Start work</value></data>
+  <data name="Action_PlacementPauseWork" xml:space="preserve"><value>Pause work</value></data>
+  <data name="Action_PlacementResumeWork" xml:space="preserve"><value>Resume work</value></data>
+  <data name="Action_PlacementClose" xml:space="preserve"><value>Close</value></data>
+  <data name="Action_ConfirmedShort" xml:space="preserve"><value>Conf</value></data>
+  <data name="Action_ScrapShort" xml:space="preserve"><value>Scrap</value></data>
 </root>

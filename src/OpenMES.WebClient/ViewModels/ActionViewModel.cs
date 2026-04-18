@@ -17,6 +17,8 @@ public class ActionViewModel : ViewModelBase
     public OperatorShiftDto? OperatorShift { get; set; }
     public ProductionOrderPhaseDto? ActivePhase { get; set; }
     public List<ProductionDeclarationDto> LastDeclarations { get; set; } = [];
+    public List<MachinePhasePlacementDto> OpenPlacements { get; set; } = [];
+    public int? SelectedPlacementId { get; set; }
 
     // ── UI state ───────────────────────────────────────────────────────────
     public ActionScreen Screen { get; set; } = ActionScreen.Main;
@@ -42,6 +44,13 @@ public class ActionViewModel : ViewModelBase
         OperatorShift?.EventType == OperatorEventType.BreakStart;
 
     public bool HasOpenSession => OpenSession is not null;
+
+    public MachinePhasePlacementDto? ActivePlacement =>
+        SelectedPlacementId.HasValue
+            ? OpenPlacements.FirstOrDefault(x => x.Id == SelectedPlacementId.Value)
+            : ActivePhase is null
+                ? OpenPlacements.FirstOrDefault()
+                : OpenPlacements.FirstOrDefault(x => x.ProductionOrderPhaseId == ActivePhase.Id);
 
     public bool CanDeclare =>
         HasOpenSession && OpenSession!.SessionType == WorkSessionType.Work

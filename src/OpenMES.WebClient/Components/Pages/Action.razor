@@ -34,10 +34,10 @@
             @ViewModel.ActivePhase.PhaseNumber — @ViewModel.ActivePhase.Description
         </div>
         <div style="display:flex;gap:16px;margin-top:6px;font-size:13px;color:var(--neutral-foreground-hint);">
-                <span>Conf: @ViewModel.ActivePhase.ConfirmedQuantity / @ViewModel.ActivePhase.PlannedQuantity</span>
+                <span>@UiResources.Action_ConfirmedShort: @ViewModel.ActivePhase.ConfirmedQuantity / @ViewModel.ActivePhase.PlannedQuantity</span>
             @if (ViewModel.ActivePhase.ScrapQuantity > 0)
             {
-                <span style="color:var(--error-foreground);">@($"{UiResources.Action_ScrapOptional.Split(' ')[0]}: {ViewModel.ActivePhase.ScrapQuantity}")</span>
+                <span style="color:var(--error-foreground);">@($"{UiResources.Action_ScrapShort}: {ViewModel.ActivePhase.ScrapQuantity}")</span>
             }
         </div>
     </div>
@@ -90,6 +90,59 @@
 
         </div>
 
+        <div style="margin-top:16px;padding:12px 14px;background:var(--neutral-layer-2);border:1px solid var(--neutral-stroke-layer-rest);border-radius:10px;">
+            <div style="font-size:13px;color:var(--neutral-foreground-hint);margin-bottom:10px;">@UiResources.Action_PlacementsTitle</div>
+
+            @if (ViewModel.OpenPlacements.Count == 0)
+            {
+                <div style="font-size:13px;color:var(--neutral-foreground-hint);">@UiResources.Action_NoPlacementsForMachine</div>
+            }
+            else
+            {
+                @foreach (var placement in ViewModel.OpenPlacements)
+                {
+                    var isSelected = ViewModel.SelectedPlacementId == placement.Id;
+                    <div style="padding:10px;border-radius:8px;border:1px solid @(isSelected ? "var(--accent-stroke-control-rest)" : "var(--neutral-stroke-layer-rest)");margin-bottom:8px;background:@(isSelected ? "var(--accent-fill-rest)" : "var(--neutral-layer-1)");color:@(isSelected ? "var(--foreground-on-accent-rest)" : "var(--neutral-foreground-rest)");">
+                        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                            <button @onclick="() => OnPlacementSelectedAsync(placement)"
+                                    style="background:transparent;border:none;color:inherit;cursor:pointer;text-align:left;padding:0;flex:1;">
+                                <div style="font-size:14px;font-weight:600;">@placement.PhaseNumber — @placement.PhaseConfirmNumber</div>
+                                <div style="font-size:12px;opacity:0.85;">@PlacementStatusLabel(placement.Status)</div>
+                            </button>
+                        </div>
+
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+                            @if (placement.Status == MachinePhasePlacementStatus.Placed)
+                            {
+                                <button @onclick="() => StartSetupForPlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementSetup</button>
+                                <button @onclick="() => StartWorkForPlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementWork</button>
+                            }
+                            else if (placement.Status == MachinePhasePlacementStatus.InSetup)
+                            {
+                                <button @onclick="() => PausePlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementPauseSetup</button>
+                                <button @onclick="() => StartWorkForPlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementSwitchToWork</button>
+                            }
+                            else if (placement.Status == MachinePhasePlacementStatus.SetupPaused)
+                            {
+                                <button @onclick="() => ResumePlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementResumeSetup</button>
+                                <button @onclick="() => StartWorkForPlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementStartWork</button>
+                            }
+                            else if (placement.Status == MachinePhasePlacementStatus.InWork)
+                            {
+                                <button @onclick="() => PausePlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementPauseWork</button>
+                            }
+                            else if (placement.Status == MachinePhasePlacementStatus.WorkPaused)
+                            {
+                                <button @onclick="() => ResumePlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementResumeWork</button>
+                            }
+
+                            <button @onclick="() => ClosePlacementAsync(placement)" style="@MiniDangerBtnStyle">@UiResources.Action_PlacementClose</button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
         @if (ViewModel.OpenSession is not null)
         {
             <div style="margin-top:16px;padding:12px 16px;
@@ -137,7 +190,7 @@
         <div style="display:flex;align-items:center;gap:12px;margin:20px 0 8px;">
             <div style="flex:1;height:1px;background:var(--neutral-stroke-layer-rest);"></div>
             <span style="font-size:13px;color:var(--neutral-foreground-hint);">@UiResources.Action_ScrapOptional</span>
-            <div style="flex:1;height:1px;background:var(--neutral-stroke-layer-rest);"></div>
+            <div style="flex:1,height:1px;background:var(--neutral-stroke-layer-rest);"></div>
         </div>
 
         <div style="text-align:center;margin-bottom:8px;">
@@ -233,6 +286,17 @@
         ? UiResources.Action_CheckOut
         : UiResources.Action_CheckIn;
 
+    private string PlacementStatusLabel(MachinePhasePlacementStatus status) => status switch
+    {
+        MachinePhasePlacementStatus.Placed => UiResources.Action_PlacementStatusPlaced,
+        MachinePhasePlacementStatus.InSetup => UiResources.Action_PlacementStatusInSetup,
+        MachinePhasePlacementStatus.SetupPaused => UiResources.Action_PlacementStatusSetupPaused,
+        MachinePhasePlacementStatus.InWork => UiResources.Action_PlacementStatusInWork,
+        MachinePhasePlacementStatus.WorkPaused => UiResources.Action_PlacementStatusWorkPaused,
+        MachinePhasePlacementStatus.Closed => UiResources.Action_PlacementStatusClosed,
+        _ => status.ToString()
+    };
+
     private string StatusLabel => ViewModel.Status switch
     {
         MachineStatus.Running     => UiResources.Machine_Running,
@@ -288,4 +352,12 @@
             "disabled" => "background:var(--neutral-layer-2);color:var(--neutral-foreground-hint);opacity:0.5;cursor:not-allowed;",
             _          => "background:var(--neutral-layer-2);color:var(--neutral-foreground-rest);border-color:var(--neutral-stroke-layer-rest);"
         };
+
+    private static string MiniActionBtnStyle =>
+        "padding:6px 10px;border-radius:8px;border:1px solid var(--neutral-stroke-layer-rest);" +
+        "background:var(--neutral-layer-2);color:var(--neutral-foreground-rest);font-size:12px;cursor:pointer;";
+
+    private static string MiniDangerBtnStyle =>
+        "padding:6px 10px;border-radius:8px;border:1px solid var(--error-border);" +
+        "background:var(--error-background);color:var(--error-foreground);font-size:12px;cursor:pointer;";
 }

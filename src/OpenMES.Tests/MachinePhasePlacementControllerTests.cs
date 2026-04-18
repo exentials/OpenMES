@@ -138,4 +138,107 @@ public class MachinePhasePlacementControllerTests
         var items2 = Assert.IsAssignableFrom<IEnumerable<MachinePhasePlacementDto>>(Assert.IsType<OkObjectResult>(open2.Result).Value).ToList();
         Assert.Empty(items2);
     }
+
+    [Fact]
+    public async Task StartSetup_FromPlaced_SetsInSetupAndOpensSetupSession()
+    {
+        var (db, machine, op1, _, phase) = await TestDbFactory.SeedForWorkSessionTests();
+        await AddShift(db, op1.Id, OperatorEventType.CheckIn);
+        var controller = Controller(db);
+
+        var placed = await controller.Place(PlaceDto(machine.Id, phase.Id, op1.Id), CancellationToken.None);
+        var placement = Assert.IsType<MachinePhasePlacementDto>(Assert.IsType<OkObjectResult>(placed.Result).Value);
+
+        var started = await controller.StartSetup(placement.Id, op1.Id, CancellationToken.None);
+        var dto = Assert.IsType<MachinePhasePlacementDto>(Assert.IsType<OkObjectResult>(started.Result).Value);
+
+        Assert.Equal(MachinePhasePlacementStatus.InSetup, dto.Status);
+        Assert.True(await db.WorkSessions.AnyAsync(x =>
+            x.MachineId == machine.Id &&
+            x.ProductionOrderPhaseId == phase.Id &&
+            x.SessionType == WorkSessionType.Setup &&
+            x.Status == WorkSessionStatus.Open));
+    }
+
+    [Fact]
+    public async Task PauseSetup_FromInSetup_ClosesSetupSessionsAndSetsPaused()
+    {
+        var (db, machine, op1, _, phase) = await TestDbFactory.SeedForWorkSessionTests();
+        await AddShift(db, op1.Id, OperatorEventType.CheckIn);
+        var controller = Controller(db);
+
+        var placed = await controller.Place(PlaceDto(machine.Id, phase.Id, op1.Id), CancellationToken.None);
+        var placement = Assert.IsType<MachinePhasePlacementDto>(Assert.IsType<OkObjectResult>(placed.Result).Value);
+
+        await controller.StartSetup(placement.Id, op1.Id, CancellationToken.None);
+        var paused = await controller.PauseSetup(placement.Id, CancellationToken.None);
+        var dto = Assert.IsType<MachinePhasePlacementDto>(Assert.IsType<OkObjectResult>(paused.Result).Value);
+
+        Assert.Equal(MachinePhasePlacementStatus.SetupPaused, dto.Status);
+        Assert.False(await db.WorkSessions.AnyAsync(x =>
+            x.MachineId == machine.Id &&
+            x.ProductionOrderPhaseId == phase.Id &&
+            x.SessionType == WorkSessionType.Setup &&
+            x.Status == WorkSessionStatus.Open));
+    }
+
+    [Fact]
+    public async Task StartWork_FromSetupPaused_SetsInWorkAndOpensWorkSession()
+    {
+        var (db, machine, op1, _, phase) = await TestDbFactory.SeedForWorkSessionTests();
+        await AddShift(db, op1.Id, OperatorEventType.CheckIn);
+        var controller = Controller(db);
+
+        var placed = await controller.Place(PlaceDto(machine.Id, phase.Id, op1.Id), CancellationToken.None);
+        var placement = Assert.IsType<MachinePhasePlacementDto>(Assert.IsType<OkObjectResult>(placed.Result).Value);
+
+        await controller.StartSetup(placement.Id, op1.Id, CancellationToken.None);
+        await controller.PauseSetup(placement.Id, CancellationToken.None);
+
+        var startedWork = await controller.StartWork(placement.Id, op1.Id, CancellationToken.None);
+        var dto = Assert.IsType<MachinePhasePlacementDto>(Assert.IsType<OkObjectResult>(startedWork.Result).Value);
+
+        Assert.Equal(MachinePhasePlacementStatus.InWork, dto.Status);
+        Assert.True(await db.WorkSessions.AnyAsync(x =>
+            x.MachineId == machine.Id &&
+            x.ProductionOrderPhaseId == phase.Id &&
+            x.SessionType == WorkSessionType.Work &&
+            x.Status == WorkSessionStatus.Open));
+    }
+
+    [Fact]
+    public async Task Close_WithOpenWorkSession_ReturnsBadRequest()
+    {
+        var (db, machine, op1, _, phase) = await TestDbFactory.SeedForWorkSessionTests();
+        await AddShift(db, op1.Id, OperatorEventType.CheckIn);
+        var controller = Controller(db);
+
+        var placed = await controller.Place(PlaceDto(machine.Id, phase.Id, op1.Id), CancellationToken.None);
+        var placement = Assert.IsType<MachinePhasePlacementDto>(Assert.IsType<OkObjectResult>(placed.Result).Value);
+
+        await controller.StartWork(placement.Id, op1.Id, CancellationToken.None);
+
+        var close = await controller.Close(placement.Id, CancellationToken.None);
+        Assert.IsType<BadRequestObjectResult>(close.Result);
+    }
+
+    [Fact]
+    public async Task Close_FromWorkPaused_ClosesPlacement()
+    {
+        var (db, machine, op1, _, phase) = await TestDbFactory.SeedForWorkSessionTests();
+        await AddShift(db, op1.Id, OperatorEventType.CheckIn);
+        var controller = Controller(db);
+
+        var placed = await controller.Place(PlaceDto(machine.Id, phase.Id, op1.Id), CancellationToken.None);
+        var placement = Assert.IsType<MachinePhasePlacementDto>(Assert.IsType<OkObjectResult>(placed.Result).Value);
+
+        await controller.StartWork(placement.Id, op1.Id, CancellationToken.None);
+        await controller.PauseWork(placement.Id, CancellationToken.None);
+
+        var close = await controller.Close(placement.Id, CancellationToken.None);
+        var dto = Assert.IsType<MachinePhasePlacementDto>(Assert.IsType<OkObjectResult>(close.Result).Value);
+
+        Assert.Equal(MachinePhasePlacementStatus.Closed, dto.Status);
+        Assert.NotNull(dto.UnplacedAt);
+    }
 }

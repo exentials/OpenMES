@@ -26,6 +26,7 @@ Use `.github/instructions/README.md` as the mandatory index for all AI/developer
 - Use `RestKeyValueApiControllerBase<TEntity, TDto, TKey>` for controllers exposing lookup endpoint `/keyvalue`.
 - Keep `Query` overrides for shared includes only; rely on base `ReadQuery` for no-tracking reads.
 - In WebAdmin lookup UIs, prefer shared select components backed by `ICrudKeyValueApiService` and `KeyValueDto<TKey>`.
+- In the `OpenMES.WebClient` project, localize UI texts using resources (UiResources/DtoResources) to avoid hardcoded strings in Razor and code-behind.
 
 ## Governance rules
 - Keep AI/developer instructions only under `.github/instructions/`.

@@ -267,4 +267,23 @@
   <data name="Action_ScanOrTypeBarcode" xml:space="preserve"><value>Scansiona barcode o digita numero bolla...</value></data>
   <data name="Action_Order" xml:space="preserve"><value>Ordine</value></data>
   <data name="Action_Confirmed" xml:space="preserve"><value>Confermato</value></data>
+  <data name="Action_PlacementsTitle" xml:space="preserve"><value>Bolle piazzate</value></data>
+  <data name="Action_NoPlacementsForMachine" xml:space="preserve"><value>Nessuna bolla piazzata su questa macchina.</value></data>
+  <data name="Action_PlacementStatusPlaced" xml:space="preserve"><value>Piazzata</value></data>
+  <data name="Action_PlacementStatusInSetup" xml:space="preserve"><value>Setup in corso</value></data>
+  <data name="Action_PlacementStatusSetupPaused" xml:space="preserve"><value>Setup sospeso</value></data>
+  <data name="Action_PlacementStatusInWork" xml:space="preserve"><value>Lavoro in corso</value></data>
+  <data name="Action_PlacementStatusWorkPaused" xml:space="preserve"><value>Lavoro sospeso</value></data>
+  <data name="Action_PlacementStatusClosed" xml:space="preserve"><value>Chiusa</value></data>
+  <data name="Action_PlacementSetup" xml:space="preserve"><value>Setup</value></data>
+  <data name="Action_PlacementWork" xml:space="preserve"><value>Lavoro</value></data>
+  <data name="Action_PlacementPauseSetup" xml:space="preserve"><value>Sospendi setup</value></data>
+  <data name="Action_PlacementSwitchToWork" xml:space="preserve"><value>Passa a lavoro</value></data>
+  <data name="Action_PlacementResumeSetup" xml:space="preserve"><value>Riprendi setup</value></data>
+  <data name="Action_PlacementStartWork" xml:space="preserve"><value>Avvia lavoro</value></data>
+  <data name="Action_PlacementPauseWork" xml:space="preserve"><value>Sospendi lavoro</value></data>
+  <data name="Action_PlacementResumeWork" xml:space="preserve"><value>Riprendi lavoro</value></data>
+  <data name="Action_PlacementClose" xml:space="preserve"><value>Chiudi</value></data>
+  <data name="Action_ConfirmedShort" xml:space="preserve"><value>Conf</value></data>
+  <data name="Action_ScrapShort" xml:space="preserve"><value>Scarto</value></data>
 </root>
