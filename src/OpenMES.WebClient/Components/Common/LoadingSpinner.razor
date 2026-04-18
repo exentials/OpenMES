@@ -1,0 +1,16 @@
+@namespace OpenMES.WebClient.Components.Common
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<div class="loading-spinner-container" style="display: flex; justify-content: center; align-items: center; padding: 20px;">
+    <FluentProgressRing Style="width: 48px; height: 48px;" />
+</div>
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <FluentLabel Style="text-align: center; margin-top: 16px;">@Message</FluentLabel>
+}
+
+@code {
+    [Parameter]
+    public string? Message { get; set; }
+}

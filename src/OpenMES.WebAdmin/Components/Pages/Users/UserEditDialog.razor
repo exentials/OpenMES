@@ -1,0 +1,85 @@
+@implements IDialogContentComponent<UserDialogModel>
+@using OpenMES.Data.Dtos.Resources
+
+<FluentDialogHeader Title="@Dialog.Instance.Parameters.Title" />
+
+<FluentDialogBody>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="16" Style="padding:8px 0;">
+
+        <FluentTextField @bind-Value="Content.Email"
+                         Label="Email"
+                         Placeholder="@UiResources.User_EmailPlaceholder"
+                         TextFieldType="TextFieldType.Email"
+                         Style="width:100%;"
+                         ReadOnly="@(!Content.IsNew)" />
+
+        <FluentTextField @bind-Value="Content.Password"
+                         Label="@(Content.IsNew ? UiResources.User_PasswordLabel : UiResources.User_NewPasswordLabel)"
+                         Placeholder="••••••••"
+                         TextFieldType="TextFieldType.Password"
+                         Style="width:100%;" />
+
+        <div>
+            <FluentLabel Style="font-size:13px;margin-bottom:8px;display:block;">@UiResources.User_RolesLabel</FluentLabel>
+            <FluentStack Orientation="Orientation.Horizontal" Style="flex-wrap:wrap;gap:8px;">
+                @foreach (var role in Content.AvailableRoles)
+                {
+                    var isSelected = Content.SelectedRoles.Contains(role.Name);
+                    <FluentButton Appearance="@(isSelected ? Appearance.Accent : Appearance.Outline)"
+                                  Style="font-size:12px;"
+                                  OnClick="@(() => ToggleRole(role.Name))">
+                        @role.Name
+                    </FluentButton>
+                }
+            </FluentStack>
+        </div>
+
+        @if (!string.IsNullOrEmpty(_validationError))
+        {
+            <FluentMessageBar Intent="MessageIntent.Error">
+                @_validationError
+            </FluentMessageBar>
+        }
+
+    </FluentStack>
+</FluentDialogBody>
+
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Accent" OnClick="@SaveAsync">@UiResources.User_SaveButton</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@CancelAsync">@UiResources.User_CancelButton</FluentButton>
+</FluentDialogFooter>
+
+@code {
+    [CascadingParameter] public FluentDialog Dialog { get; set; } = default!;
+    [Parameter]          public UserDialogModel Content { get; set; } = default!;
+
+    private string? _validationError;
+
+    private void ToggleRole(string roleName)
+    {
+        if (Content.SelectedRoles.Contains(roleName))
+            Content.SelectedRoles.Remove(roleName);
+        else
+            Content.SelectedRoles.Add(roleName);
+    }
+
+    private async Task SaveAsync()
+    {
+        _validationError = null;
+
+        if (string.IsNullOrWhiteSpace(Content.Email))
+        {
+            _validationError = UiResources.User_ErrorEmailRequired;
+            return;
+        }
+        if (Content.IsNew && string.IsNullOrWhiteSpace(Content.Password))
+        {
+            _validationError = UiResources.User_ErrorPasswordRequired;
+            return;
+        }
+
+        await Dialog.CloseAsync(Content);
+    }
+
+    private async Task CancelAsync() => await Dialog.CancelAsync();
+}

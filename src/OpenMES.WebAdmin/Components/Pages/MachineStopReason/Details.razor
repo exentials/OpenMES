@@ -1,0 +1,28 @@
+@page "/machinestopreason/{ItemId:int}"
+@attribute [Authorize]
+@inherits BaseDetails<MachineStopReasonDto, int>
+@rendermode InteractiveServer
+
+@if (Model is not null)
+{
+    <FluentGrid>
+        <FluentGridItem xs="12">
+            <FluentLabel Typo="Typography.H4">@Model.Code — @Model.Description</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="6">
+            <FluentLabel><strong>Category:</strong> @Model.Category</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="6">
+            <FluentLabel><strong>Disabled:</strong> @Model.Disabled</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="12">
+            <FluentButton Appearance="Appearance.Stealth"
+                          IconStart="@(new Icons.Regular.Size16.Delete())"
+                          OnClick="@Delete">Delete</FluentButton>
+        </FluentGridItem>
+    </FluentGrid>
+}
+else
+{
+    <FluentProgressRing />
+}

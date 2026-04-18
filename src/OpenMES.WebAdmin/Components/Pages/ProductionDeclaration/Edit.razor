@@ -1,0 +1,11 @@
+@inherits BaseEdit<ProductionDeclarationDto>
+
+<FluentDialogHeader ShowDismiss="false">
+    <FluentLabel Typo="Typography.PaneHeader">Production Declaration</FluentLabel>
+</FluentDialogHeader>
+<FluentDialogBody>
+    <FluentLabel>Declarations are created from the terminal. Use the Correct endpoint for corrections.</FluentLabel>
+</FluentDialogBody>
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@CancelAsync">@UiResources.Button_Close</FluentButton>
+</FluentDialogFooter>

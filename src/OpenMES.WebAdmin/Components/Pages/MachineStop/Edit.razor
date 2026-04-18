@@ -1,0 +1,13 @@
+@inherits BaseEdit<MachineStopDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.Warning())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnSaveAsync="@SaveAsync"
+                     OnCancelAsync="@CancelAsync">
+    <FluentNumberField Label="@DtoResources.MachineStop_MachineId" @bind-Value="@Content.MachineId" Required="true" />
+    <FluentNumberField Label="@DtoResources.MachineStop_MachineStopReasonId" @bind-Value="@Content.MachineStopReasonId" Required="true" />
+    <FluentNumberField Label="@DtoResources.MachineStop_ProductionOrderPhaseId" @bind-Value="@Content.ProductionOrderPhaseId" />
+    <FluentDatePicker Label="@DtoResources.MachineStop_StartDate" @bind-Value="@StartDate" />
+    <FluentDatePicker Label="@DtoResources.MachineStop_EndDate" @bind-Value="@EndDate" />
+    <FluentTextArea Label="@DtoResources.MachineStop_Notes" @bind-Value="@Content.Notes" Rows="3" />
+</EditDialogContainer>

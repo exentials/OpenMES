@@ -1,0 +1,12 @@
+@inherits BaseEdit<ClientDeviceDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.Desktop())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnSaveAsync="@SaveAsync"
+                     OnCancelAsync="@CancelAsync">
+    <PlantSelect Label="@DtoResources.ClientDevice_PlantId" @bind-Value="@Content.PlantId" />
+    <FluentTextField Label="@DtoResources.ClientDevice_Name" @bind-Value="@Content.Name" Required="true" />
+    <FluentTextField Label="@DtoResources.ClientDevice_Description" @bind-Value="@Content.Description" />
+    <FluentTextField Label="Password" @bind-Value="@Content.Password" TextFieldType="TextFieldType.Password" />
+    <FluentCheckbox Label="@DtoResources.ClientDevice_Enabled" @bind-Value="@Content.Enabled" />
+</EditDialogContainer>

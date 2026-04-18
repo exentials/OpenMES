@@ -1,0 +1,79 @@
+@namespace OpenMES.WebClient.Components.Shared
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@* ContextToolbar - Top Toolbar with Context Information
+    Shows current operator, machine, session, and action buttons
+    
+    Used by: MainLayout.razor
+    Features:
+    - Operator info (OperatorBadge)
+    - Machine name and state
+    - Session info (if active)
+    - Quick action buttons (Menu, Help, Logout)
+    - Time display
+*@
+
+<div style="background-color: #f5f5f5; padding: 12px 16px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+
+    @* Operator Badge *@
+    <div style="flex: 1;">
+        <OperatorBadge OperatorName="@OperatorName" Status="@OperatorStatus" />
+    </div>
+
+    @* Machine & Session Info *@
+    @if (!string.IsNullOrEmpty(MachineName))
+    {
+        <div>
+            <div style="font-weight: bold; margin-bottom: 4px;">@MachineName</div>
+            <div style="font-size: 12px; color: @MachineStateColor;">@MachineState</div>
+        </div>
+    }
+
+    @* Time Display *@
+    <div style="font-size: 12px; color: #6c757d;">
+        @CurrentTime.ToString("HH:mm:ss")
+    </div>
+
+    @* Action Buttons *@
+    <div style="display: flex; gap: 8px;">
+        <FluentButton Appearance="Appearance.Outline" Title="Help">
+            <FluentIcon Value="@(new Icons.Regular.Size20.QuestionCircle())" />
+        </FluentButton>
+        <FluentButton Appearance="Appearance.Outline" Title="Menu" @onclick="OnMenuClick">
+            <FluentIcon Value="@(new Icons.Regular.Size20.MoreVertical())" />
+        </FluentButton>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? OperatorName { get; set; } = "Unknown";
+
+    [Parameter]
+    public string? OperatorStatus { get; set; } = "Active";
+
+    [Parameter]
+    public string? MachineName { get; set; }
+
+    [Parameter]
+    public string? MachineState { get; set; }
+
+    [Parameter]
+    public string MachineStateColor { get; set; } = "#6c757d";
+
+    [Parameter]
+    public EventCallback OnMenuClick { get; set; }
+
+    private DateTime CurrentTime { get; set; } = DateTime.Now;
+
+    protected override void OnInitialized()
+    {
+        var timer = new System.Timers.Timer(1000);
+        timer.Elapsed += (s, e) =>
+        {
+            CurrentTime = DateTime.Now;
+            InvokeAsync(StateHasChanged);
+        };
+        timer.Start();
+    }
+}

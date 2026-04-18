@@ -1,0 +1,48 @@
+@using OpenMES.Data.Common
+
+<div @onclick="Navigate" style="@CardStyle">
+
+    <div style="display:flex;align-items:center;gap:16px;">
+
+        <div style="@DotStyle"></div>
+
+        <div style="flex:1;min-width:0;">
+            <div style="font-size:20px;font-weight:500;color:var(--neutral-foreground-rest);line-height:1.2;">
+                @Model.Code
+            </div>
+            <div style="font-size:14px;color:var(--neutral-foreground-hint);margin-top:2px;">
+                @Model.Description
+            </div>
+        </div>
+
+        <div style="@StatusBadgeStyle">@StatusLabel</div>
+
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--neutral-stroke-layer-rest);">
+        @if (ActiveOperator is not null)
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size16.Person())"
+                        Style="color:var(--neutral-foreground-hint);" />
+            <span style="font-size:14px;font-weight:500;color:var(--neutral-foreground-rest);flex:1;">
+                @ActiveOperator
+            </span>
+            @if (SessionType.HasValue)
+            {
+                <div style="@SessionBadgeStyle">@SessionLabel</div>
+            }
+        }
+        else
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size16.PersonSubtract())"
+                        Style="color:var(--neutral-foreground-hint);" />
+            <span style="font-size:13px;color:var(--neutral-foreground-hint);">
+                @UiResources.MachineCard_NoOperator
+            </span>
+        }
+    </div>
+
+</div>
+
+@code {
+}

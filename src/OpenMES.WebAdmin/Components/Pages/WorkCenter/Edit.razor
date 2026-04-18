@@ -1,0 +1,13 @@
+@inherits BaseEdit<WorkCenterDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.Building())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnSaveAsync="@SaveAsync"
+                     OnCancelAsync="@CancelAsync">
+
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+        <PlantSelect @bind-Value="@Content.PlantId" Label="@DtoResources.WorkCenter_PlantId" />
+        <FluentTextField Label="@DtoResources.WorkCenter_Code" @bind-Value="@Content.Code" Required="true" MaxLength="20" />
+        <FluentTextField Label="@DtoResources.WorkCenter_Description" @bind-Value="@Content.Description" MaxLength="100" />
+    </FluentStack>
+</EditDialogContainer>

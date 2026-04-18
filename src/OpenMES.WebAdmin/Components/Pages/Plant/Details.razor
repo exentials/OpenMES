@@ -1,0 +1,18 @@
+﻿@page "/plant/{ItemID:int}"
+@attribute [Authorize]
+@inherits BaseDetails<PlantDto,int>
+@rendermode InteractiveServer
+
+<h3>Plant Details</h3>
+
+@if (Model != null)
+{
+    <FluentLabel>@Model.Code</FluentLabel>
+    <FluentLabel>@Model.Description</FluentLabel>
+
+    <FluentButton IconStart="@(new Icons.Regular.Size16.Delete())" OnClick="@(() => Delete())">@UiResources.Button_Delete</FluentButton>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}

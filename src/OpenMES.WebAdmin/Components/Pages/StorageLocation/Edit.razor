@@ -1,0 +1,23 @@
+@inherits BaseEdit<StorageLocationDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.Building())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnSaveAsync="@SaveAsync"
+                     OnCancelAsync="@CancelAsync">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+        <PlantSelect @bind-Value="@Content.PlantId"
+                     Label="@DtoResources.StorageLocation_PlantId" />
+        <FluentNumberField Label="@DtoResources.StorageLocation_WarehouseId"
+                           @bind-Value="@Content.WarehouseId" Required="true" />
+        <FluentTextField Label="@DtoResources.StorageLocation_Code"
+                         @bind-Value="@Content.Code" Required="true" MaxLength="20" />
+        <FluentTextField Label="@DtoResources.StorageLocation_Description"
+                         @bind-Value="@Content.Description" MaxLength="80" />
+        <FluentTextField Label="@DtoResources.StorageLocation_Zone"
+                         @bind-Value="@Content.Zone" MaxLength="20" />
+        <FluentTextField Label="@DtoResources.StorageLocation_Slot"
+                         @bind-Value="@Content.Slot" MaxLength="20" />
+        <FluentCheckbox Label="@DtoResources.StorageLocation_Disabled"
+                        @bind-Value="@Content.Disabled" />
+    </FluentStack>
+</EditDialogContainer>

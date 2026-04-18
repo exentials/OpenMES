@@ -1,0 +1,75 @@
+@* NumericPad — full 3×4 touchscreen keypad with two-way Value binding. *@
+@* Renders: 7 8 9 / 4 5 6 / 1 2 3 / . 0 ⌫ *@
+
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:320px;margin:0 auto;">
+    @foreach (var key in _keys)
+    {
+        var k = key;
+        <button @onclick="() => Press(k)"
+                style="@ButtonStyle(k)">
+            @(k == "⌫" ? "⌫" : k)
+        </button>
+    }
+</div>
+
+@if (!string.IsNullOrEmpty(Label))
+{
+    <div style="text-align:center;font-size:13px;color:var(--neutral-foreground-hint);margin-top:6px;">
+        @Label
+    </div>
+}
+
+@code {
+    private static readonly string[] _keys =
+        ["7","8","9","4","5","6","1","2","3",".","0","⌫"];
+
+    [Parameter] public decimal Value { get; set; }
+    [Parameter] public EventCallback<decimal> ValueChanged { get; set; }
+    [Parameter] public string? Label { get; set; }
+
+    private string _buffer = "0";
+
+    protected override void OnParametersSet()
+    {
+        if (decimal.TryParse(_buffer, System.Globalization.NumberStyles.Any,
+            System.Globalization.CultureInfo.InvariantCulture, out var parsed))
+        {
+            if (parsed != Value)
+                _buffer = Value == 0 ? "0" : Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+    }
+
+    private async Task Press(string key)
+    {
+        if (key == "⌫")
+        {
+            _buffer = _buffer.Length > 1 ? _buffer[..^1] : "0";
+        }
+        else if (key == ".")
+        {
+            if (!_buffer.Contains('.')) _buffer += ".";
+        }
+        else
+        {
+            _buffer = _buffer == "0" ? key : _buffer + key;
+            if (_buffer.Length > 10) return;
+        }
+
+        if (decimal.TryParse(_buffer, System.Globalization.NumberStyles.Any,
+            System.Globalization.CultureInfo.InvariantCulture, out var value))
+        {
+            await ValueChanged.InvokeAsync(value);
+        }
+    }
+
+    private static string ButtonStyle(string key) =>
+        "height:64px;" +
+        "font-size:22px;" +
+        "font-weight:500;" +
+        "border-radius:10px;" +
+        "border:1px solid var(--neutral-stroke-layer-rest);" +
+        "background:var(--neutral-layer-2);" +
+        "color:var(--neutral-foreground-rest);" +
+        "cursor:pointer;" +
+        "transition:background 0.12s;";
+}

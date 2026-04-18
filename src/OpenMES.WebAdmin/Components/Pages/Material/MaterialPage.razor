@@ -1,0 +1,49 @@
+﻿@page "/material"
+@attribute [Authorize]
+@inherits BasePage<MaterialDto,int,Edit>
+@rendermode InteractiveServer
+
+<FluentToolbar>
+    <FluentButton Appearance="Appearance.Accent"
+                  IconStart="@(new Icons.Regular.Size20.Add())"
+                  OnClick="@AddInDialog">@UiResources.Button_Add</FluentButton>
+</FluentToolbar>
+
+<FluentDataGrid TGridItem="MaterialDto" ItemsProvider="@ItemsProvider" DisplayMode="DataGridDisplayMode.Table">
+    <PropertyColumnExt Property="@(p => p.PartNumber)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.PartDescription)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.UnitOfMeasure)" Sortable="true" />
+    <TemplateColumn Title="@DtoResources.Material_IsConsumable">
+        @if (context.IsConsumable)
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxChecked())" />
+        }
+        else
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxUnchecked())" />
+        }
+    </TemplateColumn>
+    <TemplateColumn Title="@DtoResources.Material_IsPhantom">
+        @if (context.IsPhantom)
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxChecked())" />
+        }
+        else
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxUnchecked())" />
+        }
+    </TemplateColumn>
+    <PropertyColumn Property="@(p => p.PartType)" Sortable="true" />
+    <TemplateColumn Title="@UiResources.Label_Actions">
+        <FluentButton IconStart="@(new Icons.Regular.Size16.Edit())" OnClick="@(() => EditInDialog(context))" />
+        <FluentButton IconStart="@(new Icons.Regular.Size16.DesktopEdit())" OnClick="@(() => EditInPanel(context))" />
+        <FluentButton IconStart="@(new Icons.Regular.Size16.Delete())" OnClick="@(() => DeleteItem(context))" />
+        <FluentButton IconStart="@(new Icons.Regular.Size16.Glasses())" OnClick="@(() => ShowItem(context))" />
+    </TemplateColumn>
+</FluentDataGrid>
+
+<FluentPaginator State="@pagination" />
+
+@code {
+
+}

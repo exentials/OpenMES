@@ -1,0 +1,24 @@
+@inherits BaseEdit<InspectionReadingDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.Ruler())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnSaveAsync="@SaveAsync"
+                     OnCancelAsync="@CancelAsync">
+    <FluentNumberField Label="@DtoResources.InspectionReading_InspectionPointId" @bind-Value="@Content.InspectionPointId" Required="true" />
+    <FluentNumberField Label="@DtoResources.InspectionReading_ProductionOrderPhaseId" @bind-Value="@Content.ProductionOrderPhaseId" Required="true" />
+    <FluentNumberField Label="@DtoResources.InspectionReading_OperatorId" @bind-Value="@Content.OperatorId" Required="true" />
+    <FluentDatePicker Label="@DtoResources.InspectionReading_ReadingDate" @bind-Value="@ReadingDate" />
+    <FluentNumberField Label="@DtoResources.InspectionReading_NumericValue" @bind-Value="@Content.NumericValue" />
+    <FluentCheckbox Label="@DtoResources.InspectionReading_BooleanValue" @bind-Value="@BooleanValue" />
+    <FluentTextField Label="@DtoResources.InspectionReading_TextValue" @bind-Value="@Content.TextValue" MaxLength="200" />
+    <FluentSelect TOption="string"
+                  Label="@DtoResources.InspectionReading_Result"
+                  Value="@Content.Result.ToString()"
+                  ValueChanged="@(v => Content.Result = Enum.Parse<InspectionResult>(v))">
+        @foreach (var item in Enum.GetValues<InspectionResult>())
+        {
+            <FluentOption TOption="string" Value="@item.ToString()">@EnumTextLocalizer.Localize(item)</FluentOption>
+        }
+    </FluentSelect>
+    <FluentTextArea Label="@DtoResources.InspectionReading_Notes" @bind-Value="@Content.Notes" Rows="3" />
+</EditDialogContainer>

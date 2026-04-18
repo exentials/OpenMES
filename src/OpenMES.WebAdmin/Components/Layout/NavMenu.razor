@@ -1,0 +1,67 @@
+﻿@rendermode InteractiveServer
+@using OpenMES.Data.Dtos.Resources
+
+<div class="navmenu">
+    <input type="checkbox" title="Menu expand/collapse toggle" id="navmenu-toggle" class="navmenu-icon" />
+    <label for="navmenu-toggle" class="navmenu-icon"><FluentIcon Value="@(new Icons.Regular.Size20.Navigation())" Color="Color.Fill" /></label>
+    <nav class="sitenav" aria-labelledby="main-menu">
+        <FluentNavMenu Id="main-menu" Collapsible="true" Width="250" Title="Navigation menu" @bind-Expanded="expanded" CustomToggle="true">
+            <FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Home())" IconColor="Color.Accent">@UiResources.NavMenu_Home</FluentNavLink>
+
+            <FluentNavGroup Title="@UiResources.NavMenu_Administration" Icon="@(new Icons.Regular.Size20.ShieldPerson())" IconColor="Color.Accent">
+                <AuthorizeView Roles="admin">
+                    <FluentNavLink Href="users" Icon="@(new Icons.Regular.Size20.People())" IconColor="Color.Accent">@UiResources.NavMenu_Users</FluentNavLink>
+                </AuthorizeView>
+            </FluentNavGroup>
+
+            <FluentNavGroup Title="@UiResources.NavMenu_MasterData" Icon="@(new Icons.Regular.Size20.Database())" IconColor="Color.Accent">
+                <FluentNavLink Href="plant" Icon="@(new Icons.Regular.Size20.BuildingFactory())" IconColor="Color.Accent">@UiResources.NavMenu_Plants</FluentNavLink>
+                <FluentNavLink Href="workcenter" Icon="@(new Icons.Regular.Size20.Grid())" IconColor="Color.Accent">@UiResources.NavMenu_WorkCenters</FluentNavLink>
+                <FluentNavLink Href="machine" Icon="@(new Icons.Regular.Size20.Wrench())" IconColor="Color.Accent">@UiResources.NavMenu_Machines</FluentNavLink>
+                <FluentNavLink Href="operator" Icon="@(new Icons.Regular.Size20.Person())" IconColor="Color.Accent">@UiResources.NavMenu_Operators</FluentNavLink>
+                <FluentNavLink Href="material" Icon="@(new Icons.Regular.Size20.PuzzleCubePiece())" IconColor="Color.Accent">@UiResources.NavMenu_Materials</FluentNavLink>
+                <FluentNavLink Href="clientdevice" Icon="@(new Icons.Regular.Size20.Desktop())" IconColor="Color.Accent">@UiResources.NavMenu_ClientDevices</FluentNavLink>
+            </FluentNavGroup>
+
+            <FluentNavGroup Title="@UiResources.NavMenu_Production" Icon="@(new Icons.Regular.Size20.ClipboardTask())" IconColor="Color.Accent">
+                <FluentNavLink Href="productionorder" Icon="@(new Icons.Regular.Size20.DocumentBulletList())" IconColor="Color.Accent">@UiResources.NavMenu_ProductionOrders</FluentNavLink>
+                <FluentNavLink Href="phasepickinglist" Icon="@(new Icons.Regular.Size20.BoxSearch())" IconColor="Color.Accent">@UiResources.NavMenu_PickingLists</FluentNavLink>
+                <FluentNavLink Href="productiondeclaration"
+                               Icon="@(new Icons.Regular.Size20.CheckmarkCircle())"
+                               IconColor="Color.Accent">@UiResources.NavMenu_ProductionDeclarations</FluentNavLink>
+            </FluentNavGroup>
+
+            <FluentNavGroup Title="@UiResources.NavMenu_Declarations" Icon="@(new Icons.Regular.Size20.ClockAlarm())" IconColor="Color.Accent">
+                <FluentNavLink Href="operatorshift" Icon="@(new Icons.Regular.Size20.PersonClock())" IconColor="Color.Accent">@UiResources.NavMenu_OperatorShifts</FluentNavLink>
+                <FluentNavLink Href="worksession" Icon="@(new Icons.Regular.Size20.Timer())" IconColor="Color.Accent">@UiResources.NavMenu_WorkSessions</FluentNavLink>
+                <AuthorizeView Roles="admin">
+                    <FluentNavLink Href="erpexport"
+                                   Icon="@(new Icons.Regular.Size20.ArrowExportLtr())"
+                                   IconColor="Color.Accent">@UiResources.NavMenu_ErpExport</FluentNavLink>
+                </AuthorizeView>
+                <FluentNavLink Href="machinestate" Icon="@(new Icons.Regular.Size20.Pulse())" IconColor="Color.Accent">@UiResources.NavMenu_MachineStates</FluentNavLink>
+            </FluentNavGroup>
+
+            <FluentNavGroup Title="@UiResources.NavMenu_MachineStops" Icon="@(new Icons.Regular.Size20.Warning())" IconColor="Color.Accent">
+                <FluentNavLink Href="machinestopreason" Icon="@(new Icons.Regular.Size20.BookQuestionMark())" IconColor="Color.Accent">@UiResources.NavMenu_StopReasons</FluentNavLink>
+                <FluentNavLink Href="machinestop" Icon="@(new Icons.Regular.Size20.PauseCircle())" IconColor="Color.Accent">@UiResources.NavMenu_MachineStops</FluentNavLink>
+            </FluentNavGroup>
+
+            <FluentNavGroup Title="@UiResources.NavMenu_Quality" Icon="@(new Icons.Regular.Size20.ShieldCheckmark())" IconColor="Color.Accent">
+                <FluentNavLink Href="inspectionplan" Icon="@(new Icons.Regular.Size20.ClipboardCheckmark())" IconColor="Color.Accent">@UiResources.NavMenu_InspectionPlans</FluentNavLink>
+                <FluentNavLink Href="inspectionreading" Icon="@(new Icons.Regular.Size20.Ruler())" IconColor="Color.Accent">@UiResources.NavMenu_InspectionReadings</FluentNavLink>
+                <FluentNavLink Href="nonconformity" Icon="@(new Icons.Regular.Size20.ErrorCircle())" IconColor="Color.Accent">@UiResources.NavMenu_NonConformities</FluentNavLink>
+            </FluentNavGroup>
+
+            <FluentNavGroup Title="@UiResources.NavMenu_Warehouse" Icon="@(new Icons.Regular.Size20.Box())" IconColor="Color.Accent">
+                <FluentNavLink Href="storagelocation" Icon="@(new Icons.Regular.Size20.Building())" IconColor="Color.Accent">@UiResources.NavMenu_StorageLocations</FluentNavLink>
+                <FluentNavLink Href="materialstock" Icon="@(new Icons.Regular.Size20.BoxMultiple())" IconColor="Color.Accent">@UiResources.NavMenu_MaterialStock</FluentNavLink>
+                <FluentNavLink Href="stockmovement" Icon="@(new Icons.Regular.Size20.ArrowMove())" IconColor="Color.Accent">@UiResources.NavMenu_StockMovements</FluentNavLink>
+            </FluentNavGroup>
+        </FluentNavMenu>
+    </nav>
+</div>
+
+@code {
+    private bool expanded = true;
+}

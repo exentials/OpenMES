@@ -1,0 +1,273 @@
+@namespace OpenMES.WebClient.Components.Actions
+@using OpenMES.Data.Common
+@using OpenMES.Data.Dtos.Resources
+@using OpenMES.WebClient.Components.Dialogs
+@using OpenMES.WebClient.Services
+@implements IDisposable
+
+<div style="display:flex;flex-direction:column;gap:16px;max-width:560px;margin:0 auto;">
+    <FluentCard>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <div>
+                <div style="font-size:14px;color:var(--neutral-foreground-hint);">@UiResources.Section_MachineStatus</div>
+                <div style="font-size:18px;font-weight:600;color:var(--neutral-foreground-rest);">@Machine.Code - @Machine.Description</div>
+            </div>
+            <div style="@StateBadgeStyle">@CurrentStatusLabel</div>
+        </div>
+        <div style="margin-top:8px;font-size:14px;color:var(--neutral-foreground-hint);">
+            @UiResources.Action_StateDuration: @DurationText
+        </div>
+    </FluentCard>
+
+    <FluentCard>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            @foreach (var action in AvailableActions)
+            {
+                <FluentButton Appearance="@(action.IsPrimary ? Appearance.Accent : Appearance.Outline)"
+                              Disabled="@IsBusy"
+                              OnClick="() => ExecuteActionAsync(action.TargetStatus)">
+                    @action.Label
+                </FluentButton>
+            }
+        </div>
+
+        <div style="margin-top:12px;">
+            <FluentButton Appearance="Appearance.Outline" OnClick="CancelAsync">@UiResources.Action_Cancel</FluentButton>
+        </div>
+    </FluentCard>
+</div>
+
+<StopReasonSelectionDialog IsOpen="@IsStopReasonDialogOpen"
+                           Reasons="@StopReasons"
+                           OnCancel="CloseStopReasonDialog"
+                           OnConfirm="OnStopReasonSelectedAsync" />
+
+@code {
+    [Inject] private MesClient MesClient { get; set; } = null!;
+    [Inject] private IErrorService ErrorService { get; set; } = null!;
+    [Inject] private ActionViewModel ActionViewModel { get; set; } = null!;
+
+    [Parameter, EditorRequired] public MachineDto Machine { get; set; } = null!;
+    [Parameter] public MachineStateDto? CurrentState { get; set; }
+    [Parameter] public EventCallback OnStateChanged { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private List<MachineStopReasonDto> StopReasons { get; set; } = [];
+    private bool IsStopReasonDialogOpen { get; set; }
+    private bool IsBusy { get; set; }
+
+    private TimeSpan Duration { get; set; } = TimeSpan.Zero;
+    private PeriodicTimer? Timer { get; set; }
+    private CancellationTokenSource? TimerCts { get; set; }
+
+    private MachineStatus CurrentStatus => CurrentState?.Status ?? MachineStatus.Idle;
+
+    private string CurrentStatusLabel => CurrentStatus switch
+    {
+        MachineStatus.Running => UiResources.Machine_Running,
+        MachineStatus.Stopped => UiResources.Machine_Stopped,
+        MachineStatus.Setup => UiResources.Action_StatePaused,
+        _ => UiResources.Machine_Idle,
+    };
+
+    private string DurationText => $"{(int)Duration.TotalHours:00}:{Duration.Minutes:00}:{Duration.Seconds:00}";
+
+    private string StateBadgeStyle =>
+        "font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;" +
+        CurrentStatus switch
+        {
+            MachineStatus.Running => "background:var(--success-background);color:var(--success-foreground);",
+            MachineStatus.Stopped => "background:var(--error-background);color:var(--error-foreground);",
+            MachineStatus.Setup => "background:var(--warning-background);color:var(--warning-foreground);",
+            _ => "background:var(--neutral-layer-2);color:var(--neutral-foreground-rest);",
+        };
+
+    private IReadOnlyList<StateAction> AvailableActions => CurrentStatus switch
+    {
+        MachineStatus.Idle => [new(UiResources.Action_Start, MachineStatus.Running, true)],
+        MachineStatus.Running =>
+        [
+            new(UiResources.Action_Pause, MachineStatus.Setup, false),
+            new(UiResources.Action_Stop, MachineStatus.Stopped, true),
+        ],
+        MachineStatus.Setup =>
+        [
+            new(UiResources.Action_Resume, MachineStatus.Running, true),
+            new(UiResources.Action_Stop, MachineStatus.Stopped, false),
+        ],
+        MachineStatus.Stopped => [new(UiResources.Action_Start, MachineStatus.Running, true)],
+        _ => [new(UiResources.Action_Start, MachineStatus.Running, true)],
+    };
+
+    protected override void OnParametersSet()
+    {
+        StartDurationTimer();
+    }
+
+    private async Task ExecuteActionAsync(MachineStatus targetStatus)
+    {
+        if (targetStatus == MachineStatus.Stopped)
+        {
+            await OpenStopReasonDialogAsync();
+            return;
+        }
+
+        await CreateMachineStateAsync(targetStatus);
+    }
+
+    private async Task OpenStopReasonDialogAsync()
+    {
+        await RunAsync(async ct =>
+        {
+            var reasons = await MesClient.MachineStopReason.ReadsAsync(0, 300, ct);
+            StopReasons = reasons.Data?.Items?.Where(r => !r.Disabled).ToList() ?? [];
+
+            if (StopReasons.Count == 0)
+            {
+                ErrorService.AddError(UiResources.Action_ErrorNoStopReasons);
+                return;
+            }
+
+            IsStopReasonDialogOpen = true;
+        });
+    }
+
+    private Task CloseStopReasonDialog()
+    {
+        IsStopReasonDialogOpen = false;
+        return Task.CompletedTask;
+    }
+
+    private async Task OnStopReasonSelectedAsync(int reasonId)
+    {
+        IsStopReasonDialogOpen = false;
+
+        await RunAsync(async ct =>
+        {
+            var stopEventTime = DateTimeOffset.UtcNow;
+            var durationSeconds = Math.Max(0, (int)Duration.TotalSeconds);
+
+            var stateResult = await MesClient.MachineState.CreateAsync(new MachineStateDto
+            {
+                MachineId = Machine.Id,
+                Status = MachineStatus.Stopped,
+                EventTime = stopEventTime,
+                Source = "Terminal",
+            }, ct);
+
+            if (!stateResult.Success || stateResult.Data is null)
+            {
+                ErrorService.AddError(stateResult.ErrorMessage ?? UiResources.Action_ErrorStateChangeFailed);
+                return;
+            }
+
+            CurrentState = stateResult.Data;
+            ActionViewModel.CurrentState = stateResult.Data;
+
+            var startDate = stopEventTime.AddSeconds(-durationSeconds);
+            var stopResult = await MesClient.MachineStop.CreateAsync(new MachineStopDto
+            {
+                MachineId = Machine.Id,
+                ProductionOrderPhaseId = ActionViewModel.ActivePhase?.Id,
+                MachineStopReasonId = reasonId,
+                StartDate = startDate,
+                EndDate = stopEventTime,
+                Notes = $"{UiResources.Action_StopDurationSeconds}: {durationSeconds}",
+            }, ct);
+
+            if (!stopResult.Success)
+            {
+                ErrorService.AddError(stopResult.ErrorMessage ?? UiResources.Action_ErrorStateChangeFailed);
+                return;
+            }
+
+            await OnStateChanged.InvokeAsync();
+            StateHasChanged();
+        });
+    }
+
+    private async Task CreateMachineStateAsync(MachineStatus targetStatus)
+    {
+        await RunAsync(async ct =>
+        {
+            var result = await MesClient.MachineState.CreateAsync(new MachineStateDto
+            {
+                MachineId = Machine.Id,
+                Status = targetStatus,
+                EventTime = DateTimeOffset.UtcNow,
+                Source = "Terminal",
+            }, ct);
+
+            if (!result.Success || result.Data is null)
+            {
+                ErrorService.AddError(result.ErrorMessage ?? UiResources.Action_ErrorStateChangeFailed);
+                return;
+            }
+
+            CurrentState = result.Data;
+            ActionViewModel.CurrentState = result.Data;
+            await OnStateChanged.InvokeAsync();
+            StateHasChanged();
+        });
+    }
+
+    private Task CancelAsync() => OnCancel.InvokeAsync();
+
+    private void StartDurationTimer()
+    {
+        TimerCts?.Cancel();
+        TimerCts?.Dispose();
+
+        TimerCts = new CancellationTokenSource();
+        Timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+
+        _ = UpdateDurationAsync(TimerCts.Token);
+    }
+
+    private async Task UpdateDurationAsync(CancellationToken ct)
+    {
+        if (CurrentState is null)
+        {
+            Duration = TimeSpan.Zero;
+            return;
+        }
+
+        while (Timer is not null && await Timer.WaitForNextTickAsync(ct))
+        {
+            Duration = DateTimeOffset.UtcNow - CurrentState.EventTime;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task RunAsync(Func<CancellationToken, Task> operation)
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            ErrorService.ClearError();
+            await operation(CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            ErrorService.AddError(ex.Message);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        TimerCts?.Cancel();
+        TimerCts?.Dispose();
+        Timer?.Dispose();
+    }
+
+    private sealed record StateAction(string Label, MachineStatus TargetStatus, bool IsPrimary);
+}

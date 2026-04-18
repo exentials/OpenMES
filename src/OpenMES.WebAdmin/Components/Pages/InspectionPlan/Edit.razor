@@ -1,0 +1,12 @@
+@inherits BaseEdit<InspectionPlanDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.ClipboardCheckmark())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnSaveAsync="@SaveAsync"
+                     OnCancelAsync="@CancelAsync">
+    <FluentTextField Label="@DtoResources.InspectionPlan_Code" @bind-Value="@Content.Code" Required="true" MaxLength="20" />
+    <FluentTextField Label="@DtoResources.InspectionPlan_Description" @bind-Value="@Content.Description" MaxLength="80" />
+    <FluentTextField Label="@DtoResources.InspectionPlan_PartNumber" @bind-Value="@Content.PartNumber" MaxLength="20" />
+    <FluentNumberField Label="@DtoResources.InspectionPlan_Version" @bind-Value="@Content.Version" Min="1" />
+    <FluentCheckbox Label="@DtoResources.InspectionPlan_Disabled" @bind-Value="@Content.Disabled" />
+</EditDialogContainer>

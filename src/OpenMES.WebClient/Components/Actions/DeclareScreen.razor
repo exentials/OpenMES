@@ -1,0 +1,205 @@
+@namespace OpenMES.WebClient.Components.Actions
+@using OpenMES.Data.Dtos.Resources
+@using OpenMES.WebClient.Components.Common
+@using OpenMES.WebClient.Services
+
+<div style="display:flex;flex-direction:column;gap:16px;max-width:520px;margin:0 auto;">
+    <FluentCard>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="font-size:14px;color:var(--neutral-foreground-hint);">@UiResources.Action_ActivePhase</div>
+            <div style="font-size:18px;font-weight:600;color:var(--neutral-foreground-rest);">
+                @Phase.PhaseNumber - @Phase.Description
+            </div>
+            <div style="font-size:14px;color:var(--neutral-foreground-hint);">
+                @UiResources.Action_TargetQty: @Phase.PlannedQuantity.ToString("0.###")
+            </div>
+        </div>
+    </FluentCard>
+
+    <FluentCard>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+            <NumericPad @bind-Value="ConfirmedQty" Label="@UiResources.Action_GoodPieces" />
+            <NumericPad @bind-Value="ScrapQty" Label="@UiResources.Action_ScrapOptional" />
+
+            <div style="padding:10px;border-radius:10px;background:var(--neutral-layer-2);border:1px solid var(--neutral-stroke-layer-rest);">
+                <div style="font-size:14px;color:var(--neutral-foreground-hint);">@UiResources.Action_TotalQty</div>
+                <div style="font-size:22px;font-weight:600;color:var(--neutral-foreground-rest);">@TotalQuantity.ToString("0.###")</div>
+                @if (IsOverTarget)
+                {
+                    <div style="font-size:13px;color:var(--error-foreground);margin-top:6px;">@UiResources.Action_TotalExceedsTarget</div>
+                }
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <FluentButton Appearance="Appearance.Outline" OnClick="CancelAsync">@UiResources.Action_Cancel</FluentButton>
+                <FluentButton Appearance="Appearance.Accent" Disabled="@(!CanConfirm)" OnClick="OpenConfirmDialog">@UiResources.Action_Confirm</FluentButton>
+            </div>
+        </div>
+    </FluentCard>
+
+    <FluentCard>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="font-size:16px;font-weight:600;color:var(--neutral-foreground-rest);">@UiResources.Action_LastDeclarations</div>
+            @if (LastDeclarations.Count == 0)
+            {
+                <div style="font-size:14px;color:var(--neutral-foreground-hint);">@UiResources.Action_NoDeclarations</div>
+            }
+            else
+            {
+                @foreach (var item in LastDeclarations)
+                {
+                    <div style="display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--neutral-stroke-layer-rest);">
+                        <div style="font-size:13px;color:var(--neutral-foreground-rest);">@item.DeclarationDate.ToLocalTime().ToString("HH:mm")</div>
+                        <div style="font-size:13px;color:var(--neutral-foreground-rest);">@UiResources.Action_GoodPieces: @item.ConfirmedQuantity.ToString("0.###")</div>
+                        <div style="font-size:13px;color:var(--error-foreground);">@UiResources.Action_Scrap: @item.ScrapQuantity.ToString("0.###")</div>
+                    </div>
+                }
+            }
+        </div>
+    </FluentCard>
+</div>
+
+@if (IsConfirmDialogOpen)
+{
+    <div style="position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:1200;">
+        <FluentCard Style="width:min(500px,92vw);padding:20px;display:flex;flex-direction:column;gap:14px;">
+            <div style="font-size:18px;font-weight:600;">@UiResources.Action_ConfirmDeclarationTitle</div>
+            <div style="font-size:14px;color:var(--neutral-foreground-hint);">
+                @UiResources.Action_ConfirmDeclarationMessage
+            </div>
+            <div style="display:flex;justify-content:space-between;gap:10px;">
+                <span>@UiResources.Action_GoodPieces: @ConfirmedQty.ToString("0.###")</span>
+                <span>@UiResources.Action_ScrapOptional: @ScrapQty.ToString("0.###")</span>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;">
+                <FluentButton Appearance="Appearance.Outline" OnClick="CloseConfirmDialog">@UiResources.Action_Cancel</FluentButton>
+                <FluentButton Appearance="Appearance.Accent" Disabled="@IsSaving" OnClick="ConfirmDeclareAsync">@UiResources.Action_Confirm</FluentButton>
+            </div>
+        </FluentCard>
+    </div>
+}
+
+@code {
+    [Inject] private MesClient MesClient { get; set; } = null!;
+    [Inject] private NavigationManager Navigation { get; set; } = null!;
+    [Inject] private IErrorService ErrorService { get; set; } = null!;
+
+    [Inject] private ActionViewModel ActionViewModel { get; set; } = null!;
+
+    [Parameter, EditorRequired] public ProductionOrderPhaseDto Phase { get; set; } = null!;
+    [Parameter] public EventCallback OnDeclared { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private decimal ConfirmedQty { get; set; }
+    private decimal ScrapQty { get; set; }
+
+    private bool IsConfirmDialogOpen { get; set; }
+    private bool IsSaving { get; set; }
+
+    private decimal TotalQuantity => ConfirmedQty + ScrapQty;
+    private bool IsOverTarget => TotalQuantity > Phase.PlannedQuantity;
+    private bool CanConfirm => ConfirmedQty > 0 && !IsOverTarget && !IsSaving;
+
+    private List<ProductionDeclarationDto> LastDeclarations { get; set; } = [];
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadLastDeclarationsAsync();
+    }
+
+    private Task OpenConfirmDialog()
+    {
+        if (!CanConfirm)
+        {
+            return Task.CompletedTask;
+        }
+
+        IsConfirmDialogOpen = true;
+        return Task.CompletedTask;
+    }
+
+    private Task CloseConfirmDialog()
+    {
+        IsConfirmDialogOpen = false;
+        return Task.CompletedTask;
+    }
+
+    private async Task ConfirmDeclareAsync()
+    {
+        if (ActionViewModel.Machine is null)
+        {
+            ErrorService.AddError(UiResources.Action_ErrorMachineNotLoaded);
+            return;
+        }
+
+        var operatorId = ActionViewModel.OpenSession?.OperatorId ?? 0;
+        if (operatorId <= 0)
+        {
+            ErrorService.AddError(UiResources.Action_ErrorOperatorMissing);
+            return;
+        }
+
+        await RunAsync(async ct =>
+        {
+            IsSaving = true;
+            var result = await MesClient.ProductionDeclaration.CreateAsync(new ProductionDeclarationDto
+            {
+                ProductionOrderPhaseId = Phase.Id,
+                MachineId = ActionViewModel.Machine.Id,
+                OperatorId = operatorId,
+                ConfirmedQuantity = ConfirmedQty,
+                ScrapQuantity = ScrapQty,
+                DeclarationDate = DateTimeOffset.UtcNow,
+            }, ct);
+
+            if (!result.Success)
+            {
+                ErrorService.AddError(result.ErrorMessage ?? UiResources.Action_ErrorDeclarationFailed);
+                IsSaving = false;
+                return;
+            }
+
+            IsConfirmDialogOpen = false;
+            ConfirmedQty = 0;
+            ScrapQty = 0;
+
+            await LoadLastDeclarationsAsync(ct);
+            await OnDeclared.InvokeAsync();
+            IsSaving = false;
+        });
+    }
+
+    private async Task CancelAsync()
+    {
+        await OnCancel.InvokeAsync();
+    }
+
+    private async Task LoadLastDeclarationsAsync(CancellationToken ct = default)
+    {
+        await RunAsync(async token =>
+        {
+            var response = await MesClient.ProductionDeclaration.ReadsAsync(0, 250, ct == default ? token : ct);
+            var phaseItems = response.Data?.Items?
+                .Where(x => x.ProductionOrderPhaseId == Phase.Id)
+                .OrderByDescending(x => x.DeclarationDate)
+                .Take(5)
+                .ToList() ?? [];
+
+            ActionViewModel.LastDeclarations = phaseItems;
+            LastDeclarations = ActionViewModel.LastDeclarations;
+        });
+    }
+
+    private async Task RunAsync(Func<CancellationToken, Task> operation)
+    {
+        try
+        {
+            ErrorService.ClearError();
+            await operation(CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            ErrorService.AddError(ex.Message);
+        }
+    }
+}

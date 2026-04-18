@@ -1,0 +1,15 @@
+@inherits BaseEdit<MaterialDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.PuzzleCubePiece())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnSaveAsync="@SaveAsync"
+                     OnCancelAsync="@CancelAsync">
+    <FluentTextField Label="@DtoResources.Material_PartNumber" @bind-Value="@Content.PartNumber" Required="true" MaxLength="20" />
+    <FluentTextField Label="@DtoResources.Material_PartDescription" @bind-Value="@Content.PartDescription" Required="true" MaxLength="40" />
+    <FluentTextField Label="@DtoResources.Material_PartType" @bind-Value="@Content.PartType" MaxLength="20" />
+    <FluentTextField Label="@DtoResources.Material_PartGroup" @bind-Value="@Content.PartGroup" MaxLength="20" />
+    <FluentTextField Label="@DtoResources.Material_UnitOfMeasure" @bind-Value="@Content.UnitOfMeasure" Required="true" MaxLength="3" />
+    <FluentCheckbox Label="@DtoResources.Material_IsConsumable" @bind-Value="@Content.IsConsumable" />
+    <FluentCheckbox Label="@DtoResources.Material_IsPhantom" @bind-Value="@Content.IsPhantom" />
+    <FluentCheckbox Label="@DtoResources.Material_AllowOverproduction" @bind-Value="@Content.AllowOverproduction" />
+</EditDialogContainer>

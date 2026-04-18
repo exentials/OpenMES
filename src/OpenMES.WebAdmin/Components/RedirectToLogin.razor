@@ -1,0 +1,32 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var isAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+        if (isAuthenticated)
+        {
+            return;
+        }
+
+        var relative = Navigation.ToBaseRelativePath(Navigation.Uri);
+
+        // Pass only the base-relative path as returnUrl to reduce open-redirect risk.
+        if (relative.StartsWith("login", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        if (!relative.StartsWith('/')) relative = '/' + relative;
+        var returnUrl = Uri.EscapeDataString(relative);
+        Navigation.NavigateTo($"/login?returnUrl={returnUrl}", forceLoad: false);
+    }
+}

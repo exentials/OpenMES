@@ -1,0 +1,76 @@
+@page "/worksession/{ItemId:int}"
+@attribute [Authorize]
+@inherits BaseDetails<WorkSessionDto, int>
+@rendermode InteractiveServer
+
+@if (Model is not null)
+{
+    <FluentGrid>
+        <FluentGridItem xs="12">
+            <FluentLabel Typo="Typography.H4">
+                @Model.OperatorName — @EnumTextLocalizer.Localize(Model.SessionType) on @Model.PhaseNumber
+            </FluentLabel>
+        </FluentGridItem>
+
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.WorkSession_MachineCode:</strong> @Model.MachineCode</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.WorkSession_SessionType:</strong> @EnumTextLocalizer.Localize(Model.SessionType)</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.WorkSession_Status:</strong> @EnumTextLocalizer.Localize(Model.Status)</FluentLabel>
+        </FluentGridItem>
+
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.WorkSession_StartTime:</strong> @Model.StartTime.ToLocalTime().ToString("g")</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.WorkSession_EndTime:</strong> @(Model.EndTime?.ToLocalTime().ToString("g") ?? "—")</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.WorkSession_AllocatedMinutes:</strong> @Model.AllocatedMinutes</FluentLabel>
+        </FluentGridItem>
+
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.WorkSession_Source:</strong> @Model.Source</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="8">
+            <FluentLabel><strong>@DtoResources.WorkSession_Notes:</strong> @(Model.Notes ?? "—")</FluentLabel>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12" style="margin-top:16px;">
+            <FluentLabel Typo="Typography.H6">ERP Export</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.WorkSession_PhaseExternalId:</strong> @(Model.PhaseExternalId ?? "—")</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.WorkSession_ExternalCounterId:</strong> @(Model.ExternalCounterId ?? "—")</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.WorkSession_ErpExportedAt:</strong> @(Model.ErpExportedAt?.ToLocalTime().ToString("g") ?? "—")</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.WorkSession_IsReversal:</strong></FluentLabel>
+            @if (Model.IsReversal)
+            {
+                <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxChecked())" />
+            }
+            else
+            {
+                <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxUnchecked())" />
+            }
+        </FluentGridItem>
+
+        <FluentGridItem xs="12" style="margin-top:24px;">
+            <FluentButton Appearance="Appearance.Stealth"
+                          IconStart="@(new Icons.Regular.Size16.Delete())"
+                          OnClick="@Delete">@UiResources.Button_Delete</FluentButton>
+        </FluentGridItem>
+    </FluentGrid>
+}
+else
+{
+    <FluentProgressRing />
+}

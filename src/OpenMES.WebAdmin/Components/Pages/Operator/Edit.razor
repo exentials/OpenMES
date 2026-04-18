@@ -1,0 +1,10 @@
+@inherits BaseEdit<OperatorDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.Person())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnSaveAsync="@SaveAsync"
+                     OnCancelAsync="@CancelAsync">
+    <FluentTextField Label="Employee Number" @bind-Value="@Content.EmployeeNumber" Required="true" MaxLength="10" />
+    <FluentTextField Label="Name" @bind-Value="@Content.Name" Required="true" MaxLength="40" />
+    <FluentTextField Label="Badge" @bind-Value="@Content.Badge" MaxLength="10" />
+</EditDialogContainer>

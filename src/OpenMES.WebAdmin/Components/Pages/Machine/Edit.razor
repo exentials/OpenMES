@@ -1,0 +1,32 @@
+@inherits BaseEdit<MachineDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.Wrench())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnSaveAsync="@SaveAsync"
+                     OnCancelAsync="@CancelAsync">
+    <WorkCenterSelect @bind-Value="@Content.WorkCenterId"
+                      Label="@DtoResources.Machine_WorkCenterId" />
+    <FluentTextField Label="@DtoResources.Machine_Code" @bind-Value="@Content.Code" Required="true" />
+    <FluentTextField Label="@DtoResources.Machine_Description" @bind-Value="@Content.Description" />
+    <FluentTextField Label="@DtoResources.Machine_Type" @bind-Value="@Content.Type" />
+    <FluentSelect TOption="string"
+                  Label="@DtoResources.Machine_Status"
+                  Value="@Content.Status.ToString()"
+                  ValueChanged="@(v => Content.Status = Enum.Parse<MachineStatus>(v))">
+        @foreach (var item in Enum.GetValues<MachineStatus>())
+        {
+            <FluentOption TOption="string" Value="@item.ToString()">@EnumTextLocalizer.Localize(item)</FluentOption>
+        }
+    </FluentSelect>
+    <FluentCheckbox Label="@DtoResources.Machine_Autoplacement" @bind-Value="@Content.Autoplacement" />
+    <FluentCheckbox Label="@DtoResources.Machine_AllowConcurrentSessions" @bind-Value="@Content.AllowConcurrentSessions" />
+    <FluentSelect TOption="string"
+                  Label="@DtoResources.Machine_TimeAllocationMode"
+                  Value="@Content.TimeAllocationMode.ToString()"
+                  ValueChanged="@(v => Content.TimeAllocationMode = Enum.Parse<MachineTimeAllocationMode>(v))">
+        @foreach (var item in Enum.GetValues<MachineTimeAllocationMode>())
+        {
+            <FluentOption TOption="string" Value="@item.ToString()">@EnumTextLocalizer.Localize(item)</FluentOption>
+        }
+    </FluentSelect>
+</EditDialogContainer>

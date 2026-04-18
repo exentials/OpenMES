@@ -1,0 +1,70 @@
+@namespace OpenMES.WebClient.Components.Shared
+@using Microsoft.FluentUI.AspNetCore.Components
+@using OpenMES.Data.Dtos
+
+@* MachineCard - Machine Information Card Component
+    Displays machine details with live status indicator
+
+    Used by: Home.razor (machine grid)
+    Features:
+    - Machine code, description, state
+    - Live status color indicator
+    - Production metrics (if session active)
+    - Click handler for machine selection
+*@
+
+<div style="cursor: pointer; padding: 16px; margin: 8px; min-width: 200px; border: 1px solid #e0e0e0; border-radius: 4px;" @onclick="HandleClick">
+    @if (Machine != null)
+    {
+        <div style="font-weight: bold; margin-bottom: 8px;">@Machine.Code</div>
+        <div style="font-size: 12px; color: #666; margin-bottom: 12px;">@Machine.Description</div>
+
+        @if (CurrentState != null)
+        {
+            <div style="font-weight: bold; color: @GetStateColor(); margin-bottom: 12px;">
+                @CurrentState.Status
+            </div>
+        }
+
+        @if (OpenSession != null)
+        {
+            <div style="font-size: 12px; color: #666;">
+                Session: Phase-@OpenSession.ProductionOrderPhaseId
+            </div>
+        }
+    }
+    else
+    {
+        <div>Loading...</div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public MachineDto? Machine { get; set; }
+
+    [Parameter]
+    public MachineStateDto? CurrentState { get; set; }
+
+    [Parameter]
+    public WorkSessionDto? OpenSession { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnSelect { get; set; }
+
+    private string GetStateColor()
+    {
+        if (CurrentState?.Status.ToString() == "Running") return "#28a745";
+        if (CurrentState?.Status.ToString() == "Stopped") return "#dc3545";
+        if (CurrentState?.Status.ToString() == "Idle") return "#ffc107";
+        return "#6c757d";
+    }
+
+    private async Task HandleClick()
+    {
+        if (Machine != null)
+        {
+            await OnSelect.InvokeAsync(Machine.Id);
+        }
+    }
+}

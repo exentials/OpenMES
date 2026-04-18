@@ -1,0 +1,15 @@
+@page "/404"
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<PageTitle>Not Found</PageTitle>
+
+<div style="display:flex;align-items:center;justify-content:center;min-height:70vh;padding:24px;">
+    <FluentCard Style="padding:32px;max-width:480px;width:100%;text-align:center;">
+        <FluentIcon Value="@(new Icons.Regular.Size48.Warning())" Style="color:var(--warning-foreground);margin-bottom:12px;" />
+        <h1 style="margin:8px 0;">404</h1>
+        <p style="margin:0 0 20px;color:var(--neutral-foreground-hint);">
+            The requested page was not found.
+        </p>
+        <FluentAnchor Href="/">Go back to Home</FluentAnchor>
+    </FluentCard>
+</div>

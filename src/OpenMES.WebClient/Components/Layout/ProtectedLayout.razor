@@ -1,0 +1,204 @@
+@namespace OpenMES.WebClient.Components.Layout
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using OpenMES.Data.Dtos
+@using OpenMES.Data.Dtos.Resources
+@using OpenMES.WebClient.Components.Common
+@using OpenMES.WebClient.Components.Dialogs
+@using OpenMES.WebClient.Services
+@inherits LayoutComponentBase
+@implements IAsyncDisposable
+
+@* ProtectedLayout.razor - Layout for Authenticated Routes
+    Ensures user is authenticated before rendering content.
+    Shows error if session expired during page load.
+    Includes TimeoutWarningDialog for session timeout handling.
+    
+    WEB-004: Phase 1 - Auth Guards
+*@
+
+@if (IsInitializing)
+{
+    <LoadingSpinner Message="@UiResources.Auth_CheckingAuthentication" />
+}
+else if (IsAuthenticated)
+{
+    @* Global error display at top *@
+    <ErrorMessageBar />
+
+    @* Session timeout warning dialog *@
+    <TimeoutWarningDialog />
+
+    @* Context toolbar with operator info *@
+    <ContextToolbar OperatorName="@SessionService?.CurrentIdentity?.Name"
+                   OperatorStatus="@UiResources.Home_Status_Present"
+                   OnMenuClick="@ShowMenu" />
+
+    <FluentHeader>
+        OpenMES
+        <FluentSpacer />
+        <FluentButton Appearance="Appearance.Lightweight" 
+                     IconEnd="new Icons.Regular.Size24.ArrowExit()" 
+                     OnClick="@HandleLogout"
+                     Title="@UiResources.Label_Logout" />
+    </FluentHeader>
+
+    <FluentStack Orientation="Orientation.Horizontal">
+        <FluentBodyContent>
+            @Body
+        </FluentBodyContent>
+    </FluentStack>
+
+    <FluentFooter>
+        <FluentMessageBarProvider />
+    </FluentFooter>
+}
+else
+{
+    @* Not authenticated - show error and redirect hint *@
+    <div style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+        <FluentCard Style="padding: 32px; max-width: 400px; text-align: center;">
+            <FluentIcon Value="@(new Icons.Regular.Size48.LockClosed())" 
+                       Style="color: #dc3545; margin-bottom: 16px;" />
+            
+            <h2 style="margin: 16px 0;">@UiResources.Auth_AccessDenied</h2>
+            
+            <p style="margin: 16px 0; color: #666;">
+                @UiResources.Auth_SessionExpiredOrUnauthenticated
+            </p>
+            
+            <p style="margin: 16px 0; color: #999; font-size: 12px;">
+                @UiResources.Auth_RedirectingToLogin
+            </p>
+
+            <FluentButton Appearance="Appearance.Accent" 
+                         Style="margin-top: 16px;"
+                         OnClick="@NavigateToLogin">
+                @UiResources.Auth_ClickIfNotRedirected
+            </FluentButton>
+        </FluentCard>
+    </div>
+}
+
+@code {
+    [Inject]
+    public ISessionService? SessionService { get; set; }
+
+    [Inject]
+    public IAuthorizationService? AuthorizationService { get; set; }
+
+    [Inject]
+    public NavigationManager? Navigation { get; set; }
+
+    [Inject]
+    public IJSRuntime? JSRuntime { get; set; }
+
+    [Inject]
+    public ProtectedLocalStorage? LocalStore { get; set; }
+
+    private bool IsAuthenticated { get; set; }
+    private bool IsInitializing { get; set; } = true;
+
+    protected override void OnInitialized()
+    {
+        if (SessionService != null)
+        {
+            IsAuthenticated = SessionService.IsSessionActive;
+            SessionService.SessionExpired += OnSessionExpired;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        if (!IsAuthenticated && SessionService != null && LocalStore != null)
+        {
+            try
+            {
+                var storedAuth = await LocalStore.GetAsync<TerminalLoginResultDto>("auth");
+                if (storedAuth.Success && storedAuth.Value is not null &&
+                    !string.IsNullOrWhiteSpace(storedAuth.Value.Name) &&
+                    !string.IsNullOrWhiteSpace(storedAuth.Value.AuthToken))
+                {
+                    await SessionService.RestoreSessionAsync(storedAuth.Value.Name, storedAuth.Value.AuthToken);
+                    IsAuthenticated = true;
+                }
+            }
+            catch
+            {
+                IsAuthenticated = false;
+            }
+        }
+
+        IsInitializing = false;
+        StateHasChanged();
+
+        if (!IsAuthenticated)
+        {
+            _ = Task.Delay(300).ContinueWith(_ => NavigateToLogin());
+        }
+    }
+
+    private void OnSessionExpired(object? sender, EventArgs e)
+    {
+        IsAuthenticated = false;
+        InvokeAsync(StateHasChanged);
+        _ = Task.Delay(500).ContinueWith(_ => NavigateToLogin());
+    }
+
+    private void ShowMenu()
+    {
+        // Placeholder for menu dialog
+    }
+
+    private void NavigateToLogin()
+    {
+        if (Navigation != null)
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+
+    private async Task HandleLogout()
+    {
+        // Confirm logout
+        var confirmed = false;
+        if (JSRuntime != null)
+        {
+            confirmed = await JSRuntime.InvokeAsync<bool>(
+                "confirm", 
+                UiResources.Label_LogoutConfirm
+            );
+        }
+
+        if (confirmed)
+        {
+            if (SessionService != null)
+            {
+                await SessionService.EndSessionAsync();
+            }
+
+            // Clear stored auth
+            try
+            {
+                if (LocalStore != null)
+                {
+                    await LocalStore.DeleteAsync("auth");
+                }
+            }
+            catch { }
+
+            NavigateToLogin();
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (SessionService != null)
+        {
+            SessionService.SessionExpired -= OnSessionExpired;
+        }
+    }
+}

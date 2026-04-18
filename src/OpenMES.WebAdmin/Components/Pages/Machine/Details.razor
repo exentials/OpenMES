@@ -1,0 +1,60 @@
+@page "/machine/{ItemId:int}"
+@attribute [Authorize]
+@inherits BaseDetails<MachineDto, int>
+@rendermode InteractiveServer
+
+@if (Model is not null)
+{
+    <FluentGrid>
+        <FluentGridItem xs="12">
+            <FluentLabel Typo="Typography.H4">@Model.Code — @Model.Description</FluentLabel>
+        </FluentGridItem>
+
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.Machine_Type:</strong> @Model.Type</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.Machine_Status:</strong></FluentLabel>
+            <FluentBadge BackgroundColor="@Model.StatusColor" Color="white">@EnumTextLocalizer.Localize(Model.Status)</FluentBadge>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.Machine_WorkCenterId:</strong> @Model.WorkCenterId</FluentLabel>
+        </FluentGridItem>
+
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.Machine_TimeAllocationMode:</strong> @EnumTextLocalizer.Localize(Model.TimeAllocationMode)</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.Machine_AllowConcurrentSessions:</strong></FluentLabel>
+            @if (Model.AllowConcurrentSessions)
+            {
+                <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxChecked())" />
+            }
+            else
+            {
+                <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxUnchecked())" />
+            }
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>@DtoResources.Machine_Autoplacement:</strong></FluentLabel>
+            @if (Model.Autoplacement)
+            {
+                <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxChecked())" />
+            }
+            else
+            {
+                <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxUnchecked())" />
+            }
+        </FluentGridItem>
+
+        <FluentGridItem xs="12" style="margin-top:24px;">
+            <FluentButton Appearance="Appearance.Stealth"
+                          IconStart="@(new Icons.Regular.Size16.Delete())"
+                          OnClick="@Delete">@UiResources.Button_Delete</FluentButton>
+        </FluentGridItem>
+    </FluentGrid>
+}
+else
+{
+    <FluentProgressRing />
+}

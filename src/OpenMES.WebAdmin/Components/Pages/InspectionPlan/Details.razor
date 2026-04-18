@@ -1,0 +1,54 @@
+@page "/inspectionplan/{ItemId:int}"
+@attribute [Authorize]
+@inherits BaseDetails<InspectionPlanDto, int>
+@rendermode InteractiveServer
+
+@if (Model is not null)
+{
+    <FluentGrid>
+        <FluentGridItem xs="12">
+            <FluentLabel Typo="Typography.H4">@Model.Code v@Model.Version — @Model.Description</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="6">
+            <FluentLabel><strong>Part Number:</strong> @Model.PartNumber</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="6">
+            <FluentLabel><strong>Disabled:</strong> @Model.Disabled</FluentLabel>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            <FluentLabel Typo="Typography.H6">Control Points</FluentLabel>
+            <FluentDataGrid Items="@Model.InspectionPoints.AsQueryable()"
+                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            DisplayMode="DataGridDisplayMode.Table">
+                <PropertyColumnExt Property="@(p => p.Sequence)" Sortable="true" />
+                <PropertyColumnExt Property="@(p => p.Description)" Sortable="true" />
+                <PropertyColumnExt Property="@(p => p.MeasureType)" Sortable="true" />
+                <PropertyColumnExt Property="@(p => p.NominalValue)" />
+                <PropertyColumnExt Property="@(p => p.UpperTolerance)" />
+                <PropertyColumnExt Property="@(p => p.LowerTolerance)" />
+                <PropertyColumnExt Property="@(p => p.UnitOfMeasure)" />
+                <TemplateColumn Title="@UiResources.Label_Mandatory">
+                    @if (context.IsMandatory)
+                    {
+                        <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxChecked())" />
+                    }
+                    else
+                    {
+                        <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxUnchecked())" />
+                    }
+                </TemplateColumn>
+            </FluentDataGrid>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            <FluentButton Appearance="Appearance.Stealth"
+                          IconStart="@(new Icons.Regular.Size16.Delete())"
+                          OnClick="@Delete">Delete</FluentButton>
+        </FluentGridItem>
+    </FluentGrid>
+}
+else
+{
+    <FluentProgressRing />
+}

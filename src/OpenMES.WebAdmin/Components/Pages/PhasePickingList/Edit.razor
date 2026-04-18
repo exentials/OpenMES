@@ -1,0 +1,15 @@
+@inherits BaseEdit<PhasePickingListDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.BoxSearch())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnSaveAsync="@SaveAsync"
+                     OnCancelAsync="@CancelAsync">
+    <FluentNumberField Label="Production Order Phase Id" @bind-Value="@Content.ProductionOrderPhaseId" Required="true" />
+    <FluentNumberField Label="Material Id" @bind-Value="@Content.MaterialId" Required="true" />
+    <FluentNumberField Label="Storage Location Id" @bind-Value="@Content.StorageLocationId" />
+    <FluentNumberField Label="Required Quantity" @bind-Value="@Content.RequiredQuantity" Required="true" Min="0.001" />
+    <FluentCheckbox Label="Automatic picking on declaration" @bind-Value="@Content.IsAutomatic" />
+    <FluentCheckbox Label="Consumable (no picking required)" @bind-Value="@Content.IsConsumable" />
+    <FluentCheckbox Label="Phantom (BOM grouping only — no picking required)" @bind-Value="@Content.IsPhantom" />
+    <FluentTextArea Label="Notes" @bind-Value="@Content.Notes" Rows="2" />
+</EditDialogContainer>

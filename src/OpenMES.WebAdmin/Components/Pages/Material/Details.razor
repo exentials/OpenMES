@@ -1,0 +1,18 @@
+﻿@page "/material/{ItemID:int}"
+@attribute [Authorize]
+@inherits BaseDetails<MaterialDto,int>
+@rendermode InteractiveServer
+
+<h3>Material Details</h3>
+
+@if (Model != null)
+{
+    <FluentLabel>@Model.PartNumber</FluentLabel>
+    <FluentLabel>@Model.PartDescription</FluentLabel>
+
+    <FluentButton IconStart="@(new Icons.Regular.Size16.Delete())" OnClick="@(() => Delete())">@UiResources.Button_Delete</FluentButton>
+}
+else
+{
+    <p><em>Loading...</em></p>
+}

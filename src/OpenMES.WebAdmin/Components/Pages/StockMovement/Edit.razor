@@ -1,0 +1,25 @@
+@inherits BaseEdit<StockMovementDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.ArrowMove())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnCancelAsync="@CancelAsync"
+                     CustomPrimaryLabel="Register"
+                     CustomPrimaryCallback="@(EventCallback.Factory.Create(this, SaveAsync))">
+    <FluentNumberField Label="Material Id" @bind-Value="@Content.MaterialId" Required="true" />
+    <FluentNumberField Label="Storage Location Id" @bind-Value="@Content.StorageLocationId" Required="true" />
+    <FluentSelect TOption="string"
+                  Label="Movement Type"
+                  Value="@Content.MovementType.ToString()"
+                  ValueChanged="@(v => Content.MovementType = Enum.Parse<StockMovementType>(v))">
+        @foreach (var item in Enum.GetValues<StockMovementType>())
+        {
+            <FluentOption TOption="string" Value="@item.ToString()">@EnumTextLocalizer.Localize(item)</FluentOption>
+        }
+    </FluentSelect>
+    <FluentNumberField Label="Quantity" @bind-Value="@Content.Quantity" Required="true" Min="0.001" />
+    <FluentDatePicker Label="Movement date" @bind-Value="@MovementDate" />
+    <FluentNumberField Label="Operator Id" @bind-Value="@Content.OperatorId" Required="true" />
+    <FluentTextField Label="Reference Type" @bind-Value="@Content.ReferenceType" MaxLength="50" />
+    <FluentNumberField Label="Reference Id" @bind-Value="@Content.ReferenceId" />
+    <FluentTextArea Label="Notes" @bind-Value="@Content.Notes" Rows="3" />
+</EditDialogContainer>

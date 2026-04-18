@@ -1,0 +1,18 @@
+﻿@page "/login"
+@using OpenMES.Data.Dtos.Resources
+@inherits ClientComponentBase<LoginViewModel>
+
+<PageTitle>OpenMES Client</PageTitle>
+
+@UiResources.Login_Title
+
+<FluentStack HorizontalAlignment="HorizontalAlignment.Center"
+             VerticalAlignment="VerticalAlignment.Center"
+             Style="height: 100vh">
+    <FluentStack Style="width: 300px" Orientation="Orientation.Vertical">
+        <FluentTextField Label="@UiResources.Login_DeviceName" @bind-Value="ViewModel.UserName" Placeholder="@UiResources.Login_DeviceNamePlaceholder" Style="width: 300px;" />
+        <FluentTextField Label="@UiResources.Login_Password" @bind-Value="ViewModel.Password" Placeholder="@UiResources.Login_PasswordPlaceholder" TextFieldType="TextFieldType.Password" Style="width: 300px;" />
+        <FluentButton Appearance="Appearance.Accent" OnClick="SignIn">@UiResources.Login_Connect</FluentButton>
+    </FluentStack>
+</FluentStack>
+

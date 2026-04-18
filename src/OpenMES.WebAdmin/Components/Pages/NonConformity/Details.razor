@@ -1,0 +1,52 @@
+@page "/nonconformity/{ItemId:int}"
+@attribute [Authorize]
+@inherits BaseDetails<NonConformityDto, int>
+@rendermode InteractiveServer
+
+@if (Model is not null)
+{
+    <FluentGrid>
+        <FluentGridItem xs="12">
+            <FluentLabel Typo="Typography.H4">@Model.Code — @Model.Description</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>Phase:</strong> @Model.PhaseNumber</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>Type:</strong> @EnumTextLocalizer.Localize(Model.Type)</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>Severity:</strong> @EnumTextLocalizer.Localize(Model.Severity)</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>Status:</strong> @EnumTextLocalizer.Localize(Model.Status)</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>Opened at:</strong> @Model.OpenedAt.ToString("g")</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>Closed at:</strong> @(Model.ClosedAt?.ToString("g") ?? "—")</FluentLabel>
+        </FluentGridItem>
+        @if (!string.IsNullOrEmpty(Model.CorrectiveAction))
+        {
+            <FluentGridItem xs="12">
+                <FluentLabel><strong>Corrective action:</strong> @Model.CorrectiveAction</FluentLabel>
+            </FluentGridItem>
+        }
+        @if (!string.IsNullOrEmpty(Model.ClosedByOperatorName))
+        {
+            <FluentGridItem xs="12">
+                <FluentLabel><strong>Closed by:</strong> @Model.ClosedByOperatorName</FluentLabel>
+            </FluentGridItem>
+        }
+        <FluentGridItem xs="12">
+            <FluentButton Appearance="Appearance.Stealth"
+                          IconStart="@(new Icons.Regular.Size16.Delete())"
+                          OnClick="@Delete">Delete</FluentButton>
+        </FluentGridItem>
+    </FluentGrid>
+}
+else
+{
+    <FluentProgressRing />
+}

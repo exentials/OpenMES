@@ -1,0 +1,86 @@
+@namespace OpenMES.WebClient.Components.Common
+
+<div style="display:flex;flex-direction:column;gap:10px;">
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <div style="font-size:14px;color:var(--neutral-foreground-hint);text-align:center;">@Label</div>
+    }
+
+    <div style="text-align:center;font-size:34px;font-weight:600;color:var(--neutral-foreground-rest);line-height:1.1;">
+        @_buffer
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:320px;margin:0 auto;">
+        @foreach (var key in _keys)
+        {
+            var k = key;
+            <button @onclick="() => PressAsync(k)" style="@ButtonStyle(k)">
+                @(k == "⌫" ? "⌫" : k)
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    private static readonly string[] _keys =
+        ["7", "8", "9", "4", "5", "6", "1", "2", "3", ".", "0", "⌫"];
+
+    [Parameter] public decimal Value { get; set; }
+    [Parameter] public EventCallback<decimal> ValueChanged { get; set; }
+    [Parameter] public string? Label { get; set; }
+
+    private string _buffer = "0";
+
+    protected override void OnParametersSet()
+    {
+        var valueText = Value.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+        if (_buffer != valueText)
+        {
+            _buffer = valueText;
+        }
+    }
+
+    private async Task PressAsync(string key)
+    {
+        if (key == "⌫")
+        {
+            _buffer = _buffer.Length > 1 ? _buffer[..^1] : "0";
+            if (_buffer.EndsWith('.'))
+            {
+                _buffer = _buffer[..^1];
+            }
+        }
+        else if (key == ".")
+        {
+            if (!_buffer.Contains('.'))
+            {
+                _buffer += ".";
+            }
+        }
+        else
+        {
+            _buffer = _buffer == "0" ? key : _buffer + key;
+            if (_buffer.Length > 10)
+            {
+                _buffer = _buffer[..10];
+            }
+        }
+
+        if (decimal.TryParse(_buffer, System.Globalization.NumberStyles.Number,
+                System.Globalization.CultureInfo.InvariantCulture, out var parsed))
+        {
+            await ValueChanged.InvokeAsync(parsed);
+        }
+    }
+
+    private static string ButtonStyle(string key) =>
+        "height:64px;" +
+        "font-size:22px;" +
+        "font-weight:500;" +
+        "border-radius:10px;" +
+        "border:1px solid var(--neutral-stroke-layer-rest);" +
+        "background:var(--neutral-layer-2);" +
+        "color:var(--neutral-foreground-rest);" +
+        "cursor:pointer;" +
+        (key == "⌫" ? "color:var(--error-foreground);" : string.Empty);
+}

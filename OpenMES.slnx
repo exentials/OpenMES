@@ -1,0 +1,39 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Aspire/">
+    <Project Path="src/OpenMES.AppHost/OpenMES.AppHost.csproj" />
+    <Project Path="src/OpenMES.ServiceDefaults/OpenMES.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/Data/">
+    <Project Path="src/OpenMES.Data.Common/OpenMES.Data.Common.csproj" />
+    <Project Path="src/OpenMES.Data.Dtos/OpenMES.Data.Dtos.csproj" />
+    <Project Path="src/OpenMES.Data.Pgsql/OpenMES.Data.Pgsql.csproj" />
+    <Project Path="src/OpenMES.Data.SqlServer/OpenMES.Data.SqlServer.csproj" />
+    <Project Path="src/OpenMES.Data/OpenMES.Data.csproj" />
+    <Project Path="src/OpenMES.Localization/OpenMES.Localization.csproj" />
+    <Project Path="src/OpenMES.MigrationService/OpenMES.MigrationService.csproj" />
+    <Project Path="src/OpenMES.WebApiClient/OpenMES.WebApiClient.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="LICENSE.txt" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="src/OpenMES.Tests/OpenMES.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <File Path="tools/migrateData.ps1" />
+    <File Path="tools/migrateIdentity.ps1" />
+    <File Path="tools/scan-localization.ps1" />
+  </Folder>
+  <Project Path="src/OpenMES.WebAdmin/OpenMES.WebAdmin.csproj" />
+  <Project Path="src/OpenMES.WebApi/OpenMES.WebApi.csproj" />
+  <Project Path="src/OpenMES.WebClient/OpenMES.WebClient.csproj" />
+</Solution>
+
+

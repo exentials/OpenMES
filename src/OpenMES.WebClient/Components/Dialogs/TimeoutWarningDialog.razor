@@ -1,0 +1,158 @@
+@namespace OpenMES.WebClient.Components.Dialogs
+@using Microsoft.FluentUI.AspNetCore.Components
+@using OpenMES.WebClient.Services
+@implements IAsyncDisposable
+
+@* TimeoutWarningDialog - Session Timeout Warning
+    Displayed when 5 minutes remain before inactivity timeout.
+    
+    Features:
+    - Countdown timer updating every second
+    - Continue/Logout buttons
+    - Visual warning design
+    
+    WEB-003: Phase 1 - Session Management
+*@
+
+@if (ShowWarning)
+{
+    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+        <FluentCard Style="padding: 32px; max-width: 400px; box-shadow: 0 4px 16px rgba(0,0,0,0.2);">
+            <div style="text-align: center;">
+                <FluentIcon Value="@(new Icons.Regular.Size48.ClockAlarm())" Style="color: #ff6b6b; margin-bottom: 16px;" />
+                
+                <h2 style="margin: 16px 0; color: #ff6b6b;">Session Timeout Warning</h2>
+                
+                <p style="margin: 16px 0; color: #666; font-size: 14px;">
+                    Your session will expire in <strong>@CountdownMinutes:@CountdownSeconds.ToString("00")</strong> due to inactivity.
+                </p>
+                
+                <p style="margin: 16px 0; color: #999; font-size: 12px;">
+                    Click "Continue" to remain logged in, or "Logout" to end your session.
+                </p>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: center;">
+                    <FluentButton Appearance="Appearance.Accent" 
+                                 OnClick="@HandleContinue"
+                                 Style="flex: 1;">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.CheckmarkCircle())" Style="margin-right: 8px;" />
+                        Continue
+                    </FluentButton>
+                    
+                    <FluentButton Appearance="Appearance.Outline" 
+                                 OnClick="@HandleLogout"
+                                 Style="flex: 1;">
+                        <FluentIcon Value="@(new Icons.Regular.Size20.SignOut())" Style="margin-right: 8px;" />
+                        Logout
+                    </FluentButton>
+                </div>
+            </div>
+        </FluentCard>
+    </div>
+}
+
+@code {
+    [Inject]
+    public ISessionService? SessionService { get; set; }
+
+    [Inject]
+    public NavigationManager? Navigation { get; set; }
+
+    private bool ShowWarning { get; set; }
+    private int CountdownMinutes { get; set; }
+    private int CountdownSeconds { get; set; }
+    private Timer? CountdownTimer { get; set; }
+    private DateTime? TimeoutTime { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (SessionService != null)
+        {
+            SessionService.TimeoutWarningRaised += OnTimeoutWarningRaised;
+            SessionService.SessionExpired += OnSessionExpired;
+        }
+    }
+
+    private void OnTimeoutWarningRaised(object? sender, SessionTimeoutWarningEventArgs e)
+    {
+        ShowWarning = true;
+        TimeoutTime = e.TimeoutTime;
+        StartCountdown();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnSessionExpired(object? sender, EventArgs e)
+    {
+        ShowWarning = false;
+        StopCountdown();
+    }
+
+    private void StartCountdown()
+    {
+        StopCountdown();
+        CountdownTimer = new Timer(_ => UpdateCountdown(), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+    }
+
+    private void StopCountdown()
+    {
+        if (CountdownTimer != null)
+        {
+            CountdownTimer.Dispose();
+            CountdownTimer = null;
+        }
+    }
+
+    private void UpdateCountdown()
+    {
+        if (TimeoutTime.HasValue)
+        {
+            var remaining = TimeoutTime.Value - DateTime.UtcNow;
+            if (remaining.TotalSeconds > 0)
+            {
+                CountdownMinutes = (int)remaining.TotalMinutes;
+                CountdownSeconds = (int)remaining.Seconds;
+                InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                ShowWarning = false;
+                StopCountdown();
+            }
+        }
+    }
+
+    private async Task HandleContinue()
+    {
+        ShowWarning = false;
+        StopCountdown();
+        if (SessionService != null)
+        {
+            SessionService.RefreshActivity();
+        }
+        await Task.CompletedTask;
+    }
+
+    private async Task HandleLogout()
+    {
+        ShowWarning = false;
+        StopCountdown();
+        if (SessionService != null)
+        {
+            await SessionService.EndSessionAsync();
+        }
+        if (Navigation != null)
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        StopCountdown();
+        if (SessionService != null)
+        {
+            SessionService.TimeoutWarningRaised -= OnTimeoutWarningRaised;
+            SessionService.SessionExpired -= OnSessionExpired;
+        }
+    }
+}

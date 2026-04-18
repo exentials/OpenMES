@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+
+  <!-- MachineStopReasonDto -->
+  <data name="MachineStopReason_Code" xml:space="preserve"><value>Code</value></data>
+  <data name="MachineStopReason_Description" xml:space="preserve"><value>Description</value></data>
+  <data name="MachineStopReason_Category" xml:space="preserve"><value>Category</value></data>
+  <data name="MachineStopReason_Disabled" xml:space="preserve"><value>Disabled</value></data>
+
+  <!-- MachineStopDto -->
+  <data name="MachineStop_MachineId" xml:space="preserve"><value>Machine</value></data>
+  <data name="MachineStop_ProductionOrderPhaseId" xml:space="preserve"><value>Production order phase</value></data>
+  <data name="MachineStop_MachineStopReasonId" xml:space="preserve"><value>Stop reason</value></data>
+  <data name="MachineStop_StartDate" xml:space="preserve"><value>Start date</value></data>
+  <data name="MachineStop_EndDate" xml:space="preserve"><value>End date</value></data>
+  <data name="MachineStop_Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="MachineStop_MachineCode" xml:space="preserve"><value>Machine</value></data>
+  <data name="MachineStop_ReasonCode" xml:space="preserve"><value>Stop reason code</value></data>
+  <data name="MachineStop_ReasonDescription" xml:space="preserve"><value>Stop reason</value></data>
+  <data name="MachineStop_ReasonCategory" xml:space="preserve"><value>Category</value></data>
+
+  <!-- ProductionDeclarationDto -->
+  <data name="ProductionDeclaration_ProductionOrderPhaseId" xml:space="preserve"><value>Production order phase</value></data>
+  <data name="ProductionDeclaration_OperatorId" xml:space="preserve"><value>Operator</value></data>
+  <data name="ProductionDeclaration_MachineId" xml:space="preserve"><value>Machine</value></data>
+  <data name="ProductionDeclaration_DeclarationDate" xml:space="preserve"><value>Declaration date</value></data>
+  <data name="ProductionDeclaration_ConfirmedQuantity" xml:space="preserve"><value>Confirmed quantity</value></data>
+  <data name="ProductionDeclaration_ScrapQuantity" xml:space="preserve"><value>Scrap quantity</value></data>
+  <data name="ProductionDeclaration_Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="ProductionDeclaration_PhaseExternalId" xml:space="preserve"><value>Phase external Id</value></data>
+  <data name="ProductionDeclaration_ExternalCounterId" xml:space="preserve"><value>ERP counter Id</value></data>
+  <data name="ProductionDeclaration_ErpExportedAt" xml:space="preserve"><value>Exported at</value></data>
+  <data name="ProductionDeclaration_IsReversal" xml:space="preserve"><value>Reversal</value></data>
+  <data name="ProductionDeclaration_ReversalOfId" xml:space="preserve"><value>Reversal of</value></data>
+  <data name="ProductionDeclaration_ReversedById" xml:space="preserve"><value>Reversed by</value></data>
+  <data name="ProductionDeclaration_PhaseNumber" xml:space="preserve"><value>Phase</value></data>
+  <data name="ProductionDeclaration_OperatorName" xml:space="preserve"><value>Operator</value></data>
+  <data name="ProductionDeclaration_MachineCode" xml:space="preserve"><value>Machine</value></data>
+
+  <!-- InspectionPlanDto -->
+  <data name="InspectionPlan_Code" xml:space="preserve"><value>Code</value></data>
+  <data name="InspectionPlan_Description" xml:space="preserve"><value>Description</value></data>
+  <data name="InspectionPlan_PartNumber" xml:space="preserve"><value>Part number</value></data>
+  <data name="InspectionPlan_Version" xml:space="preserve"><value>Version</value></data>
+  <data name="InspectionPlan_Disabled" xml:space="preserve"><value>Disabled</value></data>
+
+  <!-- InspectionPointDto -->
+  <data name="InspectionPoint_InspectionPlanId" xml:space="preserve"><value>Inspection plan</value></data>
+  <data name="InspectionPoint_Sequence" xml:space="preserve"><value>Sequence</value></data>
+  <data name="InspectionPoint_Description" xml:space="preserve"><value>Description</value></data>
+  <data name="InspectionPoint_MeasureType" xml:space="preserve"><value>Measure type</value></data>
+  <data name="InspectionPoint_NominalValue" xml:space="preserve"><value>Nominal value</value></data>
+  <data name="InspectionPoint_UpperTolerance" xml:space="preserve"><value>Upper tolerance</value></data>
+  <data name="InspectionPoint_LowerTolerance" xml:space="preserve"><value>Lower tolerance</value></data>
+  <data name="InspectionPoint_UnitOfMeasure" xml:space="preserve"><value>Unit of measure</value></data>
+  <data name="InspectionPoint_IsMandatory" xml:space="preserve"><value>Mandatory</value></data>
+
+  <!-- InspectionReadingDto -->
+  <data name="InspectionReading_InspectionPointId" xml:space="preserve"><value>Inspection point</value></data>
+  <data name="InspectionReading_ProductionOrderPhaseId" xml:space="preserve"><value>Production order phase</value></data>
+  <data name="InspectionReading_OperatorId" xml:space="preserve"><value>Operator</value></data>
+  <data name="InspectionReading_ReadingDate" xml:space="preserve"><value>Reading date</value></data>
+  <data name="InspectionReading_NumericValue" xml:space="preserve"><value>Numeric value</value></data>
+  <data name="InspectionReading_BooleanValue" xml:space="preserve"><value>Boolean value</value></data>
+  <data name="InspectionReading_TextValue" xml:space="preserve"><value>Text value</value></data>
+  <data name="InspectionReading_Result" xml:space="preserve"><value>Result</value></data>
+  <data name="InspectionReading_Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="InspectionReading_PointDescription" xml:space="preserve"><value>Inspection point</value></data>
+  <data name="InspectionReading_OperatorName" xml:space="preserve"><value>Operator</value></data>
+  <data name="InspectionReading_PhaseNumber" xml:space="preserve"><value>Phase</value></data>
+
+  <!-- NonConformityDto -->
+  <data name="NonConformity_Code" xml:space="preserve"><value>Code</value></data>
+  <data name="NonConformity_ProductionOrderPhaseId" xml:space="preserve"><value>Production order phase</value></data>
+  <data name="NonConformity_InspectionReadingId" xml:space="preserve"><value>Inspection reading</value></data>
+  <data name="NonConformity_Description" xml:space="preserve"><value>Description</value></data>
+  <data name="NonConformity_Type" xml:space="preserve"><value>Type</value></data>
+
+  <data name="NonConformity_Severity" xml:space="preserve"><value>Severity</value></data>
+  <data name="NonConformity_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="NonConformity_CorrectiveAction" xml:space="preserve"><value>Corrective action</value></data>
+  <data name="NonConformity_OpenedAt" xml:space="preserve"><value>Opened at</value></data>
+  <data name="NonConformity_ClosedAt" xml:space="preserve"><value>Closed at</value></data>
+  <data name="NonConformity_ClosedByOperatorId" xml:space="preserve"><value>Closed by</value></data>
+  <data name="NonConformity_Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="NonConformity_PhaseNumber" xml:space="preserve"><value>Phase</value></data>
+  <data name="NonConformity_ClosedByOperatorName" xml:space="preserve"><value>Closed by</value></data>
+
+  <!-- StorageLocationDto -->
+  <data name="StorageLocation_PlantId" xml:space="preserve"><value>Plant</value></data>
+  <data name="StorageLocation_WarehouseId" xml:space="preserve"><value>Warehouse</value></data>
+  <data name="StorageLocation_Code" xml:space="preserve"><value>Code</value></data>
+  <data name="StorageLocation_Description" xml:space="preserve"><value>Description</value></data>
+  <data name="StorageLocation_Zone" xml:space="preserve"><value>Zone</value></data>
+  <data name="StorageLocation_Slot" xml:space="preserve"><value>Slot</value></data>
+  <data name="StorageLocation_Disabled" xml:space="preserve"><value>Disabled</value></data>
+
+  <!-- MaterialStockDto -->
+  <data name="MaterialStock_MaterialId" xml:space="preserve"><value>Material</value></data>
+  <data name="MaterialStock_StorageLocationId" xml:space="preserve"><value>Storage location</value></data>
+  <data name="MaterialStock_Quantity" xml:space="preserve"><value>Quantity</value></data>
+  <data name="MaterialStock_LastMovementDate" xml:space="preserve"><value>Last movement date</value></data>
+  <data name="MaterialStock_PartNumber" xml:space="preserve"><value>Part number</value></data>
+  <data name="MaterialStock_PartDescription" xml:space="preserve"><value>Description</value></data>
+  <data name="MaterialStock_UnitOfMeasure" xml:space="preserve"><value>Unit of measure</value></data>
+  <data name="MaterialStock_StorageLocationCode" xml:space="preserve"><value>Storage location</value></data>
+  <data name="MaterialStock_Warehouse" xml:space="preserve"><value>Warehouse</value></data>
+
+  <!-- StockMovementDto -->
+  <data name="StockMovement_MaterialId" xml:space="preserve"><value>Material</value></data>
+  <data name="StockMovement_StorageLocationId" xml:space="preserve"><value>Storage location</value></data>
+  <data name="StockMovement_MovementType" xml:space="preserve"><value>Movement type</value></data>
+  <data name="StockMovement_Quantity" xml:space="preserve"><value>Quantity</value></data>
+  <data name="StockMovement_MovementDate" xml:space="preserve"><value>Movement date</value></data>
+  <data name="StockMovement_ReferenceId" xml:space="preserve"><value>Reference Id</value></data>
+  <data name="StockMovement_ReferenceType" xml:space="preserve"><value>Reference type</value></data>
+  <data name="StockMovement_OperatorId" xml:space="preserve"><value>Operator</value></data>
+  <data name="StockMovement_Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="StockMovement_PartNumber" xml:space="preserve"><value>Part number</value></data>
+  <data name="StockMovement_PartDescription" xml:space="preserve"><value>Description</value></data>
+  <data name="StockMovement_StorageLocationCode" xml:space="preserve"><value>Storage location</value></data>
+  <data name="StockMovement_OperatorName" xml:space="preserve"><value>Operator</value></data>
+
+  <!-- PlantDto -->
+  <data name="Plant_Code" xml:space="preserve"><value>Code</value></data>
+  <data name="Plant_Description" xml:space="preserve"><value>Description</value></data>
+
+  <!-- WorkCenterDto -->
+  <data name="WorkCenter_PlantId" xml:space="preserve"><value>Plant</value></data>
+  <data name="WorkCenter_Code" xml:space="preserve"><value>Code</value></data>
+  <data name="WorkCenter_Description" xml:space="preserve"><value>Description</value></data>
+
+  <!-- MachineDto -->
+  <data name="Machine_PlantId" xml:space="preserve"><value>Plant</value></data>
+  <data name="Machine_WorkCenterId" xml:space="preserve"><value>Work center</value></data>
+  <data name="Machine_Code" xml:space="preserve"><value>Code</value></data>
+  <data name="Machine_Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Machine_Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Machine_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Machine_Autoplacement" xml:space="preserve"><value>Autoplacement</value></data>
+  <data name="Machine_AllowConcurrentSessions" xml:space="preserve"><value>Allow concurrent sessions</value></data>
+  <data name="Machine_TimeAllocationMode" xml:space="preserve"><value>Time allocation mode</value></data>
+
+  <!-- OperatorShiftDto -->
+  <data name="OperatorShift_OperatorId" xml:space="preserve"><value>Operator</value></data>
+  <data name="OperatorShift_EventType" xml:space="preserve"><value>Event type</value></data>
+  <data name="OperatorShift_EventTime" xml:space="preserve"><value>Event time</value></data>
+  <data name="OperatorShift_Source" xml:space="preserve"><value>Source</value></data>
+  <data name="OperatorShift_Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="OperatorShift_OperatorName" xml:space="preserve"><value>Operator</value></data>
+
+  <!-- WorkSessionDto -->
+  <data name="WorkSession_OperatorId" xml:space="preserve"><value>Operator</value></data>
+  <data name="WorkSession_ProductionOrderPhaseId" xml:space="preserve"><value>Production order phase</value></data>
+  <data name="WorkSession_MachineId" xml:space="preserve"><value>Machine</value></data>
+  <data name="WorkSession_SessionType" xml:space="preserve"><value>Session type</value></data>
+  <data name="WorkSession_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="WorkSession_StartTime" xml:space="preserve"><value>Start time</value></data>
+  <data name="WorkSession_EndTime" xml:space="preserve"><value>End time</value></data>
+  <data name="WorkSession_AllocatedMinutes" xml:space="preserve"><value>Allocated minutes</value></data>
+  <data name="WorkSession_Source" xml:space="preserve"><value>Source</value></data>
+  <data name="WorkSession_Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="WorkSession_PhaseExternalId" xml:space="preserve"><value>Phase external Id</value></data>
+  <data name="WorkSession_ExternalCounterId" xml:space="preserve"><value>ERP counter Id</value></data>
+  <data name="WorkSession_ErpExportedAt" xml:space="preserve"><value>Exported at</value></data>
+  <data name="WorkSession_IsReversal" xml:space="preserve"><value>Reversal</value></data>
+  <data name="WorkSession_ReversalOfId" xml:space="preserve"><value>Reversal of</value></data>
+  <data name="WorkSession_ReversedById" xml:space="preserve"><value>Reversed by</value></data>
+  <data name="WorkSession_OperatorName" xml:space="preserve"><value>Operator</value></data>
+  <data name="WorkSession_PhaseNumber" xml:space="preserve"><value>Phase</value></data>
+  <data name="WorkSession_MachineCode" xml:space="preserve"><value>Machine</value></data>
+
+  <!-- WarehouseDto -->
+  <data name="Warehouse_PlantId" xml:space="preserve"><value>Plant</value></data>
+  <data name="Warehouse_Code" xml:space="preserve"><value>Code</value></data>
+  <data name="Warehouse_Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Warehouse_Disabled" xml:space="preserve"><value>Disabled</value></data>
+
+  <!-- OperatorDto -->
+  <data name="Operator_EmployeeNumber" xml:space="preserve"><value>Employee number</value></data>
+  <data name="Operator_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Operator_Badge" xml:space="preserve"><value>Badge</value></data>
+
+  <!-- MaterialDto -->
+  <data name="Material_PartNumber" xml:space="preserve"><value>Part number</value></data>
+  <data name="Material_PartDescription" xml:space="preserve"><value>Description</value></data>
+  <data name="Material_PartType" xml:space="preserve"><value>Part type</value></data>
+  <data name="Material_PartGroup" xml:space="preserve"><value>Part group</value></data>
+  <data name="Material_UnitOfMeasure" xml:space="preserve"><value>Unit of measure</value></data>
+  <data name="Material_IsConsumable" xml:space="preserve"><value>Consumable</value></data>
+  <data name="Material_IsPhantom" xml:space="preserve"><value>Phantom</value></data>
+  <data name="Material_AllowOverproduction" xml:space="preserve"><value>Allow overproduction</value></data>
+  <data name="Material_DefaultWarehouseId" xml:space="preserve"><value>Default warehouse</value></data>
+  <data name="Material_DefaultStorageLocationId" xml:space="preserve"><value>Default storage location</value></data>
+
+  <!-- ProductionOrderDto -->
+  <data name="ProductionOrder_PlantId" xml:space="preserve"><value>Plant</value></data>
+  <data name="ProductionOrder_MaterialId" xml:space="preserve"><value>Material</value></data>
+  <data name="ProductionOrder_OrderNumber" xml:space="preserve"><value>Order number</value></data>
+  <data name="ProductionOrder_OrderType" xml:space="preserve"><value>Order type</value></data>
+  <data name="ProductionOrder_PlannedQuantity" xml:space="preserve"><value>Planned quantity</value></data>
+  <data name="ProductionOrder_ConfirmedQuantity" xml:space="preserve"><value>Confirmed quantity</value></data>
+  <data name="ProductionOrder_ScrapQuantity" xml:space="preserve"><value>Scrap quantity</value></data>
+  <data name="ProductionOrder_PlantName" xml:space="preserve"><value>Plant</value></data>
+  <data name="ProductionOrder_PartNumber" xml:space="preserve"><value>Part number</value></data>
+  <data name="ProductionOrder_PartDescription" xml:space="preserve"><value>Description</value></data>
+
+  <!-- ProductionOrderPhaseDto -->
+  <data name="ProductionOrderPhase_ProductionOrderId" xml:space="preserve"><value>Production order</value></data>
+  <data name="ProductionOrderPhase_PhaseNumber" xml:space="preserve"><value>Phase</value></data>
+  <data name="ProductionOrderPhase_WorkCenterId" xml:space="preserve"><value>Work center</value></data>
+  <data name="ProductionOrderPhase_WorkCode" xml:space="preserve"><value>Work code</value></data>
+  <data name="ProductionOrderPhase_Description" xml:space="preserve"><value>Description</value></data>
+
+  <data name="ProductionOrderPhase_ConfirmNumber" xml:space="preserve"><value>Confirm number</value></data>
+  <data name="ProductionOrderPhase_StartDate" xml:space="preserve"><value>Start date</value></data>
+  <data name="ProductionOrderPhase_EndDate" xml:space="preserve"><value>End date</value></data>
+  <data name="ProductionOrderPhase_PlannedQuantity" xml:space="preserve"><value>Planned quantity</value></data>
+  <data name="ProductionOrderPhase_CounterQuantity" xml:space="preserve"><value>Counter quantity</value></data>
+  <data name="ProductionOrderPhase_ConfirmedQuantity" xml:space="preserve"><value>Confirmed quantity</value></data>
+  <data name="ProductionOrderPhase_ScrapQuantity" xml:space="preserve"><value>Scrap quantity</value></data>
+  <data name="ProductionOrderPhase_Status" xml:space="preserve"><value>Status</value></data>
+
+  <!-- ClientDeviceDto -->
+  <data name="ClientDevice_PlantId" xml:space="preserve"><value>Plant</value></data>
+  <data name="ClientDevice_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="ClientDevice_Description" xml:space="preserve"><value>Description</value></data>
+  <data name="ClientDevice_Enabled" xml:space="preserve"><value>Enabled</value></data>
+
+  <!-- PhasePickingListDto -->
+  <data name="PhasePickingList_ProductionOrderPhaseId" xml:space="preserve"><value>Production order phase</value></data>
+  <data name="PhasePickingList_MaterialId" xml:space="preserve"><value>Material</value></data>
+  <data name="PhasePickingList_StorageLocationId" xml:space="preserve"><value>Storage location</value></data>
+  <data name="PhasePickingList_RequiredQuantity" xml:space="preserve"><value>Required quantity</value></data>
+  <data name="PhasePickingList_PickedQuantity" xml:space="preserve"><value>Picked quantity</value></data>
+  <data name="PhasePickingList_IsAutomatic" xml:space="preserve"><value>Automatic</value></data>
+  <data name="PhasePickingList_IsConsumable" xml:space="preserve"><value>Consumable</value></data>
+  <data name="PhasePickingList_IsPhantom" xml:space="preserve"><value>Phantom</value></data>
+  <data name="PhasePickingList_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="PhasePickingList_Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="PhasePickingList_PhaseNumber" xml:space="preserve"><value>Phase</value></data>
+  <data name="PhasePickingList_PartNumber" xml:space="preserve"><value>Part number</value></data>
+  <data name="PhasePickingList_PartDescription" xml:space="preserve"><value>Description</value></data>
+  <data name="PhasePickingList_UnitOfMeasure" xml:space="preserve"><value>Unit of measure</value></data>
+  <data name="PhasePickingList_StorageLocationCode" xml:space="preserve"><value>Storage location</value></data>
+
+  <!-- PhasePickingItemDto -->
+  <data name="PhasePickingItem_PhasePickingListId" xml:space="preserve"><value>Picking line</value></data>
+  <data name="PhasePickingItem_StockMovementId" xml:space="preserve"><value>Stock movement</value></data>
+  <data name="PhasePickingItem_PickedQuantity" xml:space="preserve"><value>Picked quantity</value></data>
+  <data name="PhasePickingItem_PickedAt" xml:space="preserve"><value>Picked at</value></data>
+  <data name="PhasePickingItem_OperatorId" xml:space="preserve"><value>Operator</value></data>
+  <data name="PhasePickingItem_IsAutomatic" xml:space="preserve"><value>Automatic</value></data>
+  <data name="PhasePickingItem_Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="PhasePickingItem_OperatorName" xml:space="preserve"><value>Operator</value></data>
+  <data name="PhasePickingItem_PartNumber" xml:space="preserve"><value>Part number</value></data>
+  <data name="PhasePickingItem_StorageLocationCode" xml:space="preserve"><value>Storage location</value></data>
+
+  <data name="ProductionJob_ProductionOrderPhaseId" xml:space="preserve"><value>Phase</value></data>
+  <data name="ProductionJob_JobId" xml:space="preserve"><value>Job ID</value></data>
+  <data name="ProductionJob_PlannedQuantity" xml:space="preserve"><value>Planned quantity</value></data>
+  <data name="ProductionJob_PlannedSetupTime" xml:space="preserve"><value>Planned setup time (min)</value></data>
+  <data name="ProductionJob_PlannedRunTime" xml:space="preserve"><value>Planned run time (min)</value></data>
+  <data name="ProductionJob_PhaseNumber" xml:space="preserve"><value>Phase number</value></data>
+
+  <!-- Enum values -->
+  <data name="InspectionResult_Conforming" xml:space="preserve"><value>Conforming</value></data>
+  <data name="InspectionResult_NonConforming" xml:space="preserve"><value>Non conforming</value></data>
+  <data name="InspectionResult_ToVerify" xml:space="preserve"><value>To verify</value></data>
+
+  <data name="MachineStatus_Idle" xml:space="preserve"><value>Idle</value></data>
+  <data name="MachineStatus_Running" xml:space="preserve"><value>Running</value></data>
+  <data name="MachineStatus_Stopped" xml:space="preserve"><value>Stopped</value></data>
+  <data name="MachineStatus_Fault" xml:space="preserve"><value>Fault</value></data>
+  <data name="MachineStatus_Setup" xml:space="preserve"><value>Setup</value></data>
+  <data name="MachineStatus_Blocked" xml:space="preserve"><value>Blocked</value></data>
+  <data name="MachineStatus_Starved" xml:space="preserve"><value>Starved</value></data>
+  <data name="MachineStatus_Maintenance" xml:space="preserve"><value>Maintenance</value></data>
+  <data name="MachineStatus_Manual" xml:space="preserve"><value>Manual</value></data>
+
+  <data name="MachineStopCategory_Breakdown" xml:space="preserve"><value>Breakdown</value></data>
+  <data name="MachineStopCategory_Setup" xml:space="preserve"><value>Setup</value></data>
+  <data name="MachineStopCategory_Maintenance" xml:space="preserve"><value>Maintenance</value></data>
+  <data name="MachineStopCategory_MaterialWaiting" xml:space="preserve"><value>Material waiting</value></data>
+  <data name="MachineStopCategory_Organizational" xml:space="preserve"><value>Organizational</value></data>
+  <data name="MachineStopCategory_Other" xml:space="preserve"><value>Other</value></data>
+
+  <data name="MachineTimeAllocationMode_Uniform" xml:space="preserve"><value>Uniform</value></data>
+  <data name="MachineTimeAllocationMode_Proportional" xml:space="preserve"><value>Proportional</value></data>
+
+  <data name="MeasureType_Numeric" xml:space="preserve"><value>Numeric</value></data>
+  <data name="MeasureType_Boolean" xml:space="preserve"><value>Boolean</value></data>
+  <data name="MeasureType_Text" xml:space="preserve"><value>Text</value></data>
+
+  <data name="NonConformitySeverity_Low" xml:space="preserve"><value>Low</value></data>
+  <data name="NonConformitySeverity_Medium" xml:space="preserve"><value>Medium</value></data>
+  <data name="NonConformitySeverity_High" xml:space="preserve"><value>High</value></data>
+  <data name="NonConformitySeverity_Critical" xml:space="preserve"><value>Critical</value></data>
+
+  <data name="NonConformityStatus_Open" xml:space="preserve"><value>Open</value></data>
+  <data name="NonConformityStatus_InProgress" xml:space="preserve"><value>In progress</value></data>
+  <data name="NonConformityStatus_Closed" xml:space="preserve"><value>Closed</value></data>
+
+  <data name="NonConformityType_Internal" xml:space="preserve"><value>Internal</value></data>
+  <data name="NonConformityType_Customer" xml:space="preserve"><value>Customer</value></data>
+  <data name="NonConformityType_Supplier" xml:space="preserve"><value>Supplier</value></data>
+
+  <data name="OperatorEventType_CheckIn" xml:space="preserve"><value>Check in</value></data>
+  <data name="OperatorEventType_CheckOut" xml:space="preserve"><value>Check out</value></data>
+  <data name="OperatorEventType_BreakStart" xml:space="preserve"><value>Break start</value></data>
+  <data name="OperatorEventType_BreakEnd" xml:space="preserve"><value>Break end</value></data>
+
+  <data name="PickingStatus_Pending" xml:space="preserve"><value>Pending</value></data>
+  <data name="PickingStatus_PartiallyPicked" xml:space="preserve"><value>Partially picked</value></data>
+  <data name="PickingStatus_Completed" xml:space="preserve"><value>Completed</value></data>
+
+  <data name="StockMovementType_GoodsReceipt" xml:space="preserve"><value>Goods receipt</value></data>
+  <data name="StockMovementType_GoodsIssue" xml:space="preserve"><value>Goods issue</value></data>
+  <data name="StockMovementType_Adjustment" xml:space="preserve"><value>Adjustment</value></data>
+  <data name="StockMovementType_Transfer" xml:space="preserve"><value>Transfer</value></data>
+  <data name="StockMovementType_ProductionIssue" xml:space="preserve"><value>Production issue</value></data>
+
+  <data name="WorkSessionStatus_Open" xml:space="preserve"><value>Open</value></data>
+  <data name="WorkSessionStatus_Closed" xml:space="preserve"><value>Closed</value></data>
+
+  <data name="WorkSessionType_Setup" xml:space="preserve"><value>Setup</value></data>
+  <data name="WorkSessionType_Work" xml:space="preserve"><value>Work</value></data>
+  <data name="WorkSessionType_Wait" xml:space="preserve"><value>Wait</value></data>
+  <data name="WorkSessionType_Rework" xml:space="preserve"><value>Rework</value></data>
+  <data name="WorkSessionType_Other" xml:space="preserve"><value>Other</value></data>
+</root>
+
+

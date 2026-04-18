@@ -1,0 +1,127 @@
+﻿@implements IDialogContentComponent<MachineActionsDialogViewModel>
+
+
+<FluentDialogHeader>
+    @Content.MachineDescription Control Panel
+</FluentDialogHeader>
+
+<FluentTabs>
+    <FluentTab Label="Setup">
+        <FluentGrid Spacing="2" Justify="JustifyContent.FlexStart">
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Accent" @onclick="StartSetup" Style="width:100%; height:100%;">Start Setup</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Neutral" @onclick="PauseSetup" Style="width:100%; height:100%;">Pause Setup</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Neutral" @onclick="ResumeSetup" Style="width:100%; height:100%;">Resume Setup</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Outline" @onclick="AbortSetup" Style="width:100%; height:100%;">Abort Setup</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Accent" @onclick="SetupCompleted" Style="width:100%; height:100%;">Setup Completed</FluentButton>
+            </FluentGridItem>
+        </FluentGrid>
+    </FluentTab>
+
+    <FluentTab Label="Production">
+        <FluentGrid Spacing="2">
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Accent" @onclick="StartProduction" Style="width:100%; height:100%;">Start Production</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Neutral" @onclick="PauseProduction" Style="width:100%; height:100%;">Pause Production</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Neutral" @onclick="ResumeProduction" Style="width:100%; height:100%;">Resume Production</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Outline" @onclick="StopProduction" Style="width:100%; height:100%;">Stop Production</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Accent" @onclick="EndBatch" Style="width:100%; height:100%;">End of Batch</FluentButton>
+            </FluentGridItem>
+        </FluentGrid>
+    </FluentTab>
+
+    <FluentTab Label="Inspection">
+        <FluentGrid Spacing="2">
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Accent" @onclick="StartInspection" Style="width:100%; height:100%;">Start Inspection</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Neutral" @onclick="PauseInspection" Style="width:100%; height:100%;">Pause Inspection</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Neutral" @onclick="ResumeInspection" Style="width:100%; height:100%;">Resume Inspection</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Accent" @onclick="InspectionCompleted" Style="width:100%; height:100%;">Inspection Completed</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+            </FluentGridItem>
+        </FluentGrid>
+    </FluentTab>
+
+    <FluentTab Label="Maintenance">
+        <FluentGrid Spacing="2">
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Accent" @onclick="StartMaintenance" Style="width:100%; height:100%;">Start Maintenance</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Accent" @onclick="EndMaintenance" Style="width:100%; height:100%;">End Maintenance</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Outline" @onclick="ReportDowntime" Style="width:100%; height:100%;">Report Downtime</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+            </FluentGridItem>
+        </FluentGrid>
+    </FluentTab>
+
+    <FluentTab Label="Material">
+        <FluentGrid Spacing="2">
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Accent" @onclick="LoadMaterial" Style="width:100%; height:100%;">Load Material</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Accent" @onclick="UnloadMaterial" Style="width:100%; height:100%;">Unload Material</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Outline" @onclick="MaterialShortage" Style="width:100%; height:100%;">Material Shortage</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Accent" @onclick="MaterialOK" Style="width:100%; height:100%;">Material OK</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+            </FluentGridItem>
+        </FluentGrid>
+    </FluentTab>
+
+    <FluentTab Label="System">
+        <FluentGrid Spacing="2">
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Neutral" @onclick="ShowStatus" Style="width:100%; height:100%;">Machine Status</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Neutral" @onclick="OperatorLogin" Style="width:100%; height:100%;">Operator Login</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Neutral" @onclick="OperatorLogout" Style="width:100%; height:100%;">Operator Logout</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Outline" @onclick="EmergencyStop" Style="width:100%; height:100%;">Emergency Stop</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Neutral" @onclick="ResetAlarm" Style="width:100%; height:100%;">Reset Alarm</FluentButton>
+            </FluentGridItem>
+            <FluentGridItem xs="6" sm="4" md="2">
+                <FluentButton Appearance="Appearance.Accent" @onclick="SendReport" Style="width:100%; height:100%;">Send Report</FluentButton>
+            </FluentGridItem>
+        </FluentGrid>
+    </FluentTab>
+</FluentTabs>

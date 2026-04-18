@@ -1,0 +1,51 @@
+@namespace OpenMES.WebClient.Components.Dialogs
+@using Microsoft.FluentUI.AspNetCore.Components
+
+@* DeclarationConfirmDialog - Declaration Confirmation and Summary
+    Phase 5 (WEB-014)
+    Shows summary of what operator is about to declare (produce/consume)
+    Operator confirms or goes back to edit
+    
+    Features:
+    - Declaration summary (material, quantity, phase)
+    - Confirmation prompt
+    - Edit/Cancel/Confirm buttons
+*@
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="16" Style="padding: 20px;">
+    <h3 style="margin: 0 0 16px 0;">Confirm Declaration</h3>
+    
+    <FluentCard Style="padding: 16px; background-color: #f0f0f0;">
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+            <div>
+                <strong>Order:</strong>
+                <span>ORD-2024-001</span>
+            </div>
+            <div>
+                <strong>Material:</strong>
+                <span>Plastic Part A</span>
+            </div>
+            <div>
+                <strong>Quantity:</strong>
+                <span>25 units</span>
+            </div>
+            <div>
+                <strong>Phase:</strong>
+                <span>Molding</span>
+            </div>
+        </FluentStack>
+    </FluentCard>
+
+    <FluentLabel Style="font-style: italic; color: #6c757d;">
+        Please review the above before confirming your declaration.
+    </FluentLabel>
+
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Style="justify-content: flex-end;">
+        <FluentButton Appearance="Appearance.Outline">Go Back</FluentButton>
+        <FluentButton Appearance="Appearance.Accent">Confirm</FluentButton>
+    </FluentStack>
+</FluentStack>
+
+@code {
+    // Placeholder - to be implemented in Phase 5 (WEB-014)
+}

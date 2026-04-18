@@ -1,0 +1,34 @@
+@page "/productiondeclaration"
+@attribute [Authorize]
+@inherits BaseAppendPage<ProductionDeclarationDto, Edit>
+@rendermode InteractiveServer
+
+<FluentToolbar>
+    <FluentButton Appearance="Appearance.Accent"
+                  IconStart="@(new Icons.Regular.Size20.Add())"
+                  OnClick="@AddInDialog">@UiResources.Button_Add</FluentButton>
+</FluentToolbar>
+
+<FluentDataGrid TGridItem="ProductionDeclarationDto" ItemsProvider="@ItemsProvider"
+                GenerateHeader="GenerateHeaderOption.Sticky"
+                DisplayMode="DataGridDisplayMode.Table">
+    <PropertyColumnExt Property="@(p => p.DeclarationDate)" Format="g" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.PhaseNumber)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.OperatorName)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.MachineCode)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.ConfirmedQuantity)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.ScrapQuantity)" Sortable="true" />
+    <TemplateColumn Title="@DtoResources.ProductionDeclaration_IsReversal">
+        @if (context.IsReversal)
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxChecked())" />
+        }
+        else
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxUnchecked())" />
+        }
+    </TemplateColumn>
+    <PropertyColumnExt Property="@(p => p.ExternalCounterId)" Sortable="true" />
+</FluentDataGrid>
+
+<FluentPaginator State="@pagination" />

@@ -1,0 +1,17 @@
+@* Material stock is managed exclusively via stock movements — this dialog is intentionally empty. *@
+@inherits BaseEdit<MaterialStockDto>
+
+<FluentDialogHeader ShowDismiss="false">
+    <FluentStack VerticalAlignment="VerticalAlignment.Center">
+        <FluentIcon Value="@(new Icons.Regular.Size24.Box())" />
+        <FluentLabel Typo="Typography.PaneHeader">@Dialog.Instance.Parameters.Title</FluentLabel>
+    </FluentStack>
+</FluentDialogHeader>
+
+<FluentDialogBody>
+    <FluentLabel>Stock levels are managed automatically via stock movements.</FluentLabel>
+</FluentDialogBody>
+
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@CancelAsync">Close</FluentButton>
+</FluentDialogFooter>

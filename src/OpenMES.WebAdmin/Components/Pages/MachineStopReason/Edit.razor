@@ -1,0 +1,19 @@
+@inherits BaseEdit<MachineStopReasonDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.VehicleCarProfileLtr())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnSaveAsync="@SaveAsync"
+                     OnCancelAsync="@CancelAsync">
+    <FluentTextField Label="@DtoResources.MachineStopReason_Code" @bind-Value="@Content.Code" Required="true" MaxLength="10" />
+    <FluentTextField Label="@DtoResources.MachineStopReason_Description" @bind-Value="@Content.Description" MaxLength="80" />
+    <FluentSelect TOption="string"
+                  Label="@DtoResources.MachineStopReason_Category"
+                  Value="@Content.Category.ToString()"
+                  ValueChanged="@(v => Content.Category = Enum.Parse<MachineStopCategory>(v))">
+        @foreach (var item in Enum.GetValues<MachineStopCategory>())
+        {
+            <FluentOption TOption="string" Value="@item.ToString()">@EnumTextLocalizer.Localize(item)</FluentOption>
+        }
+    </FluentSelect>
+    <FluentCheckbox Label="@DtoResources.MachineStopReason_Disabled" @bind-Value="@Content.Disabled" />
+</EditDialogContainer>

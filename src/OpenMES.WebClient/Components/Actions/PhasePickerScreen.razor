@@ -1,0 +1,89 @@
+@namespace OpenMES.WebClient.Components.Actions
+@using OpenMES.Data.Dtos
+@using OpenMES.Localization.Resources
+
+<div style="display:flex;flex-direction:column;gap:16px;max-width:560px;margin:0 auto;">
+    
+    @* Header with back button and title *@
+    <div style="display:flex;align-items:center;gap:12px;padding:0;">
+        <button @onclick="OnCancelClick" 
+                style="height:44px;width:44px;border-radius:10px;border:1px solid var(--neutral-stroke-layer-rest);
+                        background:var(--neutral-layer-2);color:var(--neutral-foreground-rest);
+                        font-size:20px;cursor:pointer;flex-shrink:0;">
+            ←
+        </button>
+        <div style="font-size:18px;font-weight:500;color:var(--neutral-foreground-rest);">
+            @UiResources.Action_SelectPhase
+        </div>
+    </div>
+
+    @* Barcode input row *@
+    <input type="text" 
+           placeholder="@UiResources.Action_ScanOrTypeBarcode"
+           @bind="barcodeInput" 
+           @bind:event="oninput" 
+           style="width:100%;font-size:18px;padding:12px;border-radius:10px;
+                  border:1px solid var(--neutral-stroke-layer-rest);
+                  background:var(--neutral-layer-2);color:var(--neutral-foreground-rest);" 
+           autofocus />
+
+    @* Phase list *@
+    <div style="display:flex;flex-direction:column;gap:8px;">
+        @if (FilteredPhases.Any())
+        {
+            @foreach (var phase in FilteredPhases)
+            {
+                <div @onclick="() => SelectPhase(phase)" 
+                     style="padding:14px 16px;margin-bottom:0;border-radius:12px;
+                             background:var(--neutral-layer-2);border:1px solid var(--neutral-stroke-layer-rest);
+                             cursor:pointer;transition:opacity 0.15s;"
+                     onmouseover="this.style.opacity='0.8'"
+                     onmouseout="this.style.opacity='1'">
+                    <div style="font-size:16px;font-weight:500;color:var(--neutral-foreground-rest);">
+                        @phase.PhaseNumber — @phase.Description
+                    </div>
+                    <div style="font-size:13px;color:var(--neutral-foreground-hint);margin-top:4px;">
+                        @UiResources.Action_Order: @phase.ConfirmNumber
+                        · @UiResources.Action_Confirmed: @phase.ConfirmedQuantity / @phase.PlannedQuantity
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="text-align:center;padding:24px;color:var(--neutral-foreground-hint);">
+                @UiResources.Action_ErrorNoActivePhaseForMachine
+            </div>
+        }
+    </div>
+
+</div>
+
+@code {
+    [Parameter]
+    public IEnumerable<ProductionOrderPhaseDto> Phases { get; set; } = [];
+
+    [Parameter]
+    public EventCallback<ProductionOrderPhaseDto> OnPhaseSelected { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private string barcodeInput = "";
+
+    private IEnumerable<ProductionOrderPhaseDto> FilteredPhases =>
+        string.IsNullOrWhiteSpace(barcodeInput)
+            ? Phases
+            : Phases.Where(p =>
+                p.ConfirmNumber?.Contains(barcodeInput, StringComparison.OrdinalIgnoreCase) == true
+                || p.PhaseNumber.Contains(barcodeInput, StringComparison.OrdinalIgnoreCase)
+                || p.Description.Contains(barcodeInput, StringComparison.OrdinalIgnoreCase));
+
+    private async Task SelectPhase(ProductionOrderPhaseDto phase)
+        => await OnPhaseSelected.InvokeAsync(phase);
+
+    private async Task OnCancelClick()
+        => await OnCancel.InvokeAsync();
+
+    private void FilterByBarcode() { } // binding handles it; method exists for clarity
+}

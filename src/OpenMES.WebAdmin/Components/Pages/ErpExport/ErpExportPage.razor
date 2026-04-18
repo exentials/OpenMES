@@ -1,0 +1,97 @@
+@page "/erpexport"
+@attribute [Authorize(Roles = "admin")]
+@rendermode InteractiveServer
+@using OpenMES.Data.Dtos
+@using OpenMES.WebApiClient
+
+<FluentLabel Typo="Typography.H4" style="margin-bottom:16px;">ERP Export</FluentLabel>
+
+<FluentCard style="margin-bottom:24px;">
+    <FluentLabel Typo="Typography.H6">Work Sessions</FluentLabel>
+    <FluentLabel style="display:block;margin:8px 0;">
+        Export all closed, non-exported work sessions to the ERP staging area.
+    </FluentLabel>
+    <FluentButton Appearance="Appearance.Accent"
+                  Disabled="@_wsLoading"
+                  OnClick="@ExportWorkSessionsAsync">
+        @(_wsLoading ? "Running..." : "Run export")
+    </FluentButton>
+    @if (_wsResult is not null)
+    {
+        <div style="margin-top:12px;">
+            <FluentLabel>Exported: @_wsResult.ExportedCount rows at @_wsResult.ExportedAt.ToLocalTime().ToString("g")</FluentLabel>
+            @if (_wsResult.Rows?.Count > 0)
+            {
+                <FluentDataGrid Items="@_wsResult.Rows!.AsQueryable()"
+                                GenerateHeader="GenerateHeaderOption.Sticky"
+                                DisplayMode="DataGridDisplayMode.Table"
+                                style="margin-top:8px;">
+                    <PropertyColumn Property="@(p => p.RecordId)" Title="ID" />
+                    <PropertyColumn Property="@(p => p.PhaseExternalId)" Title="Phase" />
+                    <PropertyColumn Property="@(p => p.SessionType)" Title="Type" />
+                    <PropertyColumn Property="@(p => p.AllocatedMinutes)" Title="Minutes" />
+                    <PropertyColumn Property="@(p => p.OperatorName)" Title="Operator" />
+                    <PropertyColumn Property="@(p => p.MachineCode)" Title="Machine" />
+                    <PropertyColumn Property="@(p => p.IsReversal)" Title="Reversal" />
+                </FluentDataGrid>
+            }
+        </div>
+    }
+</FluentCard>
+
+<FluentCard>
+    <FluentLabel Typo="Typography.H6">Production Declarations</FluentLabel>
+    <FluentLabel style="display:block;margin:8px 0;">
+        Export all non-exported production declarations to the ERP staging area.
+    </FluentLabel>
+    <FluentButton Appearance="Appearance.Accent"
+                  Disabled="@_pdLoading"
+                  OnClick="@ExportDeclarationsAsync">
+        @(_pdLoading ? "Running..." : "Run export")
+    </FluentButton>
+    @if (_pdResult is not null)
+    {
+        <div style="margin-top:12px;">
+            <FluentLabel>Exported: @_pdResult.ExportedCount rows at @_pdResult.ExportedAt.ToLocalTime().ToString("g")</FluentLabel>
+            @if (_pdResult.Rows?.Count > 0)
+            {
+                <FluentDataGrid Items="@_pdResult.Rows!.AsQueryable()"
+                                GenerateHeader="GenerateHeaderOption.Sticky"
+                                DisplayMode="DataGridDisplayMode.Table"
+                                style="margin-top:8px;">
+                    <PropertyColumn Property="@(p => p.RecordId)" Title="ID" />
+                    <PropertyColumn Property="@(p => p.PhaseExternalId)" Title="Phase" />
+                    <PropertyColumn Property="@(p => p.ConfirmedQuantity)" Title="Confirmed" />
+                    <PropertyColumn Property="@(p => p.ScrapQuantity)" Title="Scrap" />
+                    <PropertyColumn Property="@(p => p.OperatorName)" Title="Operator" />
+                    <PropertyColumn Property="@(p => p.IsReversal)" Title="Reversal" />
+                </FluentDataGrid>
+            }
+        </div>
+    }
+</FluentCard>
+
+@code {
+    [Inject] private MesClient MesClient { get; set; } = null!;
+
+    private bool _wsLoading;
+    private bool _pdLoading;
+    private ErpExportResultDto? _wsResult;
+    private ErpExportResultDto? _pdResult;
+
+    private async Task ExportWorkSessionsAsync()
+    {
+        _wsLoading = true;
+        _wsResult = null;
+        _wsResult = await MesClient.ErpExport.ExportWorkSessionsAsync();
+        _wsLoading = false;
+    }
+
+    private async Task ExportDeclarationsAsync()
+    {
+        _pdLoading = true;
+        _pdResult = null;
+        _pdResult = await MesClient.ErpExport.ExportDeclarationsAsync();
+        _pdLoading = false;
+    }
+}

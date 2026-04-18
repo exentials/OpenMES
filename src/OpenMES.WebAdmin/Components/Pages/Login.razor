@@ -1,0 +1,109 @@
+@page "/login"
+@layout EmptyLayout
+@attribute [AllowAnonymous]
+@using OpenMES.Data.Dtos.Resources
+@inject ILoginService LoginService
+@inject MesClient MesClient
+@inject NavigationManager Navigation
+@inject IMessageService MessageService
+@inject ILogger<Login> Logger
+
+<PageTitle>Login — OpenMES</PageTitle>
+
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;
+            background:var(--neutral-layer-3);">
+    <FluentCard Style="width:380px;padding:36px 32px;">
+
+        <div style="text-align:center;margin-bottom:32px;">
+            <div style="font-size:28px;font-weight:600;color:var(--neutral-foreground-rest);
+                        letter-spacing:-0.5px;">OpenMES</div>
+            <div style="font-size:13px;color:var(--neutral-foreground-hint);margin-top:6px;">
+                @UiResources.WebAdmin_Login_Title
+            </div>
+        </div>
+
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="18">
+
+            <FluentTextField @bind-Value="_email"
+                             Label="Email"
+                             Placeholder="@UiResources.WebAdmin_Login_EmailPlaceholder"
+                             TextFieldType="TextFieldType.Email"
+                             Style="width:100%;"
+                             @onkeydown="OnKeyDown" />
+
+            <FluentTextField @bind-Value="_password"
+                             Label="Password"
+                             Placeholder="••••••••"
+                             TextFieldType="TextFieldType.Password"
+                             Style="width:100%;"
+                             @onkeydown="OnKeyDown" />
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <div style="font-size:13px;color:var(--error-foreground);
+                            background:var(--error-background);padding:10px 14px;
+                            border-radius:6px;border:1px solid var(--error-border);">
+                    @_errorMessage
+                </div>
+            }
+
+            <FluentButton Appearance="Appearance.Accent"
+                          Style="width:100%;margin-top:4px;"
+                          Loading="@_isLoading"
+                          OnClick="LoginAsync">
+                @UiResources.WebAdmin_Login_LoginButton
+            </FluentButton>
+
+        </FluentStack>
+    </FluentCard>
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "returnUrl")] private string? ReturnUrl { get; set; }
+
+    private string _email    = string.Empty;
+    private string _password = string.Empty;
+    private string? _errorMessage;
+    private bool _isLoading;
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await LoginAsync();
+    }
+
+    private async Task LoginAsync()
+    {
+        _errorMessage = null;
+        if (string.IsNullOrWhiteSpace(_email) || string.IsNullOrWhiteSpace(_password))
+        {
+            _errorMessage = UiResources.WebAdmin_Login_ErrorRequiredFields;
+            return;
+        }
+
+        _isLoading = true;
+        try
+        {
+            var dto    = new AdminLoginDto { Email = _email, Password = _password };
+            var result = await MesClient.Identity.LoginAsync(dto);
+            await LoginService.LoginAsync(result);
+
+            var target = LoginRedirectResolver.ResolveTarget(ReturnUrl, Navigation.BaseUri);
+
+            Navigation.NavigateTo(target, forceLoad: false);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            _errorMessage = "Email o password non corretti.";
+            Logger.LogWarning("WebAdmin login failed with unauthorized credentials. Email={Email}", _email);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Errore di connessione: {ex.Message}";
+            Logger.LogError(ex, "WebAdmin login failed with unexpected exception. Email={Email}", _email);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

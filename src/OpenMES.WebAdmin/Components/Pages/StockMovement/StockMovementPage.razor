@@ -1,0 +1,24 @@
+﻿@page "/stockmovement"
+@attribute [Authorize]
+@inherits BaseAppendPage<StockMovementDto, Edit>
+@rendermode InteractiveServer
+
+<FluentToolbar>
+    <FluentButton Appearance="Appearance.Accent"
+                  IconStart="@(new Icons.Regular.Size20.Add())"
+                  OnClick="@AddInDialog">Register Movement</FluentButton>
+</FluentToolbar>
+
+<FluentDataGrid TGridItem="StockMovementDto" ItemsProvider="@ItemsProvider"
+                GenerateHeader="GenerateHeaderOption.Sticky"
+                DisplayMode="DataGridDisplayMode.Table">
+    <PropertyColumnExt Property="@(p => p.MovementDate)" Sortable="true" Format="g" />
+    <PropertyColumnExt Property="@(p => p.MovementType)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.PartNumber)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.PartDescription)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.StorageLocationCode)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.Quantity)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.OperatorName)" Sortable="true" />
+</FluentDataGrid>
+
+<FluentPaginator State="@pagination" />

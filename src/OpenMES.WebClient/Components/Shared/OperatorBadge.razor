@@ -1,0 +1,75 @@
+@namespace OpenMES.WebClient.Components.Shared
+@using Microsoft.FluentUI.AspNetCore.Components
+@using OpenMES.Data.Dtos.Resources
+
+@* OperatorBadge - Operator Information Display Badge
+    Shows operator name, initials, and status
+
+    Used by: MainLayout.razor, ContextToolbar.razor
+    Features:
+    - Operator avatar (initials or photo)
+    - Name display
+    - Status indicator (active/shift/offline)
+    - Click for operator menu
+*@
+
+<div style="padding: 12px; display: inline-flex; align-items: center; gap: 12px; border: 1px solid #e0e0e0; border-radius: 4px;">
+    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #0078d4; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+        @if (!string.IsNullOrEmpty(OperatorInitials))
+        {
+            @OperatorInitials
+        }
+        else
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size24.Person())" />
+        }
+    </div>
+    <div>
+        <div style="font-weight: bold; margin-bottom: 4px;">@DisplayName</div>
+        <div style="font-size: 12px; color: @GetStatusColor();">@StatusLabel</div>
+    </div>
+</div>
+
+@code {
+    private const string ActiveStatus = "active";
+    private const string OnBreakStatus = "onbreak";
+    private const string OfflineStatus = "offline";
+
+    [Parameter]
+    public string? OperatorName { get; set; } = null;
+
+    [Parameter]
+    public string? OperatorInitials { get; set; }
+
+    [Parameter]
+    public string? Status { get; set; } = ActiveStatus;
+
+    private string DisplayName => string.IsNullOrWhiteSpace(OperatorName)
+        ? UiResources.Action_NoOperator
+        : OperatorName;
+
+    private string StatusLabel => NormalizeStatus(Status) switch
+    {
+        ActiveStatus => UiResources.Home_Status_Present,
+        OnBreakStatus => UiResources.Home_Status_Break,
+        OfflineStatus => UiResources.OperatorBadge_StatusOffline,
+        _ => UiResources.OperatorBadge_StatusOffline,
+    };
+
+    private string GetStatusColor()
+    {
+        return NormalizeStatus(Status) switch
+        {
+            ActiveStatus => "#28a745",
+            OnBreakStatus => "#ffc107",
+            OfflineStatus => "#6c757d",
+            _ => "#6c757d"
+        };
+    }
+
+    private static string NormalizeStatus(string? status)
+        => (status ?? string.Empty)
+            .Trim()
+            .Replace(" ", string.Empty, StringComparison.Ordinal)
+            .ToLowerInvariant();
+}

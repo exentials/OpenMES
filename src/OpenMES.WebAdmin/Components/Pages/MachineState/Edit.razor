@@ -1,0 +1,22 @@
+@inherits BaseEdit<MachineStateDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.Pulse())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnCancelAsync="@CancelAsync"
+                     CustomPrimaryLabel="Declare"
+                     CustomPrimaryCallback="@(EventCallback.Factory.Create(this, SaveAsync))">
+    <FluentNumberField Label="Machine Id" @bind-Value="@Content.MachineId" Required="true" />
+    <FluentSelect TOption="string"
+                  Label="Status"
+                  Value="@Content.Status.ToString()"
+                  ValueChanged="@(v => Content.Status = Enum.Parse<MachineStatus>(v))">
+        @foreach (var item in Enum.GetValues<MachineStatus>())
+        {
+            <FluentOption TOption="string" Value="@item.ToString()">@EnumTextLocalizer.Localize(item)</FluentOption>
+        }
+    </FluentSelect>
+    <FluentDatePicker Label="Event Date" @bind-Value="@EventDate" />
+    <FluentTextField Label="Source" @bind-Value="@Content.Source" MaxLength="20" />
+    <FluentNumberField Label="Operator Id" @bind-Value="@Content.OperatorId" />
+    <FluentTextArea Label="Notes" @bind-Value="@Content.Notes" Rows="2" />
+</EditDialogContainer>

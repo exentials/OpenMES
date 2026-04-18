@@ -1,0 +1,34 @@
+﻿@page "/worksession"
+@attribute [Authorize]
+@inherits BasePage<WorkSessionDto, int, Edit>
+@rendermode InteractiveServer
+
+<FluentDataGrid TGridItem="WorkSessionDto" ItemsProvider="@ItemsProvider"
+                GenerateHeader="GenerateHeaderOption.Sticky"
+                DisplayMode="DataGridDisplayMode.Table">
+    <PropertyColumnExt Property="@(p => p.OperatorName)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.PhaseNumber)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.MachineCode)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.SessionType)" Sortable="true" />
+    <TemplateColumn Title="Status">
+        @if (context.Status == WorkSessionStatus.Open)
+        {
+            <FluentBadge Appearance="Appearance.Accent">Open</FluentBadge>
+        }
+        else
+        {
+            <FluentBadge Appearance="Appearance.Neutral">Closed</FluentBadge>
+        }
+    </TemplateColumn>
+    <PropertyColumnExt Property="@(p => p.StartTime)" Format="g" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.EndTime)" Format="g" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.AllocatedMinutes)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.Source)" Sortable="true" />
+    <TemplateColumn Title="@UiResources.Label_Actions">
+        <FluentButton Appearance="Appearance.Stealth"
+                      IconStart="@(new Icons.Regular.Size16.Glasses())"
+                      OnClick="@(() => ShowItem(context))" />
+    </TemplateColumn>
+</FluentDataGrid>
+
+<FluentPaginator State="@pagination" />

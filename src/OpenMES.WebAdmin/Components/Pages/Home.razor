@@ -1,0 +1,364 @@
+@page "/"
+@attribute [Authorize]
+@inherits HomeBase
+
+<PageTitle>Dashboard — OpenMES</PageTitle>
+
+<FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="margin-bottom:4px;">
+    <FluentLabel Typo="Typography.H4" Style="margin:0;">@UiResources.Home_Title</FluentLabel>
+    <FluentSpacer />
+    <FluentLabel Style="font-size:13px;color:var(--neutral-foreground-hint);">@CurrentTime</FluentLabel>
+</FluentStack>
+
+<FluentTabs @bind-ActiveTabId="ActiveTab" Style="margin-top:8px;">
+
+@* ══ TAB 1: REPARTO ══════════════════════════════════════════════════════ *@
+<FluentTab Label="@UiResources.Tab_Department" Id="reparto">
+
+    <FluentGrid Spacing="3" Style="margin:16px 0 12px;">
+        <FluentGridItem xs="6" sm="3">
+            <FluentCard>
+                <FluentLabel Style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint)">@UiResources.Kpi_ActiveOrders</FluentLabel>
+                <FluentLabel Typo="Typography.H3" Style="margin:6px 0 2px;">@KpiOrdiniAttivi</FluentLabel>
+                <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);">@KpiOrdiniSub</FluentLabel>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem xs="6" sm="3">
+            <FluentCard>
+                <FluentLabel Style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint)">@UiResources.Kpi_OpenSessions</FluentLabel>
+                <FluentLabel Typo="Typography.H3" Style="margin:6px 0 2px;">@KpiSessioni</FluentLabel>
+                <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);">@KpiSessioniSub</FluentLabel>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem xs="6" sm="3">
+            <FluentCard>
+                <FluentLabel Style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint)">@UiResources.Kpi_ActiveStops</FluentLabel>
+                <FluentLabel Typo="Typography.H3" Style="margin:6px 0 2px;color:var(--error-foreground);">@KpiFermi</FluentLabel>
+                <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);">@KpiFermiSub</FluentLabel>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem xs="6" sm="3">
+            <FluentCard>
+                <FluentLabel Style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint)">@UiResources.Kpi_OpenNc</FluentLabel>
+                <FluentLabel Typo="Typography.H3" Style="margin:6px 0 2px;color:var(--warning-foreground);">@KpiNc</FluentLabel>
+                <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);">@KpiNcSub</FluentLabel>
+            </FluentCard>
+        </FluentGridItem>
+    </FluentGrid>
+
+    <FluentGrid Spacing="3">
+        @* Stato macchine *@
+        <FluentGridItem xs="12" sm="6">
+            <FluentCard>
+                <FluentLabel Style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint);margin-bottom:8px;display:block;">@UiResources.Section_MachineStatus</FluentLabel>
+                @if (IsLoading) { <FluentProgressRing /> }
+                else {
+                    @foreach (var ms in MachineStates) {
+                        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center"
+                                     Style="padding:6px 0;border-bottom:0.5px solid var(--neutral-stroke-layer-rest);">
+                            @if (ms.Status == MachineStatus.Running) {
+                                <FluentIcon Value="@(new Icons.Regular.Size16.CheckmarkCircle())" Style="@($"color:{GetMachineStatusColor(ms.Status)}")" />
+                            } else if (ms.Status == MachineStatus.Fault) {
+                                <FluentIcon Value="@(new Icons.Regular.Size16.ErrorCircle())" Style="@($"color:{GetMachineStatusColor(ms.Status)}")" />
+                            } else if (ms.Status == MachineStatus.Maintenance) {
+                                <FluentIcon Value="@(new Icons.Regular.Size16.Wrench())" Style="@($"color:{GetMachineStatusColor(ms.Status)}")" />
+                            } else {
+                                <FluentIcon Value="@(new Icons.Regular.Size16.Timer())" Style="@($"color:{GetMachineStatusColor(ms.Status)}")" />
+                            }
+                            <FluentLabel Style="flex:1;font-weight:500;font-size:13px;">@ms.MachineCode</FluentLabel>
+                            <FluentLabel Style="font-size:11px;color:var(--neutral-foreground-hint);margin-right:8px;">@ms.OperatorName</FluentLabel>
+                            <FluentBadge Appearance="Appearance.Neutral"
+                                         Style="@($"background:{GetMachineStatusBg(ms.Status)};color:{GetMachineStatusColor(ms.Status)};font-size:11px;")">
+                                @EnumTextLocalizer.Localize(ms.Status)
+                            </FluentBadge>
+                        </FluentStack>
+                    }
+                }
+            </FluentCard>
+        </FluentGridItem>
+
+        @* Fermi + NC *@
+        <FluentGridItem xs="12" sm="6">
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+                <FluentCard>
+                    <FluentLabel Style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint);margin-bottom:8px;display:block;">@UiResources.Home_Tab1_ActiveStops</FluentLabel>
+                    @if (IsLoading) { <FluentProgressRing /> }
+                    else if (!ActiveStops.Any()) {
+                        <FluentLabel Style="font-size:13px;color:var(--neutral-foreground-hint);">@UiResources.NoActiveStops</FluentLabel>
+                    } else {
+                        @foreach (var stop in ActiveStops) {
+                            <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center"
+                                         Style="padding:6px 0;border-bottom:0.5px solid var(--neutral-stroke-layer-rest);">
+                                <FluentStack Orientation="Orientation.Vertical" VerticalGap="2" Style="flex:1;">
+                                    <FluentLabel Style="font-size:13px;font-weight:500;">@stop.MachineCode</FluentLabel>
+                                    <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);">@stop.MachineStopReasonDescription</FluentLabel>
+                                </FluentStack>
+                                <FluentLabel Style="font-size:12px;color:var(--error-foreground);white-space:nowrap;">@FormatDuration(stop.StartDate)</FluentLabel>
+                            </FluentStack>
+                        }
+                    }
+                </FluentCard>
+                <FluentCard>
+                    <FluentLabel Style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint);margin-bottom:8px;display:block;">@UiResources.Home_Tab1_OpenNc</FluentLabel>
+                    @if (IsLoading) { <FluentProgressRing /> }
+                    else if (!OpenNc.Any()) {
+                        <FluentLabel Style="font-size:13px;color:var(--neutral-foreground-hint);">@UiResources.NoOpenNc</FluentLabel>
+                    } else {
+                        @foreach (var nc in OpenNc) {
+                            <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center"
+                                         Style="padding:6px 0;border-bottom:0.5px solid var(--neutral-stroke-layer-rest);">
+                                <FluentLabel Style="font-size:13px;font-weight:500;min-width:80px;">@nc.Code</FluentLabel>
+                                <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@nc.Description</FluentLabel>
+                                <FluentBadge Appearance="Appearance.Neutral"
+                                             Style="@($"background:{GetSeverityBg(nc.Severity)};color:{GetSeverityColor(nc.Severity)};font-size:11px;margin-left:8px;")">
+                                    @EnumTextLocalizer.Localize(nc.Severity)
+                                </FluentBadge>
+                            </FluentStack>
+                        }
+                    }
+                </FluentCard>
+            </FluentStack>
+        </FluentGridItem>
+
+        @* Sessioni attive *@
+        <FluentGridItem xs="12" sm="6">
+            <FluentCard>
+                <FluentLabel Style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint);margin-bottom:8px;display:block;">@UiResources.Home_Tab1_OpenSessions</FluentLabel>
+                @if (IsLoading) { <FluentProgressRing /> }
+                else if (!OpenSessions.Any()) {
+                    <FluentLabel Style="font-size:13px;color:var(--neutral-foreground-hint);">@UiResources.Home_Tab1_NoOpenSessions</FluentLabel>
+                } else {
+                    @foreach (var s in OpenSessions) {
+                        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center"
+                                     Style="padding:6px 0;border-bottom:0.5px solid var(--neutral-stroke-layer-rest);">
+                            <FluentLabel Style="flex:1;font-weight:500;font-size:13px;">@s.OperatorName</FluentLabel>
+                            <FluentBadge Appearance="Appearance.Neutral"
+                                         Style="@($"background:{GetSessionTypeBg(s.SessionType)};color:{GetSessionTypeColor(s.SessionType)};font-size:11px;")">
+                                @EnumTextLocalizer.Localize(s.SessionType)
+                            </FluentBadge>
+                            <FluentLabel Style="font-size:11px;color:var(--neutral-foreground-hint);margin-left:8px;min-width:40px;">@s.MachineCode</FluentLabel>
+                            <FluentLabel Style="font-size:11px;color:var(--neutral-foreground-hint);min-width:40px;text-align:right;">@FormatDuration(s.StartTime)</FluentLabel>
+                        </FluentStack>
+                    }
+                }
+            </FluentCard>
+        </FluentGridItem>
+
+        @* Ordini in lavorazione *@
+        <FluentGridItem xs="12" sm="6">
+            <FluentCard>
+                <FluentLabel Style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint);margin-bottom:8px;display:block;">@UiResources.Home_Tab1_ActiveOrders</FluentLabel>
+                @if (IsLoading) { <FluentProgressRing /> }
+                else {
+                    @foreach (var o in ActiveOrders) {
+                        var pct = o.PlannedQuantity > 0 ? (int)Math.Round(o.ConfirmedQuantity / o.PlannedQuantity * 100) : 0;
+                        <div style="margin-bottom:12px;">
+                            <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="margin-bottom:3px;">
+                                <FluentLabel Style="font-size:13px;font-weight:500;flex:1;">@o.OrderNumber</FluentLabel>
+                                <FluentBadge Appearance="Appearance.Neutral" Style="font-size:11px;">
+                                    @(pct >= 100 ? UiResources.Home_Tab1_OrderStatus_Completed : UiResources.Home_Tab1_OrderStatus_InProgress)
+                                </FluentBadge>
+                            </FluentStack>
+                            <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);display:block;margin-bottom:4px;">@o.PartNumber — @o.PlannedQuantity pz</FluentLabel>
+                            <FluentStack Orientation="Orientation.Horizontal" Style="margin-bottom:3px;">
+                                <FluentLabel Style="font-size:11px;color:var(--neutral-foreground-hint);flex:1;">@o.ConfirmedQuantity / @o.PlannedQuantity</FluentLabel>
+                                <FluentLabel Style="font-size:11px;color:var(--neutral-foreground-hint);">@pct%</FluentLabel>
+                            </FluentStack>
+                            <FluentProgress Value="@pct" Max="100" Style="height:5px;" />
+                        </div>
+                    }
+                }
+            </FluentCard>
+        </FluentGridItem>
+    </FluentGrid>
+
+    @* KPI secondari *@
+    <FluentGrid Spacing="3" Style="margin-top:12px;">
+        <FluentGridItem xs="12" sm="4">
+            <FluentCard>
+                <FluentLabel Style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint)">@UiResources.Home_Kpi_ErpPending</FluentLabel>
+                <FluentLabel Typo="Typography.H3" Style="margin:6px 0 2px;">@KpiErpPending</FluentLabel>
+                <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);">@KpiErpSub</FluentLabel>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem xs="12" sm="4">
+            <FluentCard>
+                <FluentLabel Style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint)">@UiResources.Home_Kpi_Picking</FluentLabel>
+                <FluentLabel Typo="Typography.H3" Style="margin:6px 0 2px;">@KpiPicking</FluentLabel>
+                <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);">@UiResources.Home_Kpi_PickingSubtext</FluentLabel>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem xs="12" sm="4">
+            <FluentCard>
+                <FluentLabel Style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint)">@UiResources.Home_Kpi_StockAlert</FluentLabel>
+                <FluentLabel Typo="Typography.H3" Style="margin:6px 0 2px;color:var(--error-foreground);">@KpiStockAlert</FluentLabel>
+                <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);">@UiResources.Home_Kpi_StockAlertSubtext</FluentLabel>
+            </FluentCard>
+        </FluentGridItem>
+    </FluentGrid>
+
+</FluentTab>
+
+@* ══ TAB 2: OPERATORI E MACCHINE ══════════════════════════════════════════ *@
+<FluentTab Label="@UiResources.Tab_OperatorsMachines" Id="operatori">
+
+    @* Selettore periodo *@
+    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center"
+                 Style="margin:16px 0 12px;gap:8px;">
+        <FluentButton Appearance="@(PeriodTab == "oggi" ? Appearance.Accent : Appearance.Neutral)"
+                      OnClick="@(() => SetPeriod("oggi"))">@UiResources.Period_Today</FluentButton>
+        <FluentButton Appearance="@(PeriodTab == "settimana" ? Appearance.Accent : Appearance.Neutral)"
+                      OnClick="@(() => SetPeriod("settimana"))">@UiResources.Period_Week</FluentButton>
+        <FluentButton Appearance="@(PeriodTab == "mese" ? Appearance.Accent : Appearance.Neutral)"
+                      OnClick="@(() => SetPeriod("mese"))">@UiResources.Period_Month</FluentButton>
+    </FluentStack>
+
+    <FluentGrid Spacing="3" Style="margin-bottom:12px;">
+        <FluentGridItem xs="6" sm="3">
+            <FluentCard>
+                <FluentLabel Style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint)">@UiResources.Kpi_PresentOperators</FluentLabel>
+                <FluentLabel Typo="Typography.H3" Style="margin:6px 0 2px;">@KpiPresenti</FluentLabel>
+                <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);">@KpiPresentiSub</FluentLabel>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem xs="6" sm="3">
+            <FluentCard>
+                <FluentLabel Style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint)">@UiResources.Kpi_HoursWorked</FluentLabel>
+                <FluentLabel Typo="Typography.H3" Style="margin:6px 0 2px;">@KpiOre</FluentLabel>
+                <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);">@KpiOreSub</FluentLabel>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem xs="6" sm="3">
+            <FluentCard>
+                <FluentLabel Style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint)">@UiResources.Kpi_DeclaredPieces</FluentLabel>
+                <FluentLabel Typo="Typography.H3" Style="margin:6px 0 2px;">@KpiPezzi</FluentLabel>
+                <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);">@KpiPezziSub</FluentLabel>
+            </FluentCard>
+        </FluentGridItem>
+        <FluentGridItem xs="6" sm="3">
+            <FluentCard>
+                <FluentLabel Style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint)">@UiResources.Kpi_OeeDept</FluentLabel>
+                <FluentLabel Typo="Typography.H3" Style="@($"margin:6px 0 2px;color:{OeeColor};")">@KpiOee</FluentLabel>
+                <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);">Target 75%</FluentLabel>
+            </FluentCard>
+        </FluentGridItem>
+    </FluentGrid>
+
+    <FluentGrid Spacing="3">
+        @* Presenza operatori *@
+        <FluentGridItem xs="12" sm="6">
+            <FluentCard>
+                <FluentLabel Style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint);margin-bottom:8px;display:block;">@UiResources.Home_Tab2_OperatorPresence</FluentLabel>
+                @if (IsLoading) { <FluentProgressRing /> }
+                else {
+                    @foreach (var op in OperatorPresence) {
+                        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center"
+                                     Style="padding:7px 0;border-bottom:0.5px solid var(--neutral-stroke-layer-rest);gap:10px;">
+                            <div style="@($"width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;background:{GetPresenceBg(op.Status)};color:{GetPresenceFg(op.Status)};")">
+                                @op.Initials
+                            </div>
+                            <FluentLabel Style="font-size:13px;font-weight:500;min-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@op.Name</FluentLabel>
+                            <FluentBadge Appearance="Appearance.Neutral"
+                                         Style="@($"background:{GetPresenceBg(op.Status)};color:{GetPresenceFg(op.Status)};font-size:11px;")">
+                                @op.StatusLabel
+                            </FluentBadge>
+                            <FluentStack Orientation="Orientation.Vertical" VerticalGap="3" Style="flex:1;">
+                                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="gap:6px;">
+                                    <FluentProgress Value="@op.WorkPct" Max="100" Style="flex:1;height:4px;" />
+                                    <FluentLabel Style="font-size:10px;color:var(--success-foreground);min-width:20px;">W</FluentLabel>
+                                </FluentStack>
+                                <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="gap:6px;">
+                                    <FluentProgress Value="@op.SetupPct" Max="100" Style="flex:1;height:4px;" />
+                                    <FluentLabel Style="font-size:10px;color:var(--warning-foreground);min-width:20px;">S</FluentLabel>
+                                </FluentStack>
+                            </FluentStack>
+                            <FluentLabel Style="font-size:12px;font-weight:500;min-width:42px;text-align:right;">@op.TotalHours</FluentLabel>
+                        </FluentStack>
+                    }
+                }
+            </FluentCard>
+        </FluentGridItem>
+
+        @* Colonna destra: rendimento macchine + top produttori *@
+        <FluentGridItem xs="12" sm="6">
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+                <FluentCard>
+                    <FluentLabel Style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint);margin-bottom:8px;display:block;">@UiResources.Home_Tab2_MachineEfficiency</FluentLabel>
+                    @if (IsLoading) { <FluentProgressRing /> }
+                    else {
+                        @foreach (var m in MachineEfficiency) {
+                            <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center"
+                                         Style="padding:7px 0;border-bottom:0.5px solid var(--neutral-stroke-layer-rest);gap:10px;">
+                                <FluentLabel Style="font-size:13px;font-weight:500;min-width:58px;">@m.Code</FluentLabel>
+                                <FluentStack Orientation="Orientation.Vertical" VerticalGap="3" Style="flex:1;">
+                                    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="gap:6px;">
+                                        <FluentProgress Value="@m.RunningPct" Max="100" Style="flex:1;height:4px;" />
+                                        <FluentLabel Style="font-size:10px;color:var(--neutral-foreground-hint);min-width:24px;">@UiResources.Home_Tab2_MachineEfficiency_Run</FluentLabel>
+                                    </FluentStack>
+                                    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="gap:6px;">
+                                        <FluentProgress Value="@m.StopPct" Max="100" Style="flex:1;height:4px;" />
+                                        <FluentLabel Style="font-size:10px;color:var(--neutral-foreground-hint);min-width:24px;">@UiResources.Home_Tab2_MachineEfficiency_Stop</FluentLabel>
+                                    </FluentStack>
+                                </FluentStack>
+                                <FluentLabel Style="@($"font-size:12px;font-weight:500;min-width:36px;text-align:right;color:{GetOeeColor(m.RunningPct)};")">@m.RunningPct%</FluentLabel>
+                            </FluentStack>
+                        }
+                    }
+                </FluentCard>
+
+                <FluentCard>
+                    <FluentLabel Style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint);margin-bottom:8px;display:block;">@UiResources.Home_Tab2_TopProducers</FluentLabel>
+                    @if (IsLoading) { <FluentProgressRing /> }
+                    else {
+                        @foreach (var p in TopProducers) {
+                            <div style="margin-bottom:10px;">
+                                <FluentStack Orientation="Orientation.Horizontal" Style="margin-bottom:3px;">
+                                    <FluentLabel Style="font-size:13px;font-weight:500;flex:1;">@p.Name</FluentLabel>
+                                    <FluentLabel Style="font-size:13px;font-weight:500;">@p.Pieces pz</FluentLabel>
+                                    @if (p.Scrap > 0) {
+                                        <FluentLabel Style="font-size:11px;color:var(--error-foreground);margin-left:6px;">(+@p.Scrap scarti)</FluentLabel>
+                                    }
+                                </FluentStack>
+                                <FluentProgress Value="@p.BarPct" Max="100" Style="height:5px;" />
+                            </div>
+                        }
+                        <FluentStack Orientation="Orientation.Horizontal"
+                                     Style="margin-top:8px;padding-top:8px;border-top:0.5px solid var(--neutral-stroke-layer-rest);">
+                            <FluentLabel Style="font-size:12px;color:var(--neutral-foreground-hint);flex:1;">@UiResources.Home_Tab2_ScrapRate</FluentLabel>
+                            <FluentLabel Style="font-size:13px;font-weight:500;color:var(--warning-foreground);">@ScrapRate%</FluentLabel>
+                        </FluentStack>
+                    }
+                </FluentCard>
+            </FluentStack>
+        </FluentGridItem>
+
+        @* Ultime dichiarazioni *@
+        <FluentGridItem xs="12">
+            <FluentCard>
+                <FluentLabel Style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--neutral-foreground-hint);margin-bottom:8px;display:block;">@UiResources.Home_Tab2_RecentDeclarations</FluentLabel>
+                @if (IsLoading) { <FluentProgressRing /> }
+                else if (!RecentDeclarations.Any()) {
+                    <FluentLabel Style="font-size:13px;color:var(--neutral-foreground-hint);">@UiResources.Home_Tab2_NoDeclarations</FluentLabel>
+                } else {
+                    @foreach (var d in RecentDeclarations) {
+                        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center"
+                                     Style="padding:7px 0;border-bottom:0.5px solid var(--neutral-stroke-layer-rest);gap:10px;">
+                            <FluentStack Orientation="Orientation.Vertical" VerticalGap="2" Style="flex:1;min-width:0;">
+                                <FluentLabel Style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@d.OperatorName</FluentLabel>
+                                <FluentLabel Style="font-size:11px;color:var(--neutral-foreground-hint);">@d.PhaseNumber · @d.MachineCode</FluentLabel>
+                            </FluentStack>
+                            <FluentLabel Style="font-size:13px;font-weight:500;white-space:nowrap;">+@d.ConfirmedQuantity pz</FluentLabel>
+                            @if (d.ScrapQuantity > 0) {
+                                <FluentLabel Style="font-size:11px;color:var(--error-foreground);white-space:nowrap;">@d.ScrapQuantity scarti</FluentLabel>
+                            }
+                            <FluentLabel Style="font-size:11px;color:var(--neutral-foreground-hint);white-space:nowrap;">@d.DeclarationDate.ToLocalTime().ToString("HH:mm")</FluentLabel>
+                        </FluentStack>
+                    }
+                }
+            </FluentCard>
+        </FluentGridItem>
+    </FluentGrid>
+
+</FluentTab>
+
+</FluentTabs>

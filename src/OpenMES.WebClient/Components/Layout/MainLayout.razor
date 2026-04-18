@@ -1,0 +1,30 @@
+﻿@inherits LayoutComponentBase
+@using OpenMES.WebClient.Components.Common
+
+@* WEB-002: Global error display at top of layout *@
+<ErrorMessageBar />
+
+<FluentHeader>
+    OpenMES
+    <FluentSpacer />
+    <OperatorSessionPanel />
+    <FluentButton Appearance="Appearance.Lightweight" IconEnd="new Icons.Regular.Size24.ArrowExit()" OnClick="Logout" />
+</FluentHeader>
+<FluentStack Orientation="Orientation.Horizontal">
+    <FluentBodyContent>
+        @Body
+    </FluentBodyContent>
+</FluentStack>
+<FluentFooter>
+    <FluentMessageBarProvider />
+</FluentFooter>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+<FluentToastProvider />
+<FluentDialogProvider />
+<FluentTooltipProvider />
+<FluentMenuProvider />

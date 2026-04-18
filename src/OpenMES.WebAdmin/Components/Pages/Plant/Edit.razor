@@ -1,0 +1,9 @@
+﻿@inherits BaseEdit<PlantDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.BuildingSkyscraper())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnSaveAsync="@SaveAsync"
+                     OnCancelAsync="@CancelAsync">
+    <FluentTextField Label="@DtoResources.Plant_Code" @bind-Value="@Content.Code" Required="true" MaxLength="10" />
+    <FluentTextField Label="@DtoResources.Plant_Description" @bind-Value="@Content.Description" MaxLength="100" />
+</EditDialogContainer>

@@ -1,0 +1,35 @@
+@page "/workcenter/{ItemId:int}"
+@attribute [Authorize]
+@inherits BaseDetails<WorkCenterDto, int>
+@rendermode InteractiveServer
+
+@if (Model is not null)
+{
+    <FluentGrid>
+        <FluentGridItem xs="12">
+            <FluentLabel Typo="Typography.H4">@Model.Code — @Model.Description</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="12">
+            <FluentLabel Typo="Typography.H6">Machines</FluentLabel>
+            <FluentDataGrid Items="@Model.Machines.AsQueryable()"
+                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            DisplayMode="DataGridDisplayMode.Table">
+                <PropertyColumn Property="@(p => p.Code)" Title="Code" Sortable="true" />
+                <PropertyColumn Property="@(p => p.Description)" Title="Description" Sortable="true" />
+                <PropertyColumn Property="@(p => p.Type)" Title="Type" Sortable="true" />
+                <TemplateColumn Title="Status">
+                    <FluentBadge BackgroundColor="@context.StatusColor" Color="white">@EnumTextLocalizer.Localize(context.Status)</FluentBadge>
+                </TemplateColumn>
+            </FluentDataGrid>
+        </FluentGridItem>
+        <FluentGridItem xs="12">
+            <FluentButton Appearance="Appearance.Stealth"
+                          IconStart="@(new Icons.Regular.Size16.Delete())"
+                          OnClick="@Delete">Delete</FluentButton>
+        </FluentGridItem>
+    </FluentGrid>
+}
+else
+{
+    <FluentProgressRing />
+}

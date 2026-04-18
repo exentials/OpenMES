@@ -1,0 +1,39 @@
+@inherits BaseEdit<NonConformityDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.ErrorCircle())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnSaveAsync="@SaveAsync"
+                     OnCancelAsync="@CancelAsync">
+    <FluentTextField Label="Code" @bind-Value="@Content.Code" Required="true" MaxLength="20" />
+    <FluentNumberField Label="Production Order Phase Id" @bind-Value="@Content.ProductionOrderPhaseId" Required="true" />
+    <FluentTextField Label="Description" @bind-Value="@Content.Description" Required="true" MaxLength="500" />
+    <FluentSelect TOption="string"
+                  Label="Type"
+                  Value="@Content.Type.ToString()"
+                  ValueChanged="@(v => Content.Type = Enum.Parse<NonConformityType>(v))">
+        @foreach (var item in Enum.GetValues<NonConformityType>())
+        {
+            <FluentOption TOption="string" Value="@item.ToString()">@EnumTextLocalizer.Localize(item)</FluentOption>
+        }
+    </FluentSelect>
+    <FluentSelect TOption="string"
+                  Label="Severity"
+                  Value="@Content.Severity.ToString()"
+                  ValueChanged="@(v => Content.Severity = Enum.Parse<NonConformitySeverity>(v))">
+        @foreach (var item in Enum.GetValues<NonConformitySeverity>())
+        {
+            <FluentOption TOption="string" Value="@item.ToString()">@EnumTextLocalizer.Localize(item)</FluentOption>
+        }
+    </FluentSelect>
+    <FluentSelect TOption="string"
+                  Label="Status"
+                  Value="@Content.Status.ToString()"
+                  ValueChanged="@(v => Content.Status = Enum.Parse<NonConformityStatus>(v))">
+        @foreach (var item in Enum.GetValues<NonConformityStatus>())
+        {
+            <FluentOption TOption="string" Value="@item.ToString()">@EnumTextLocalizer.Localize(item)</FluentOption>
+        }
+    </FluentSelect>
+    <FluentTextArea Label="Corrective Action" @bind-Value="@Content.CorrectiveAction" Rows="3" />
+    <FluentTextArea Label="Notes" @bind-Value="@Content.Notes" Rows="2" />
+</EditDialogContainer>

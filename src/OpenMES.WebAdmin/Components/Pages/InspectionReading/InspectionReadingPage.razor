@@ -1,0 +1,27 @@
+﻿@page "/inspectionreading"
+@attribute [Authorize]
+@inherits BasePage<InspectionReadingDto, int, Edit>
+@rendermode InteractiveServer
+
+<FluentToolbar>
+    <FluentButton Appearance="Appearance.Accent"
+                  IconStart="@(new Icons.Regular.Size20.Add())"
+                  OnClick="@AddInDialog">@UiResources.Button_Add</FluentButton>
+</FluentToolbar>
+
+<FluentDataGrid TGridItem="InspectionReadingDto" ItemsProvider="@ItemsProvider"
+                GenerateHeader="GenerateHeaderOption.Sticky"
+                DisplayMode="DataGridDisplayMode.Table">
+    <PropertyColumnExt Property="@(p => p.PhaseNumber)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.InspectionPointDescription)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.OperatorName)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.ReadingDate)" Sortable="true" Format="g" />
+    <PropertyColumnExt Property="@(p => p.NumericValue)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.Result)" Sortable="true" />
+    <TemplateColumn Title="@UiResources.Label_Actions">
+        <FluentButton Appearance="Appearance.Stealth" IconStart="@(new Icons.Regular.Size16.Edit())" OnClick="@(() => EditInDialog(context))" />
+        <FluentButton Appearance="Appearance.Stealth" IconStart="@(new Icons.Regular.Size16.Delete())" OnClick="@(() => DeleteItem(context))" />
+    </TemplateColumn>
+</FluentDataGrid>
+
+<FluentPaginator State="@pagination" />

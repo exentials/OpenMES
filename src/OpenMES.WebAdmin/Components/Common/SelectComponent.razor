@@ -1,0 +1,63 @@
+﻿@using OpenMES.WebApiClient.Interfaces
+@typeparam TDto where TDto : class
+@typeparam TKey
+
+<FluentSelect TOption="KeyValueDto<TKey>"
+              Items="@_items"
+              OptionText="@(x => x.Value)"
+              OptionValue="@(x => x.Id!.ToString())"
+              SelectedOption="@_selected"
+              SelectedOptionChanged="@OnSelectionChangedAsync"
+              Label="@Label"
+              Placeholder="@Placeholder"
+              Disabled="@Disabled" />
+
+@code {
+    [Parameter] public TKey? Value { get; set; }
+    [Parameter] public EventCallback<TKey> ValueChanged { get; set; }
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+
+    protected ICrudKeyValueApiService<TDto, TKey> ApiService { get; set; } = null!;
+
+    private IEnumerable<KeyValueDto<TKey>> _items = [];
+    private KeyValueDto<TKey>? _selected;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var ct = CancellationToken.None;
+        var result = await ApiService.ReadKeyValuesAsync(new KeyValueRequestDto(), ct);
+        _items = result.Data ?? [];
+        await base.OnInitializedAsync();
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        if (Value is null)
+        {
+            _selected = null;
+            return base.OnParametersSetAsync();
+        }
+
+        var valueAsKey = (TKey)(object)Value;
+        if (EqualityComparer<TKey>.Default.Equals(valueAsKey, default!))
+        {
+            _selected = null;
+            return base.OnParametersSetAsync();
+        }
+
+        _selected = _items.FirstOrDefault(x => EqualityComparer<TKey>.Default.Equals(x.Id, valueAsKey));
+        return base.OnParametersSetAsync();
+    }
+
+    private async Task OnSelectionChangedAsync(KeyValueDto<TKey>? selected)
+    {
+        _selected = selected;
+        if (selected is not null)
+        {
+            await ValueChanged.InvokeAsync(selected.Id!);
+        }
+        StateHasChanged();
+    }
+}

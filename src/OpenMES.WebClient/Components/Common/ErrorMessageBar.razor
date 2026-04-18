@@ -1,0 +1,83 @@
+@namespace OpenMES.WebClient.Components.Common
+@using System.ComponentModel
+@using Microsoft.FluentUI.AspNetCore.Components
+@using OpenMES.WebClient.Services
+@implements IDisposable
+
+@* ErrorMessageBar - Global Error Display Component
+    Consumes IErrorService to display application-wide errors
+
+    Features:
+    - Auto-binds to ErrorService for error state changes
+    - Color-coded by severity (Info=blue, Warning=yellow, Error=red, Critical=crimson)
+    - Dismissible errors with clear button
+    - Auto-dismiss support (if configured)
+    - Timestamp of error occurrence
+
+    WEB-002: Phase 1 - Error Infrastructure
+*@
+
+@if (ErrorService?.HasError ?? false)
+{
+    <div style="margin-bottom: 16px;">
+        <FluentMessageBar Intent="@GetIntent()" AllowDismiss="true" OnDismiss="@HandleDismiss">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="flex: 1;">
+                    <div style="font-weight: bold;">@ErrorService.CurrentSeverity</div>
+                    <div style="font-size: 14px; margin-top: 4px;">@ErrorService.CurrentErrorMessage</div>
+                    @if (ErrorService.ErrorTimestamp.HasValue)
+                    {
+                        <div style="font-size: 11px; color: rgba(0,0,0,0.6); margin-top: 4px;">
+                            @ErrorService.ErrorTimestamp.Value.ToString("yyyy-MM-dd HH:mm:ss UTC")
+                        </div>
+                    }
+                </div>
+            </div>
+        </FluentMessageBar>
+    </div>
+}
+
+@code {
+    [Inject]
+    public IErrorService? ErrorService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (ErrorService != null)
+        {
+            // Subscribe to PropertyChanged to trigger re-render when error changes
+            ((INotifyPropertyChanged)ErrorService).PropertyChanged += OnErrorServiceChanged;
+        }
+    }
+
+    private void OnErrorServiceChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // Trigger component re-render when ErrorService properties change
+        InvokeAsync(StateHasChanged);
+    }
+
+    private MessageIntent GetIntent() => ErrorService?.CurrentSeverity switch
+    {
+        ErrorSeverity.Info => MessageIntent.Info,
+        ErrorSeverity.Warning => MessageIntent.Warning,
+        ErrorSeverity.Error => MessageIntent.Error,
+        ErrorSeverity.Critical => MessageIntent.Error, // Use Error for Critical (no higher intent)
+        _ => MessageIntent.Error
+    };
+
+    private async Task HandleDismiss()
+    {
+        if (ErrorService != null)
+        {
+            ErrorService.ClearError();
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (ErrorService != null)
+        {
+            ((INotifyPropertyChanged)ErrorService).PropertyChanged -= OnErrorServiceChanged;
+        }
+    }
+}

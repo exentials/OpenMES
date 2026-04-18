@@ -1,0 +1,57 @@
+@page "/productionorder/{ItemId:int}"
+@attribute [Authorize]
+@inherits BaseDetails<ProductionOrderDto, int>
+@rendermode InteractiveServer
+
+@if (Model is not null)
+{
+    <FluentGrid>
+        <FluentGridItem xs="12">
+            <FluentLabel Typo="Typography.H4">@Model.OrderNumber — @Model.PartNumber</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>Part:</strong> @Model.PartDescription</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>Type:</strong> @Model.OrderType</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>Plant:</strong> @Model.PlantName</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>Planned:</strong> @Model.PlannedQuantity</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>Confirmed:</strong> @Model.ConfirmedQuantity</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="4">
+            <FluentLabel><strong>Scrap:</strong> @Model.ScrapQuantity</FluentLabel>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            <FluentLabel Typo="Typography.H6">Phases</FluentLabel>
+            <FluentDataGrid Items="@Model.ProductionOrderPhases.AsQueryable()"
+                            GenerateHeader="GenerateHeaderOption.Sticky"
+                            DisplayMode="DataGridDisplayMode.Table">
+                <PropertyColumn Property="@(p => p.PhaseNumber)" Title="Phase" Sortable="true" />
+                <PropertyColumn Property="@(p => p.Description)" Title="Description" Sortable="true" />
+                <PropertyColumn Property="@(p => p.WorkCode)" Title="Work Code" />
+                <PropertyColumn Property="@(p => p.ConfirmNumber)" Title="Confirm Nr" />
+                <PropertyColumn Property="@(p => p.Status)" Title="Status" Sortable="true" />
+                <PropertyColumn Property="@(p => p.PlannedQuantity)" Title="Planned" />
+                <PropertyColumn Property="@(p => p.ConfirmedQuantity)" Title="Confirmed" />
+                <PropertyColumn Property="@(p => p.ScrapQuantity)" Title="Scrap" />
+            </FluentDataGrid>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            <FluentButton Appearance="Appearance.Stealth"
+                          IconStart="@(new Icons.Regular.Size16.Delete())"
+                          OnClick="@Delete">Delete</FluentButton>
+        </FluentGridItem>
+    </FluentGrid>
+}
+else
+{
+    <FluentProgressRing />
+}

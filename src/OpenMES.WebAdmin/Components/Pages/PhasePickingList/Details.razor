@@ -1,0 +1,77 @@
+@page "/phasepickinglist/{ItemId:int}"
+@attribute [Authorize]
+@inherits BaseDetails<PhasePickingListDto, int>
+@rendermode InteractiveServer
+
+@if (Model is not null)
+{
+    <FluentGrid>
+        <FluentGridItem xs="12">
+            <FluentLabel Typo="Typography.H4">@Model.PartNumber — @Model.PartDescription</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="3">
+            <FluentLabel><strong>Phase:</strong> @Model.PhaseNumber</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="3">
+            <FluentLabel><strong>Storage location:</strong> @(Model.StorageLocationCode ?? "—")</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="3">
+            <FluentLabel><strong>Required:</strong> @Model.RequiredQuantity @Model.UnitOfMeasure</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="3">
+            <FluentLabel><strong>Picked:</strong> @Model.PickedQuantity @Model.UnitOfMeasure</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="3">
+            <FluentLabel><strong>Status:</strong> @EnumTextLocalizer.Localize(Model.Status)</FluentLabel>
+        </FluentGridItem>
+        <FluentGridItem xs="3">
+            <FluentLabel><strong>Automatic:</strong> @Model.IsAutomatic</FluentLabel>
+        </FluentGridItem>
+
+        @if (!string.IsNullOrEmpty(Model.Notes))
+        {
+            <FluentGridItem xs="12">
+                <FluentLabel><strong>Notes:</strong> @Model.Notes</FluentLabel>
+            </FluentGridItem>
+        }
+
+        <FluentGridItem xs="12">
+            <FluentLabel Typo="Typography.H6">Picking History</FluentLabel>
+            @if (PickingItems.Any())
+            {
+                <FluentDataGrid Items="@PickingItems.AsQueryable()"
+                                GenerateHeader="GenerateHeaderOption.Sticky"
+                                DisplayMode="DataGridDisplayMode.Table">
+                    <PropertyColumn Property="@(p => p.PickedAt)" Title="Picked at" Format="g" Sortable="true" />
+                    <PropertyColumn Property="@(p => p.PickedQuantity)" Title="Qty" />
+                    <PropertyColumn Property="@(p => p.OperatorName)" Title="Operator" />
+                    <TemplateColumn Title="Auto">
+                        @if (context.IsAutomatic)
+                        {
+                            <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxChecked())" />
+                        }
+                        else
+                        {
+                            <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxUnchecked())" />
+                        }
+                    </TemplateColumn>
+                    <PropertyColumn Property="@(p => p.Notes)" Title="Notes" />
+                </FluentDataGrid>
+            }
+            else
+            {
+                <FluentLabel>No picking events recorded yet.</FluentLabel>
+            }
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            <FluentButton Appearance="Appearance.Stealth"
+                          IconStart="@(new Icons.Regular.Size16.Delete())"
+                          OnClick="@Delete">Delete</FluentButton>
+        </FluentGridItem>
+    </FluentGrid>
+}
+else
+{
+    <FluentProgressRing />
+}

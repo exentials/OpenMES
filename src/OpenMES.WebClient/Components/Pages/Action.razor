@@ -1,0 +1,291 @@
+@page "/action/{Id:int}"
+@using OpenMES.WebClient.Components.Dialogs
+@using OpenMES.WebClient.Components.Machine
+@using OpenMES.WebClient.Components.Actions
+@using OpenMES.Data.Common
+@inherits ClientComponentBase<ActionViewModel>
+@* ── Header ──────────────────────────────────────────────────────────────── *@
+<div style="display:flex;align-items:center;gap:12px;padding:16px 16px 0;">
+    <button @onclick="NavigateHome" style="@BackBtnStyle">←</button>
+    @if (ViewModel.Machine is not null)
+    {
+        <div style="flex:1;">
+            <div style="font-size:22px;font-weight:500;color:var(--neutral-foreground-rest);">
+                @ViewModel.Machine.Code
+            </div>
+            <div style="font-size:14px;color:var(--neutral-foreground-hint);">
+                @ViewModel.Machine.Description
+            </div>
+        </div>
+        <div style="@StatusBadgeStyle">@StatusLabel</div>
+    }
+</div>
+
+@* ── Context strip ────────────────────────────────────────────────────────── *@
+@if (ViewModel.ActivePhase is not null)
+{
+    <div style="margin:12px 16px 0;padding:12px 16px;
+                background:var(--neutral-layer-2);border-radius:10px;
+                border:1px solid var(--neutral-stroke-layer-rest);">
+        <div style="font-size:12px;color:var(--neutral-foreground-hint);margin-bottom:2px;">
+            @UiResources.Action_ActivePhase
+        </div>
+        <div style="font-size:16px;font-weight:500;color:var(--neutral-foreground-rest);">
+            @ViewModel.ActivePhase.PhaseNumber — @ViewModel.ActivePhase.Description
+        </div>
+        <div style="display:flex;gap:16px;margin-top:6px;font-size:13px;color:var(--neutral-foreground-hint);">
+                <span>Conf: @ViewModel.ActivePhase.ConfirmedQuantity / @ViewModel.ActivePhase.PlannedQuantity</span>
+            @if (ViewModel.ActivePhase.ScrapQuantity > 0)
+            {
+                <span style="color:var(--error-foreground);">@($"{UiResources.Action_ScrapOptional.Split(' ')[0]}: {ViewModel.ActivePhase.ScrapQuantity}")</span>
+            }
+        </div>
+    </div>
+}
+
+<div style="padding:16px;">
+
+@* ════ SCREEN: MAIN ═════════════════════════════════════════════════════════ *@
+@if (ViewModel.Screen == ActionScreen.Main)
+{
+    @if (IsLoading)
+    {
+        <FluentProgressRing Style="margin:60px auto;display:block;" />
+    }
+    else
+    {
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">
+
+            @if (!ViewModel.HasOpenSession)
+            {
+                <button @onclick="StartWorkAsync" style="@ActionBtnStyle("accent")">
+                    <div style="font-size:28px;margin-bottom:6px;">▶</div>
+                    <div>@UiResources.Action_StartWork</div>
+                </button>
+            }
+            else
+            {
+                <button @onclick="CloseSessionAsync" style="@ActionBtnStyle("neutral")">
+                    <div style="font-size:28px;margin-bottom:6px;">■</div>
+                    <div>@UiResources.Action_CloseSession</div>
+                </button>
+            }
+
+            <button @onclick="ShowDeclareAsync"
+                    disabled="@(!ViewModel.CanDeclare)"
+                    style="@ActionBtnStyle(ViewModel.CanDeclare ? "green" : "disabled")">
+                <div style="font-size:28px;margin-bottom:6px;">✓</div>
+                <div>@UiResources.Action_DeclareQty</div>
+            </button>
+
+            <button @onclick="HandleMachineStateAsync" style="@ActionBtnStyle("warn")">
+                <div style="font-size:28px;margin-bottom:6px;">⚠</div>
+                <div>@MachineStateActionLabel</div>
+            </button>
+
+            <button @onclick="ShowShiftScreenAsync" style="@ActionBtnStyle("neutral")">
+                <div style="font-size:28px;margin-bottom:6px;">👤</div>
+                <div>@ShiftActionLabel</div>
+            </button>
+
+        </div>
+
+        @if (ViewModel.OpenSession is not null)
+        {
+            <div style="margin-top:16px;padding:12px 16px;
+                        background:var(--success-background);border-radius:10px;
+                        border:1px solid var(--success-border);
+                        display:flex;align-items:center;gap:12px;">
+                <FluentIcon Value="@(new Icons.Regular.Size20.Timer())"
+                            Style="color:var(--success-foreground);" />
+                <div>
+                    <div style="font-size:14px;font-weight:500;color:var(--success-foreground);">
+                        @UiResources.Action_SessionOpen — @ViewModel.OpenSession.SessionType
+                    </div>
+                    <div style="font-size:12px;color:var(--success-foreground);opacity:0.8;">
+                        @ViewModel.OpenSession.OperatorName · @UiResources.Action_Started @ViewModel.OpenSession.StartTime.ToLocalTime().ToString("HH:mm")
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+
+@if (ViewModel.Screen == ActionScreen.Declare)
+{
+    <div style="max-width:360px;margin:0 auto;">
+
+        <div style="text-align:center;margin-bottom:20px;">
+            <div style="font-size:18px;font-weight:500;color:var(--neutral-foreground-rest);">
+                @UiResources.Action_DeclareQty
+            </div>
+            <div style="font-size:13px;color:var(--neutral-foreground-hint);margin-top:4px;">
+                @ViewModel.ActivePhase?.PhaseNumber — @ViewModel.ActivePhase?.Description
+            </div>
+        </div>
+
+        <div style="text-align:center;margin-bottom:8px;">
+            <div style="font-size:13px;color:var(--neutral-foreground-hint);">@UiResources.Action_GoodPieces</div>
+            <div style="font-size:48px;font-weight:500;color:var(--neutral-foreground-rest);
+                        line-height:1.1;letter-spacing:-1px;">
+                @ViewModel.ConfirmedQty.ToString("0.###")
+            </div>
+        </div>
+
+        <NumericPad @bind-Value="ViewModel.ConfirmedQty" Label="@UiResources.Action_GoodPieces" />
+
+        <div style="display:flex;align-items:center;gap:12px;margin:20px 0 8px;">
+            <div style="flex:1;height:1px;background:var(--neutral-stroke-layer-rest);"></div>
+            <span style="font-size:13px;color:var(--neutral-foreground-hint);">@UiResources.Action_ScrapOptional</span>
+            <div style="flex:1;height:1px;background:var(--neutral-stroke-layer-rest);"></div>
+        </div>
+
+        <div style="text-align:center;margin-bottom:8px;">
+            <div style="font-size:36px;font-weight:500;color:var(--error-foreground);line-height:1.1;">
+                @ViewModel.ScrapQty.ToString("0.###")
+            </div>
+        </div>
+
+        <NumericPad @bind-Value="ViewModel.ScrapQty" Label="@UiResources.Action_ScrapOptional" />
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;">
+            <button @onclick="GoBack" style="@ActionBtnStyle("neutral")">
+                <div>← @UiResources.Action_Cancel</div>
+            </button>
+            <button @onclick="ConfirmDeclareAsync"
+                    disabled="@(ViewModel.ConfirmedQty <= 0)"
+                    style="@ActionBtnStyle(ViewModel.ConfirmedQty > 0 ? "green" : "disabled")">
+                <div>✓ @UiResources.Action_Confirm</div>
+            </button>
+        </div>
+
+    </div>
+}
+
+@if (ViewModel.Screen == ActionScreen.SessionTypePicker)
+{
+    <div style="max-width:360px;margin:0 auto;">
+
+        <div style="text-align:center;margin-bottom:24px;">
+            <div style="font-size:18px;font-weight:500;color:var(--neutral-foreground-rest);">
+                @UiResources.Action_ChooseSessionType
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <button @onclick="@(() => StartSessionOfType(WorkSessionType.Work))"
+                    style="@ActionBtnStyle("accent")">
+                <div style="font-size:28px;margin-bottom:6px;">▶</div>
+                <div>@UiResources.Action_SessionWork</div>
+            </button>
+            <button @onclick="@(() => StartSessionOfType(WorkSessionType.Setup))"
+                    style="@ActionBtnStyle("warn")">
+                <div style="font-size:28px;margin-bottom:6px;">⚙</div>
+                <div>@UiResources.Action_SessionSetup</div>
+            </button>
+        </div>
+
+        <div style="margin-top:16px;">
+            <button @onclick="GoBack" style="@ActionBtnStyle("neutral")">
+                <div>← @UiResources.Action_Cancel</div>
+            </button>
+        </div>
+
+    </div>
+}
+
+@if (ViewModel.Screen == ActionScreen.PhasePicker)
+{
+    <PhasePickerScreen Phases="@AvailablePhases"
+                       OnPhaseSelected="@OnPhaseSelectedAsync"
+                       OnCancel="@GoBack" />
+}
+
+@if (ViewModel.Screen == ActionScreen.CheckIn)
+{
+    <OperatorShiftScreen CurrentShift="@ViewModel.OperatorShift"
+                         OnShiftChanged="@OnShiftChangedAsync"
+                         OnCancel="@GoBack" />
+}
+
+<OperatorSelectionDialog IsOpen="@IsOperatorDialogOpen"
+                         Operators="@AvailableOperators"
+                         OnCancel="@CloseOperatorDialog"
+                         OnConfirm="@OnOperatorSelectedAsync" />
+
+<StopReasonDialog IsOpen="@IsStopReasonDialogOpen"
+                  Reasons="@AvailableStopReasons"
+                  OnCancel="@CloseStopReasonDialog"
+                  OnConfirm="@OnStopReasonSelectedAsync" />
+
+</div>
+
+@code {
+    private string MachineStateActionLabel => ViewModel.Status switch
+    {
+        MachineStatus.Running => UiResources.Action_MachineStop,
+        MachineStatus.Setup   => UiResources.Action_Resume,
+        MachineStatus.Stopped => UiResources.Action_Start,
+        _                     => UiResources.Action_Start,
+    };
+
+    private string ShiftActionLabel => ViewModel.IsOperatorPresent
+        ? UiResources.Action_CheckOut
+        : UiResources.Action_CheckIn;
+
+    private string StatusLabel => ViewModel.Status switch
+    {
+        MachineStatus.Running     => UiResources.Machine_Running,
+        MachineStatus.Setup       => UiResources.Machine_Setup,
+        MachineStatus.Idle        => UiResources.Machine_Idle,
+        MachineStatus.Stopped     => UiResources.Machine_Stopped,
+        MachineStatus.Fault       => UiResources.Machine_Fault,
+        MachineStatus.Maintenance => UiResources.Machine_Maintenance,
+        MachineStatus.Blocked     => UiResources.Machine_Blocked,
+        MachineStatus.Starved     => UiResources.Machine_Starved,
+        _                         => UiResources.Machine_Manual
+    };
+
+    private string StatusColor => ViewModel.Status switch
+    {
+        MachineStatus.Running     => "var(--success-foreground)",
+        MachineStatus.Setup       => "var(--warning-foreground)",
+        MachineStatus.Fault       => "var(--error-foreground)",
+        MachineStatus.Stopped     => "var(--error-foreground)",
+        MachineStatus.Maintenance => "#7F77DD",
+        _                         => "var(--neutral-foreground-hint)"
+    };
+
+    private string StatusBg => ViewModel.Status switch
+    {
+        MachineStatus.Running     => "var(--success-background)",
+        MachineStatus.Setup       => "var(--warning-background)",
+        MachineStatus.Fault       => "var(--error-background)",
+        MachineStatus.Stopped     => "var(--error-background)",
+        MachineStatus.Maintenance => "#EEEDFE",
+        _                         => "var(--neutral-layer-2)"
+    };
+
+    private string StatusBadgeStyle =>
+        "font-size:14px;font-weight:500;padding:6px 16px;border-radius:99px;" +
+        $"background:{StatusBg};color:{StatusColor};white-space:nowrap;";
+
+    private static string BackBtnStyle =>
+        "height:44px;width:44px;border-radius:10px;border:1px solid var(--neutral-stroke-layer-rest);" +
+        "background:var(--neutral-layer-2);color:var(--neutral-foreground-rest);" +
+        "font-size:20px;cursor:pointer;flex-shrink:0;";
+
+    private static string ActionBtnStyle(string variant) =>
+        "display:flex;flex-direction:column;align-items:center;justify-content:center;" +
+        "height:110px;border-radius:14px;cursor:pointer;" +
+        "font-size:16px;font-weight:500;border:1px solid transparent;" +
+        "transition:opacity 0.15s;" +
+        variant switch
+        {
+            "accent"   => "background:var(--accent-fill-rest);color:var(--foreground-on-accent-rest);border-color:var(--accent-stroke-control-rest);",
+            "green"    => "background:var(--success-background);color:var(--success-foreground);border-color:var(--success-border);",
+            "warn"     => "background:var(--warning-background);color:var(--warning-foreground);border-color:var(--warning-border);",
+            "disabled" => "background:var(--neutral-layer-2);color:var(--neutral-foreground-hint);opacity:0.5;cursor:not-allowed;",
+            _          => "background:var(--neutral-layer-2);color:var(--neutral-foreground-rest);border-color:var(--neutral-stroke-layer-rest);"
+        };
+}

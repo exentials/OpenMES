@@ -1,0 +1,66 @@
+@page "/users"
+@attribute [Authorize(Roles = "admin")]
+@inherits UsersPageBase
+@rendermode InteractiveServer
+
+<PageTitle>Gestione Utenti — OpenMES</PageTitle>
+
+<FluentToolbar>
+    <FluentButton Appearance="Appearance.Accent"
+                  IconStart="@(new Icons.Regular.Size20.Add())"
+                  OnClick="@AddInDialog">@UiResources.Button_Add</FluentButton>
+</FluentToolbar>
+
+<FluentDataGrid TGridItem="IdentityUserDto" ItemsProvider="@ItemsProvider"
+                GenerateHeader="GenerateHeaderOption.Sticky"
+                DisplayMode="DataGridDisplayMode.Table">
+    <PropertyColumnExt Property="@(u => u.Email)" Sortable="true" />
+
+    <TemplateColumn Title="@UiResources.User_RolesLabel">
+        @foreach (var role in context.Roles)
+        {
+            <FluentBadge Appearance="Appearance.Accent"
+                         Style="margin-right:4px;font-size:11px;">
+                @role
+            </FluentBadge>
+        }
+    </TemplateColumn>
+
+    <TemplateColumn Title="@UiResources.User_StatusLabel">
+        @if (context.LockoutEnd.HasValue && context.LockoutEnd > DateTimeOffset.UtcNow)
+        {
+            <FluentBadge Color="Color.Error">@UiResources.User_StatusBlocked</FluentBadge>
+        }
+        else
+        {
+            <FluentBadge Color="Color.Success">@UiResources.User_StatusActive</FluentBadge>
+        }
+    </TemplateColumn>
+
+    <TemplateColumn Title="Actions">
+        <FluentButton Appearance="Appearance.Stealth" 
+                      IconStart="@(new Icons.Regular.Size16.Edit())" 
+                      Title="@UiResources.User_EditButton"
+                      OnClick="@(() => EditInDialog(context))" />
+        @if (context.LockoutEnd.HasValue && context.LockoutEnd > DateTimeOffset.UtcNow)
+        {
+            <FluentButton Appearance="Appearance.Stealth" 
+                          IconStart="@(new Icons.Regular.Size16.LockOpen())" 
+                          Title="@UiResources.User_UnlockButton"
+                          OnClick="@(() => UnlockUserAsync(context))" />
+        }
+        <FluentButton Appearance="Appearance.Stealth" 
+                      IconStart="@(new Icons.Regular.Size16.Delete())" 
+                      Title="@UiResources.User_DeleteButton"
+                      OnClick="@(() => DeleteUserAsync(context))" />
+    </TemplateColumn>
+</FluentDataGrid>
+
+<FluentPaginator State="@pagination" />
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <FluentMessageBar Intent="MessageIntent.Error" OnDismiss="@(() => _errorMessage = null)">
+        @_errorMessage
+    </FluentMessageBar>
+}

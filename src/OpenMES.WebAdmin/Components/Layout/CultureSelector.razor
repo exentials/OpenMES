@@ -1,0 +1,33 @@
+@using System.Globalization
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+@* Culture toggle — works because InteractiveServer is active globally.
+   Changing culture requires a full page reload to re-apply the RequestLocalization middleware. *@
+
+<FluentButton Appearance="Appearance.Stealth"
+              Title="@(_current == "it" ? "Switch to English" : "Passa all'italiano")"
+              OnClick="@Toggle">
+    <FluentIcon Value="@(new Icons.Regular.Size16.LocalLanguage())" />
+    &nbsp;@_current.ToUpperInvariant()
+</FluentButton>
+
+@code {
+    private string _current = "en";
+
+    protected override void OnInitialized()
+    {
+        _current = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.ToLowerInvariant();
+        if (_current != "it") _current = "en";
+    }
+
+    private void Toggle()
+    {
+        var next = _current == "en" ? "it" : "en";
+        // Extract only the relative path+query — LocalRedirect rejects absolute URLs
+        var uri         = new Uri(Nav.Uri);
+        var relativePath = uri.PathAndQuery;
+        var redirectUri = Uri.EscapeDataString(relativePath);
+        Nav.NavigateTo($"/setculture?culture={next}&redirectUri={redirectUri}", forceLoad: true);
+    }
+}

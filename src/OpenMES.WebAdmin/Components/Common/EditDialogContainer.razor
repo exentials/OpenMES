@@ -1,0 +1,170 @@
+@namespace OpenMES.WebAdmin.Components.Common
+@using OpenMES.Data.Dtos.Resources
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentDialogHeader ShowDismiss="false">
+    <FluentStack VerticalAlignment="VerticalAlignment.Center">
+        @if (Icon != null)
+        {
+            <FluentIcon Value="Icon" />
+        }
+        <FluentLabel Typo="Typography.PaneHeader">@Title</FluentLabel>
+    </FluentStack>
+</FluentDialogHeader>
+
+<FluentDialogBody>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <FluentMessageBar Intent="MessageIntent.Error" AllowDismiss="true" OnDismiss="@(() => errorMessage = null)">
+                @errorMessage
+            </FluentMessageBar>
+        }
+        @ChildContent
+    </FluentStack>
+</FluentDialogBody>
+
+<FluentDialogFooter>
+    @if (!string.IsNullOrEmpty(CustomPrimaryLabel) && CustomPrimaryCallback.HasValue && CustomPrimaryCallback.Value.HasDelegate)
+    {
+        <FluentButton Appearance="Appearance.Accent" OnClick="@HandleCustomPrimaryAsync" Disabled="@isSaving">
+            <FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalGap="4">
+                @if (isSaving)
+                {
+                    <FluentProgressRing Width="16px" Height="16px" />
+                }
+                else
+                {
+                    <FluentIcon Value="@(new Icons.Regular.Size20.Save())" />
+                }
+                @CustomPrimaryLabel
+            </FluentStack>
+        </FluentButton>
+    }
+    else
+    {
+        <FluentButton Appearance="Appearance.Accent" OnClick="@HandleSaveAsync" Disabled="@isSaving">
+            <FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalGap="4">
+                @if (isSaving)
+                {
+                    <FluentProgressRing Width="16px" Height="16px" />
+                }
+                else
+                {
+                    <FluentIcon Value="@(new Icons.Regular.Size20.Save())" />
+                }
+                @(SaveButtonText ?? UiResources.Button_Save)
+            </FluentStack>
+        </FluentButton>
+    }
+    <FluentButton Appearance="Appearance.Neutral"
+                  OnClick="@OnCancelAsync"
+                  Disabled="@isSaving">
+        @(CancelButtonText ?? UiResources.Button_Cancel)
+    </FluentButton>
+</FluentDialogFooter>
+
+@code {
+    /// <summary>
+    /// Child content - the form fields to display in the dialog body
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Icon to display in the header (optional, type: Icon)
+    /// Example: @(new Icons.Regular.Size24.Wrench())
+    /// </summary>
+    [Parameter]
+    public Icon? Icon { get; set; }
+
+    /// <summary>
+    /// Title text to display in the header
+    /// </summary>
+    [Parameter]
+    public string? Title { get; set; }
+
+    /// <summary>
+    /// Callback when Save button is clicked
+    /// </summary>
+    [Parameter]
+    public EventCallback OnSaveAsync { get; set; }
+
+    /// <summary>
+    /// Callback when Cancel button is clicked
+    /// </summary>
+    [Parameter]
+    public EventCallback OnCancelAsync { get; set; }
+
+    /// <summary>
+    /// Text for the Save button (default: uses UiResources.Button_Save if not set)
+    /// </summary>
+    [Parameter]
+    public string? SaveButtonText { get; set; }
+
+    /// <summary>
+    /// Text for the Cancel button (default: uses UiResources.Button_Cancel if not set)
+    /// </summary>
+    [Parameter]
+    public string? CancelButtonText { get; set; }
+
+    /// <summary>
+    /// Alternative custom primary button label for domain-specific actions
+    /// (e.g., "Declare", "Register", "Close"). If set, it replaces the standard Save button.
+    /// </summary>
+    [Parameter]
+    public string? CustomPrimaryLabel { get; set; }
+
+    /// <summary>
+    /// Callback for the custom primary button (replaces Save). If null, OnSaveAsync is used.
+    /// </summary>
+    [Parameter]
+    public EventCallback? CustomPrimaryCallback { get; set; }
+
+    private bool isSaving;
+    private string? errorMessage;
+
+    private async Task HandleSaveAsync()
+    {
+        if (isSaving) return;
+        isSaving = true;
+        try
+        {
+            errorMessage = null;
+            await OnSaveAsync.InvokeAsync(null);
+        }
+        catch (Exception ex)
+        {
+            // centralize error handling: capture message and keep dialog open
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isSaving = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleCustomPrimaryAsync()
+    {
+        if (isSaving) return;
+        isSaving = true;
+        try
+        {
+            errorMessage = null;
+            if (CustomPrimaryCallback.HasValue && CustomPrimaryCallback.Value.HasDelegate)
+            {
+                await CustomPrimaryCallback.Value.InvokeAsync(null);
+            }
+            else
+            {
+                await OnSaveAsync.InvokeAsync(null);
+            }
+        }
+        finally
+        {
+            isSaving = false;
+            StateHasChanged();
+        }
+    }
+}

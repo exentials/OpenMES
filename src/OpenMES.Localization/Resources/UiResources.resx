@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+
+  <!-- Action page -->
+  <data name="Action_ActivePhase" xml:space="preserve"><value>Active phase</value></data>
+  <data name="Action_StartWork" xml:space="preserve"><value>Start work</value></data>
+  <data name="Action_CloseSession" xml:space="preserve"><value>Close session</value></data>
+  <data name="Action_DeclareQty" xml:space="preserve"><value>Declare qty</value></data>
+  <data name="Action_MachineStop" xml:space="preserve"><value>Machine stop</value></data>
+  <data name="Action_CheckIn" xml:space="preserve"><value>Check-in</value></data>
+  <data name="Action_CheckOut" xml:space="preserve"><value>Check-out</value></data>
+  <data name="Action_ChooseSessionType" xml:space="preserve"><value>Choose session type</value></data>
+  <data name="Action_SessionWork" xml:space="preserve"><value>Work</value></data>
+  <data name="Action_SessionSetup" xml:space="preserve"><value>Setup</value></data>
+  <data name="Action_GoodPieces" xml:space="preserve"><value>Good pieces</value></data>
+  <data name="Action_ScrapOptional" xml:space="preserve"><value>Scrap (optional)</value></data>
+  <data name="Action_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Action_Confirm" xml:space="preserve"><value>Confirm</value></data>
+  <data name="Action_SessionOpen" xml:space="preserve"><value>Session open</value></data>
+
+  <!-- Home page -->
+  <data name="Tab_Department" xml:space="preserve"><value>Department</value></data>
+  <data name="Tab_OperatorsMachines" xml:space="preserve"><value>Operators &amp; machines</value></data>
+  <data name="Kpi_ActiveOrders" xml:space="preserve"><value>Active orders</value></data>
+  <data name="Kpi_OpenSessions" xml:space="preserve"><value>Open sessions</value></data>
+  <data name="Section_MachineStatus" xml:space="preserve"><value>Machine status</value></data>
+  <data name="Kpi_ActiveStops" xml:space="preserve"><value>Active stops</value></data>
+  <data name="Kpi_OpenNc" xml:space="preserve"><value>Open NCs</value></data>
+  <data name="NoActiveStops" xml:space="preserve"><value>No active stops</value></data>
+  <data name="NoOpenNc" xml:space="preserve"><value>No open NCs</value></data>
+  <data name="Period_Today" xml:space="preserve"><value>Today</value></data>
+  <data name="Period_Week" xml:space="preserve"><value>Week</value></data>
+  <data name="Period_Month" xml:space="preserve"><value>Month</value></data>
+  <data name="Kpi_PresentOperators" xml:space="preserve"><value>Present operators</value></data>
+  <data name="Kpi_HoursWorked" xml:space="preserve"><value>Hours worked</value></data>
+  <data name="Kpi_DeclaredPieces" xml:space="preserve"><value>Declared pieces</value></data>
+  <data name="Kpi_OeeDept" xml:space="preserve"><value>Dept avg OEE</value></data>
+  <data name="Section_PresenceOperators" xml:space="preserve"><value>Operator presence — current shift</value></data>
+  <data name="NoOpenSessions" xml:space="preserve"><value>No open sessions</value></data>
+  <data name="NoDeclarationsToday" xml:space="preserve"><value>No declarations today</value></data>
+  <data name="Section_OpenSessions" xml:space="preserve"><value>Open sessions</value></data>
+  <data name="Section_ActiveOrders" xml:space="preserve"><value>Orders in progress</value></data>
+  <data name="Section_LastDeclarations" xml:space="preserve"><value>Recent declarations</value></data>
+
+  <!-- MachineCard -->
+  <data name="Machine_Running" xml:space="preserve"><value>Running</value></data>
+  <data name="Machine_Setup" xml:space="preserve"><value>Setup</value></data>
+  <data name="Machine_Idle" xml:space="preserve"><value>Idle</value></data>
+  <data name="Machine_Stopped" xml:space="preserve"><value>Stopped</value></data>
+  <data name="Machine_Fault" xml:space="preserve"><value>Fault</value></data>
+  <data name="Machine_Maintenance" xml:space="preserve"><value>Maintenance</value></data>
+  <data name="Session_Work" xml:space="preserve"><value>Work</value></data>
+  <data name="Session_Setup" xml:space="preserve"><value>Setup</value></data>
+  <data name="Session_Wait" xml:space="preserve"><value>Wait</value></data>
+  <data name="Session_Rework" xml:space="preserve"><value>Rework</value></data>
+  <data name="Action_Started" xml:space="preserve"><value>Started</value></data>
+  <data name="Action_Scrap" xml:space="preserve"><value>Scrap</value></data>
+  <data name="Machine_Blocked" xml:space="preserve"><value>Blocked</value></data>
+  <data name="Machine_Starved" xml:space="preserve"><value>Starved</value></data>
+  <data name="Machine_Manual" xml:space="preserve"><value>Manual</value></data>
+  <data name="MachineCard_NoOperator" xml:space="preserve"><value>No active operator</value></data>
+
+  <!-- Login page (WebClient) -->
+  <data name="Login_Title" xml:space="preserve"><value>Please login</value></data>
+  <data name="Login_DeviceName" xml:space="preserve"><value>Device name</value></data>
+  <data name="Login_DeviceNamePlaceholder" xml:space="preserve"><value>device name</value></data>
+  <data name="Login_Password" xml:space="preserve"><value>Password</value></data>
+  <data name="Login_PasswordPlaceholder" xml:space="preserve"><value>password</value></data>
+  <data name="Login_Connect" xml:space="preserve"><value>Connect</value></data>
+
+     <!-- User dialog (WebAdmin) -->
+    <data name="User_EmailPlaceholder" xml:space="preserve"><value>user@company.com</value></data>
+    <data name="User_PasswordLabel" xml:space="preserve"><value>Password</value></data>
+    <data name="User_NewPasswordLabel" xml:space="preserve"><value>New password (leave empty to not modify)</value></data>
+    <data name="User_RolesLabel" xml:space="preserve"><value>Roles</value></data>
+    <data name="User_SaveButton" xml:space="preserve"><value>Save</value></data>
+    <data name="User_CancelButton" xml:space="preserve"><value>Cancel</value></data>
+    <data name="User_ErrorEmailRequired" xml:space="preserve"><value>Email is required.</value></data>
+    <data name="User_ErrorPasswordRequired" xml:space="preserve"><value>Password is required for new users.</value></data>
+    <data name="User_StatusLabel" xml:space="preserve"><value>Status</value></data>
+    <data name="User_StatusActive" xml:space="preserve"><value>Active</value></data>
+    <data name="User_StatusBlocked" xml:space="preserve"><value>Blocked</value></data>
+    <data name="User_EditButton" xml:space="preserve"><value>Edit</value></data>
+    <data name="User_UnlockButton" xml:space="preserve"><value>Unlock account</value></data>
+    <data name="User_DeleteButton" xml:space="preserve"><value>Delete</value></data>
+
+    <!-- Home dashboard (WebAdmin) -->
+    <data name="Home_Title" xml:space="preserve"><value>Shop floor overview</value></data>
+    <data name="Home_Tab1_ActiveStops" xml:space="preserve"><value>Active stops</value></data>
+    <data name="Home_Tab1_OpenNc" xml:space="preserve"><value>Open NCs</value></data>
+    <data name="Home_Tab1_OpenSessions" xml:space="preserve"><value>Open sessions</value></data>
+    <data name="Home_Tab1_NoOpenSessions" xml:space="preserve"><value>No open sessions</value></data>
+    <data name="Home_Tab1_OrderStatus_Completed" xml:space="preserve"><value>Completed</value></data>
+    <data name="Home_Tab1_OrderStatus_InProgress" xml:space="preserve"><value>In progress</value></data>
+    <data name="Home_Tab1_ActiveOrders" xml:space="preserve"><value>Orders in progress</value></data>
+    <data name="Home_Kpi_ErpPending" xml:space="preserve"><value>ERP export pending</value></data>
+    <data name="Home_Kpi_Picking" xml:space="preserve"><value>Picking to fulfill</value></data>
+    <data name="Home_Kpi_PickingSubtext" xml:space="preserve"><value>Open or partial lists</value></data>
+    <data name="Home_Kpi_StockAlert" xml:space="preserve"><value>Stock alert</value></data>
+    <data name="Home_Kpi_StockAlertSubtext" xml:space="preserve"><value>Quantity ≤ 0</value></data>
+    <data name="Home_Tab2_OperatorPresence" xml:space="preserve"><value>Operator presence — current shift</value></data>
+    <data name="Home_Tab2_MachineEfficiency" xml:space="preserve"><value>Machine efficiency — % Running per shift</value></data>
+    <data name="Home_Tab2_MachineEfficiency_Run" xml:space="preserve"><value>Run</value></data>
+    <data name="Home_Tab2_MachineEfficiency_Stop" xml:space="preserve"><value>Stop</value></data>
+    <data name="Home_Tab2_TopProducers" xml:space="preserve"><value>Top producers — pieces declared</value></data>
+    <data name="Home_Tab2_ScrapRate" xml:space="preserve"><value>Scrap rate</value></data>
+    <data name="Home_Tab2_RecentDeclarations" xml:space="preserve"><value>Recent production declarations</value></data>
+    <data name="Home_Tab2_NoDeclarations" xml:space="preserve"><value>No declarations today</value></data>
+    <data name="Home_Status_Present" xml:space="preserve"><value>Present</value></data>
+    <data name="Home_Status_Break" xml:space="preserve"><value>Break</value></data>
+    <data name="Home_Status_Absent" xml:space="preserve"><value>Absent</value></data>
+    <data name="Home_StopReason_Breakdown" xml:space="preserve"><value>breakdown</value></data>
+    <data name="Home_NC_Severity_Critical" xml:space="preserve"><value>critical</value></data>
+    <data name="Home_NC_Severity_High" xml:space="preserve"><value>high</value></data>
+    <data name="Home_KpiSubtext_CurrentShift" xml:space="preserve"><value>current shift</value></data>
+    <data name="Home_KpiSubtext_Days" xml:space="preserve"><value>days</value></data>
+    <data name="Home_KpiSubtext_Scrap" xml:space="preserve"><value>scrap</value></data>
+    <data name="Home_KpiSubtext_InBreak" xml:space="preserve"><value>on break</value></data>
+    <data name="Home_KpiSubtext_Absent" xml:space="preserve"><value>absent</value></data>
+
+    <!-- Login page (WebAdmin) -->
+    <data name="WebAdmin_Login_Title" xml:space="preserve"><value>Admin panel</value></data>
+    <data name="WebAdmin_Login_EmailPlaceholder" xml:space="preserve"><value>admin@company.com</value></data>
+    <data name="WebAdmin_Login_LoginButton" xml:space="preserve"><value>Login</value></data>
+    <data name="WebAdmin_Login_ErrorRequiredFields" xml:space="preserve"><value>Please enter email and password.</value></data>
+
+    <!-- NavMenu (WebAdmin) -->
+    <data name="NavMenu_Administration" xml:space="preserve"><value>Administration</value></data>
+    <data name="NavMenu_Users" xml:space="preserve"><value>Users</value></data>
+    <data name="NavMenu_Home" xml:space="preserve"><value>Home</value></data>
+    <data name="NavMenu_MasterData" xml:space="preserve"><value>Master Data</value></data>
+    <data name="NavMenu_Plants" xml:space="preserve"><value>Plants</value></data>
+    <data name="NavMenu_WorkCenters" xml:space="preserve"><value>Work Centers</value></data>
+    <data name="NavMenu_Machines" xml:space="preserve"><value>Machines</value></data>
+    <data name="NavMenu_Operators" xml:space="preserve"><value>Operators</value></data>
+    <data name="NavMenu_Materials" xml:space="preserve"><value>Materials</value></data>
+    <data name="NavMenu_ClientDevices" xml:space="preserve"><value>Client Devices</value></data>
+    <data name="NavMenu_Production" xml:space="preserve"><value>Production</value></data>
+    <data name="NavMenu_ProductionOrders" xml:space="preserve"><value>Production Orders</value></data>
+    <data name="NavMenu_PickingLists" xml:space="preserve"><value>Picking Lists</value></data>
+    <data name="NavMenu_ProductionDeclarations" xml:space="preserve"><value>Declarations</value></data>
+    <data name="NavMenu_Declarations" xml:space="preserve"><value>Declarations</value></data>
+    <data name="NavMenu_OperatorShifts" xml:space="preserve"><value>Operator Shifts</value></data>
+    <data name="NavMenu_WorkSessions" xml:space="preserve"><value>Work Sessions</value></data>
+    <data name="NavMenu_ErpExport" xml:space="preserve"><value>ERP Export</value></data>
+    <data name="NavMenu_MachineStates" xml:space="preserve"><value>Machine States</value></data>
+    <data name="NavMenu_MachineStops" xml:space="preserve"><value>Machine Stops</value></data>
+    <data name="NavMenu_StopReasons" xml:space="preserve"><value>Stop Reasons</value></data>
+    <data name="NavMenu_Quality" xml:space="preserve"><value>Quality</value></data>
+    <data name="NavMenu_InspectionPlans" xml:space="preserve"><value>Inspection Plans</value></data>
+    <data name="NavMenu_InspectionReadings" xml:space="preserve"><value>Inspection Readings</value></data>
+    <data name="NavMenu_NonConformities" xml:space="preserve"><value>Non Conformities</value></data>
+    <data name="NavMenu_Warehouse" xml:space="preserve"><value>Warehouse</value></data>
+    <data name="NavMenu_StorageLocations" xml:space="preserve"><value>Storage Locations</value></data>
+    <data name="NavMenu_MaterialStock" xml:space="preserve"><value>Material Stock</value></data>
+    <data name="NavMenu_StockMovements" xml:space="preserve"><value>Stock Movements</value></data>
+
+    <!-- Common form labels (WebAdmin) -->
+    <data name="Label_Open" xml:space="preserve"><value>Open</value></data>
+    <data name="Label_Quantity" xml:space="preserve"><value>Quantity</value></data>
+    <data name="Label_PickedQuantity" xml:space="preserve"><value>Qty</value></data>
+    <data name="Label_PickedAt" xml:space="preserve"><value>Picked at</value></data>
+    <data name="Label_Mandatory" xml:space="preserve"><value>Mandatory</value></data>
+    <data name="Label_Seq" xml:space="preserve"><value>Seq</value></data>
+    <data name="Label_NominalValue" xml:space="preserve"><value>Nominal</value></data>
+    <data name="Label_MeasureType" xml:space="preserve"><value>Type</value></data>
+    <data name="Label_Auto" xml:space="preserve"><value>Auto</value></data>
+    <data name="Label_Consumable" xml:space="preserve"><value>Consumable</value></data>
+    <data name="Label_Phantom" xml:space="preserve"><value>Phantom</value></data>
+    <data name="Label_Actions" xml:space="preserve"><value>Actions</value></data>
+
+    <!-- Common button labels (WebAdmin) -->
+    <data name="Button_Add" xml:space="preserve"><value>Add</value></data>
+    <data name="Button_Close" xml:space="preserve"><value>Close</value></data>
+    <data name="Button_Edit" xml:space="preserve"><value>Edit</value></data>
+    <data name="Button_Delete" xml:space="preserve"><value>Delete</value></data>
+    <data name="Button_Save" xml:space="preserve"><value>Save</value></data>
+    <data name="Button_Cancel" xml:space="preserve"><value>Cancel</value></data>
+
+  <!-- Action screens (WebClient P0) -->
+  <data name="Action_TargetQty" xml:space="preserve"><value>Target quantity</value></data>
+  <data name="Action_TotalQty" xml:space="preserve"><value>Total quantity</value></data>
+  <data name="Action_TotalExceedsTarget" xml:space="preserve"><value>Total quantity exceeds the phase target.</value></data>
+  <data name="Action_LastDeclarations" xml:space="preserve"><value>Last declarations</value></data>
+  <data name="Action_NoDeclarations" xml:space="preserve"><value>No declarations found.</value></data>
+  <data name="Action_ConfirmDeclarationTitle" xml:space="preserve"><value>Confirm declaration</value></data>
+  <data name="Action_ConfirmDeclarationMessage" xml:space="preserve"><value>Do you want to submit this production declaration?</value></data>
+  <data name="Action_ErrorMachineNotLoaded" xml:space="preserve"><value>Machine context is not loaded.</value></data>
+  <data name="Action_ErrorOperatorMissing" xml:space="preserve"><value>Select an operator before continuing.</value></data>
+  <data name="Action_ErrorDeclarationFailed" xml:space="preserve"><value>Failed to submit declaration.</value></data>
+  <data name="Action_ErrorNoActivePhaseForMachine" xml:space="preserve"><value>No active phase is available for this machine.</value></data>
+  <data name="Action_ErrorOpenSessionFailed" xml:space="preserve"><value>Unable to open session.</value></data>
+  <data name="Action_Operator" xml:space="preserve"><value>Operator</value></data>
+  <data name="Action_ShiftStatus" xml:space="preserve"><value>Shift status</value></data>
+  <data name="Action_ShiftDuration" xml:space="preserve"><value>Shift duration</value></data>
+  <data name="Action_NoOperator" xml:space="preserve"><value>No operator selected</value></data>
+  <data name="Action_ShiftCheckedIn" xml:space="preserve"><value>Checked in</value></data>
+  <data name="Action_ShiftOnBreak" xml:space="preserve"><value>On break</value></data>
+  <data name="Action_ShiftCheckedOut" xml:space="preserve"><value>Checked out</value></data>
+  <data name="Action_TakeBreak" xml:space="preserve"><value>Take break</value></data>
+  <data name="Action_ReturnFromBreak" xml:space="preserve"><value>Return from break</value></data>
+  <data name="Action_CheckOutWarningTitle" xml:space="preserve"><value>Open work session detected</value></data>
+  <data name="Action_CheckOutWarningMessage" xml:space="preserve"><value>Check-out will close open work sessions. Continue?</value></data>
+  <data name="Action_ErrorNoOperators" xml:space="preserve"><value>No operators are available.</value></data>
+  <data name="Action_ErrorShiftUpdateFailed" xml:space="preserve"><value>Failed to update operator shift.</value></data>
+  <data name="Action_StateDuration" xml:space="preserve"><value>State duration</value></data>
+  <data name="Action_StatePaused" xml:space="preserve"><value>Paused</value></data>
+  <data name="Action_Start" xml:space="preserve"><value>Start</value></data>
+  <data name="Action_Pause" xml:space="preserve"><value>Pause</value></data>
+  <data name="Action_Stop" xml:space="preserve"><value>Stop</value></data>
+  <data name="Action_Resume" xml:space="preserve"><value>Resume</value></data>
+  <data name="Action_SelectStopReason" xml:space="preserve"><value>Select stop reason</value></data>
+  <data name="Action_SearchStopReason" xml:space="preserve"><value>Search by code or description</value></data>
+  <data name="Action_ErrorNoStopReasons" xml:space="preserve"><value>No stop reasons are configured.</value></data>
+  <data name="Action_ErrorStateChangeFailed" xml:space="preserve"><value>Failed to change machine state.</value></data>
+  <data name="Action_StopDurationSeconds" xml:space="preserve"><value>Stop duration (s)</value></data>
+
+    <!-- New entries -->
+    <data name="OperatorBadge_StatusOffline" xml:space="preserve"><value>Offline</value></data>
+    <data name="Session_ExpiredInactivity" xml:space="preserve"><value>Your session has expired due to inactivity. Please log in again.</value></data>
+  <data name="Auth_CheckingAuthentication" xml:space="preserve"><value>Checking authentication...</value></data>
+  <data name="Auth_AccessDenied" xml:space="preserve"><value>Access denied</value></data>
+  <data name="Auth_NoPermissionPage" xml:space="preserve"><value>You do not have permission to access this page.</value></data>
+  <data name="Auth_SessionExpiredOrUnauthenticated" xml:space="preserve"><value>Your session has expired or you are not authenticated.</value></data>
+  <data name="Auth_RedirectingToLogin" xml:space="preserve"><value>Redirecting to login...</value></data>
+  <data name="Auth_ClickIfNotRedirected" xml:space="preserve"><value>Click here if not redirected</value></data>
+  <data name="Dialog_SelectOperator" xml:space="preserve"><value>Select operator</value></data>
+  <data name="Dialog_SearchOperator" xml:space="preserve"><value>Search operator...</value></data>
+  <data name="Error_HttpUnauthorized" xml:space="preserve"><value>Your session has expired. Please log in again.</value></data>
+  <data name="Error_HttpForbidden" xml:space="preserve"><value>You do not have permission to perform this action.</value></data>
+  <data name="Error_HttpNotFound" xml:space="preserve"><value>The requested resource was not found.</value></data>
+  <data name="Error_HttpBadRequestPrefix" xml:space="preserve"><value>Invalid request</value></data>
+  <data name="Error_HttpInternalServer" xml:space="preserve"><value>Server error. Please contact support.</value></data>
+  <data name="Error_HttpServiceUnavailable" xml:space="preserve"><value>The service is temporarily unavailable. Please try again later.</value></data>
+  <data name="Error_HttpCommunicationPrefix" xml:space="preserve"><value>Communication error</value></data>
+  <data name="Error_GenericOccurredPrefix" xml:space="preserve"><value>An error occurred</value></data>
+  <data name="Label_Logout" xml:space="preserve"><value>Logout</value></data>
+  <data name="Label_LogoutConfirm" xml:space="preserve"><value>Are you sure you want to logout?</value></data>
+  <data name="Action_SelectPhase" xml:space="preserve"><value>Select work order phase</value></data>
+  <data name="Action_ScanOrTypeBarcode" xml:space="preserve"><value>Scan barcode or type order number...</value></data>
+  <data name="Action_Order" xml:space="preserve"><value>Order</value></data>
+  <data name="Action_Confirmed" xml:space="preserve"><value>Confirmed</value></data>
+</root>

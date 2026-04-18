@@ -1,0 +1,27 @@
+﻿@page "/machinestate"
+@attribute [Authorize]
+@inherits BasePage<MachineStateDto, int, Edit>
+@rendermode InteractiveServer
+
+<FluentToolbar>
+    <FluentButton Appearance="Appearance.Accent"
+                  IconStart="@(new Icons.Regular.Size20.Add())"
+                  OnClick="@AddInDialog">Declare State</FluentButton>
+</FluentToolbar>
+
+<FluentDataGrid TGridItem="MachineStateDto" ItemsProvider="@ItemsProvider"
+                GenerateHeader="GenerateHeaderOption.Sticky"
+                DisplayMode="DataGridDisplayMode.Table">
+    <PropertyColumnExt Property="@(p => p.MachineCode)" Sortable="true" />
+    <TemplateColumn Title="Status">
+        <FluentBadge BackgroundColor="@GetStatusColor(context.Status)" Color="white">
+            @context.Status
+        </FluentBadge>
+    </TemplateColumn>
+    <PropertyColumnExt Property="@(p => p.EventTime)" Format="g" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.Source)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.OperatorName)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.Notes)" />
+</FluentDataGrid>
+
+<FluentPaginator State="@pagination" />

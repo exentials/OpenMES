@@ -1,0 +1,67 @@
+@namespace OpenMES.WebClient.Components.Dialogs
+@using Microsoft.FluentUI.AspNetCore.Components
+@using OpenMES.Data.Dtos
+@using OpenMES.Data.Dtos.Resources
+
+@if (IsOpen)
+{
+    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+        <FluentCard Style="padding: 24px; width: min(720px, 92vw); max-height: 80vh; overflow: auto;">
+            <h3 style="margin: 0 0 12px 0;">@UiResources.Dialog_SelectOperator</h3>
+
+            <FluentSearch Placeholder="@UiResources.Dialog_SearchOperator" @bind-Value="SearchText" />
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px;">
+                @foreach (var item in FilteredOperators)
+                {
+                    var isSelected = SelectedOperatorId == item.Id;
+                    <FluentButton Appearance="@(isSelected ? Appearance.Accent : Appearance.Outline)"
+                                  Style="min-height: 56px; justify-content: flex-start;"
+                                  OnClick="@(() => SelectedOperatorId = item.Id)">
+                        @($"{item.EmployeeNumber} - {item.Name}")
+                    </FluentButton>
+                }
+            </div>
+
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Style="justify-content: flex-end; margin-top: 16px;">
+                <FluentButton Appearance="Appearance.Outline" OnClick="OnCancel">@UiResources.Action_Cancel</FluentButton>
+                <FluentButton Appearance="Appearance.Accent" Disabled="@(SelectedOperatorId is null)" OnClick="ConfirmAsync">@UiResources.Action_Confirm</FluentButton>
+            </FluentStack>
+        </FluentCard>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public IEnumerable<OperatorDto> Operators { get; set; } = [];
+    [Parameter] public EventCallback<int> OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private string? SearchText { get; set; }
+    private int? SelectedOperatorId { get; set; }
+
+    private IEnumerable<OperatorDto> FilteredOperators =>
+        string.IsNullOrWhiteSpace(SearchText)
+            ? Operators
+            : Operators.Where(o =>
+                (o.Name?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (o.EmployeeNumber?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false)
+                || (o.Badge?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ?? false));
+
+    protected override void OnParametersSet()
+    {
+        if (!IsOpen)
+        {
+            SearchText = null;
+            SelectedOperatorId = null;
+        }
+    }
+
+    private async Task ConfirmAsync()
+    {
+        if (SelectedOperatorId is int id)
+        {
+            await OnConfirm.InvokeAsync(id);
+        }
+    }
+}

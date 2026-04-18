@@ -1,0 +1,364 @@
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using OpenMES.Data.Common
+@using OpenMES.Data.Dtos
+@using OpenMES.Data.Dtos.Resources
+@using OpenMES.WebApiClient
+@using OpenMES.WebClient.Components.Dialogs
+@using OpenMES.WebClient.Services
+@inject MesClient MesClient
+@inject ProtectedLocalStorage LocalStore
+@inject IOperatorShiftClientService ShiftClientService
+@inject IErrorService ErrorService
+@inject ILogger<OperatorSessionPanel> Logger
+
+@if (_isAuthenticated)
+{
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:var(--neutral-layer-2);border:1px solid var(--neutral-stroke-layer-rest);">
+        <div style="display:flex;flex-direction:column;min-width:220px;max-width:320px;">
+            <div style="font-size:12px;color:var(--neutral-foreground-hint);">@UiResources.Action_Operator</div>
+            <div style="font-size:14px;font-weight:500;color:var(--neutral-foreground-rest);">@OperatorName</div>
+            <div style="font-size:12px;color:var(--neutral-foreground-hint);">@ShiftStatusLabel</div>
+
+            @if (ActiveShifts.Any())
+            {
+                <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+                    @foreach (var shift in ActiveShifts)
+                    {
+                        <FluentButton Appearance="@(SelectedOperatorId == shift.OperatorId ? Appearance.Accent : Appearance.Outline)"
+                                      Size="Size.Small"
+                                      OnClick="@(() => SelectActiveOperator(shift.OperatorId))">
+                            @shift.OperatorName
+                        </FluentButton>
+                    }
+                </div>
+            }
+        </div>
+
+        <FluentButton Appearance="Appearance.Accent" Disabled="@IsBusy" OnClick="CheckInAsync">@UiResources.Action_CheckIn</FluentButton>
+
+        @if (SelectedShift is not null && SelectedShift.EventType != OperatorEventType.CheckOut)
+        {
+            @if (SelectedShift.EventType == OperatorEventType.BreakStart)
+            {
+                <FluentButton Appearance="Appearance.Accent" Disabled="@IsBusy" OnClick="EndBreakAsync">@UiResources.Action_ReturnFromBreak</FluentButton>
+            }
+            else
+            {
+                <FluentButton Appearance="Appearance.Outline" Disabled="@IsBusy" OnClick="StartBreakAsync">@UiResources.Action_TakeBreak</FluentButton>
+            }
+
+            <FluentButton Appearance="Appearance.Lightweight" Disabled="@IsBusy" OnClick="CheckOutAsync">@UiResources.Action_CheckOut</FluentButton>
+        }
+    </div>
+
+    <OperatorSelectionDialog IsOpen="@IsOperatorDialogOpen"
+                             Operators="@AvailableOperators"
+                             OnCancel="CloseOperatorDialogAsync"
+                             OnConfirm="OnOperatorSelectedAsync" />
+}
+
+@if (IsCheckOutWarningOpen)
+{
+    <div style="position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:1200;">
+        <FluentCard Style="width:min(480px,92vw);padding:20px;display:flex;flex-direction:column;gap:14px;">
+            <div style="font-size:18px;font-weight:600;">@UiResources.Action_CheckOutWarningTitle</div>
+            <div style="font-size:14px;color:var(--neutral-foreground-hint);">@UiResources.Action_CheckOutWarningMessage</div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;">
+                <FluentButton Appearance="Appearance.Outline" OnClick="CloseCheckOutWarning">@UiResources.Action_Cancel</FluentButton>
+                <FluentButton Appearance="Appearance.Accent" OnClick="ConfirmCheckOutAsync">@UiResources.Action_Confirm</FluentButton>
+            </div>
+        </FluentCard>
+    </div>
+}
+
+@code {
+    private bool _isAuthenticated;
+
+    private readonly List<OperatorDto> AllOperators = [];
+    private readonly List<OperatorShiftDto> LatestShifts = [];
+
+    private List<OperatorDto> AvailableOperators { get; set; } = [];
+    private bool IsOperatorDialogOpen { get; set; }
+    private bool IsCheckOutWarningOpen { get; set; }
+    private bool IsBusy { get; set; }
+    private int? SelectedOperatorId { get; set; }
+    private ShiftAction PendingAction { get; set; } = ShiftAction.None;
+
+    private IEnumerable<OperatorShiftDto> ActiveShifts =>
+        LatestShifts.Where(x => x.EventType is OperatorEventType.CheckIn or OperatorEventType.BreakStart or OperatorEventType.BreakEnd)
+            .OrderBy(x => x.OperatorName);
+
+    private OperatorShiftDto? SelectedShift => SelectedOperatorId.HasValue
+        ? LatestShifts.FirstOrDefault(x => x.OperatorId == SelectedOperatorId.Value)
+        : null;
+
+    private string OperatorName => SelectedShift?.OperatorName
+        ?? AllOperators.FirstOrDefault(x => x.Id == SelectedOperatorId)?.Name
+        ?? UiResources.Action_NoOperator;
+
+    private string ShiftStatusLabel => SelectedShift?.EventType switch
+    {
+        OperatorEventType.CheckIn => UiResources.Action_ShiftCheckedIn,
+        OperatorEventType.BreakStart => UiResources.Action_ShiftOnBreak,
+        OperatorEventType.BreakEnd => UiResources.Action_ShiftCheckedIn,
+        OperatorEventType.CheckOut => UiResources.Action_ShiftCheckedOut,
+        _ => UiResources.OperatorBadge_StatusOffline,
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            await ShiftClientService.EnsureAuthenticatedAsync();
+            _isAuthenticated = true;
+            await LoadDataAsync(CancellationToken.None);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Unable to initialize operator session panel");
+        }
+    }
+
+    private void SelectActiveOperator(int operatorId)
+    {
+        SelectedOperatorId = operatorId;
+        StateHasChanged();
+    }
+
+    private Task CheckInAsync() => RunAsync(async ct =>
+    {
+        if (!await EnsureOperatorSelectionAsync(ShiftAction.CheckIn, ct))
+        {
+            return;
+        }
+
+        await CreateShiftEventAsync(OperatorEventType.CheckIn, ct);
+    });
+
+    private Task StartBreakAsync() => RunAsync(async ct =>
+    {
+        if (!await EnsureOperatorSelectionAsync(ShiftAction.BreakStart, ct))
+        {
+            return;
+        }
+
+        await CreateShiftEventAsync(OperatorEventType.BreakStart, ct);
+    });
+
+    private Task EndBreakAsync() => RunAsync(async ct =>
+    {
+        if (!await EnsureOperatorSelectionAsync(ShiftAction.BreakEnd, ct))
+        {
+            return;
+        }
+
+        await CreateShiftEventAsync(OperatorEventType.BreakEnd, ct);
+    });
+
+    private Task CheckOutAsync() => RunAsync(async ct =>
+    {
+        if (!await EnsureOperatorSelectionAsync(ShiftAction.CheckOut, ct))
+        {
+            return;
+        }
+
+        var hasOpenWorkSession = await ShiftClientService.HasOpenWorkSessionAsync(SelectedOperatorId!.Value, ct);
+
+        if (hasOpenWorkSession)
+        {
+            IsCheckOutWarningOpen = true;
+            return;
+        }
+
+        await CreateShiftEventAsync(OperatorEventType.CheckOut, ct);
+    });
+
+    private Task ConfirmCheckOutAsync()
+    {
+        IsCheckOutWarningOpen = false;
+
+        return RunAsync(async ct =>
+        {
+            if (!await EnsureOperatorSelectionAsync(ShiftAction.CheckOut, ct))
+            {
+                return;
+            }
+
+            await CreateShiftEventAsync(OperatorEventType.CheckOut, ct);
+        });
+    }
+
+    private async Task<bool> EnsureOperatorSelectionAsync(ShiftAction action, CancellationToken ct)
+    {
+        PendingAction = action;
+
+        if (SelectedOperatorId.HasValue && IsValidForAction(SelectedOperatorId.Value, action))
+        {
+            return true;
+        }
+
+        AvailableOperators = action == ShiftAction.CheckIn
+            ? AllOperators.ToList()
+            : ActiveShifts
+                .Select(x => AllOperators.FirstOrDefault(o => o.Id == x.OperatorId))
+                .Where(x => x is not null)
+                .Cast<OperatorDto>()
+                .ToList();
+
+        if (AvailableOperators.Count == 0)
+        {
+            ErrorService.AddError(UiResources.Action_ErrorNoOperators);
+            return false;
+        }
+
+        IsOperatorDialogOpen = true;
+        StateHasChanged();
+        await Task.CompletedTask;
+        return false;
+    }
+
+    private bool IsValidForAction(int operatorId, ShiftAction action)
+    {
+        var latest = LatestShifts.FirstOrDefault(x => x.OperatorId == operatorId);
+        return ShiftClientService.CanApplyEvent(latest?.EventType, ToEventType(action));
+    }
+
+    private static OperatorEventType ToEventType(ShiftAction action) => action switch
+    {
+        ShiftAction.CheckIn => OperatorEventType.CheckIn,
+        ShiftAction.BreakStart => OperatorEventType.BreakStart,
+        ShiftAction.BreakEnd => OperatorEventType.BreakEnd,
+        ShiftAction.CheckOut => OperatorEventType.CheckOut,
+        _ => OperatorEventType.CheckOut,
+    };
+
+    private async Task CreateShiftEventAsync(OperatorEventType eventType, CancellationToken ct)
+    {
+        if (!SelectedOperatorId.HasValue)
+        {
+            ErrorService.AddError(UiResources.Action_ErrorOperatorMissing);
+            return;
+        }
+
+        var result = await ShiftClientService.CreateShiftEventAsync(SelectedOperatorId.Value, eventType, ct);
+
+        if (!result.Success || result.Data is null)
+        {
+            ErrorService.AddError(result.ErrorMessage ?? UiResources.Action_ErrorShiftUpdateFailed);
+            return;
+        }
+
+        await LoadDataAsync(ct);
+        StateHasChanged();
+    }
+
+    private async Task LoadDataAsync(CancellationToken ct)
+    {
+        var snapshot = await ShiftClientService.LoadSnapshotAsync(ct);
+
+        AllOperators.Clear();
+        AllOperators.AddRange(snapshot.Operators);
+
+        LatestShifts.Clear();
+        LatestShifts.AddRange(snapshot.LatestShifts);
+
+        if (SelectedOperatorId.HasValue && !AllOperators.Any(x => x.Id == SelectedOperatorId.Value))
+        {
+            SelectedOperatorId = null;
+        }
+
+        if (!SelectedOperatorId.HasValue)
+        {
+            SelectedOperatorId = ActiveShifts.FirstOrDefault()?.OperatorId;
+        }
+    }
+
+    private async Task OnOperatorSelectedAsync(int operatorId)
+    {
+        IsOperatorDialogOpen = false;
+        SelectedOperatorId = operatorId;
+
+        if (PendingAction == ShiftAction.None)
+        {
+            StateHasChanged();
+            return;
+        }
+
+        if (!IsValidForAction(operatorId, PendingAction))
+        {
+            ErrorService.AddError(UiResources.Action_ErrorShiftUpdateFailed);
+            PendingAction = ShiftAction.None;
+            return;
+        }
+
+        var action = PendingAction;
+        PendingAction = ShiftAction.None;
+
+        switch (action)
+        {
+            case ShiftAction.CheckIn:
+                await CheckInAsync();
+                break;
+            case ShiftAction.BreakStart:
+                await StartBreakAsync();
+                break;
+            case ShiftAction.BreakEnd:
+                await EndBreakAsync();
+                break;
+            case ShiftAction.CheckOut:
+                await CheckOutAsync();
+                break;
+        }
+    }
+
+    private Task CloseOperatorDialogAsync()
+    {
+        IsOperatorDialogOpen = false;
+        PendingAction = ShiftAction.None;
+        return Task.CompletedTask;
+    }
+
+    private Task CloseCheckOutWarning()
+    {
+        IsCheckOutWarningOpen = false;
+        return Task.CompletedTask;
+    }
+
+    private async Task RunAsync(Func<CancellationToken, Task> operation)
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            ErrorService.ClearError();
+            await operation(CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            ErrorService.AddError(ex.Message);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private enum ShiftAction
+    {
+        None,
+        CheckIn,
+        BreakStart,
+        BreakEnd,
+        CheckOut
+    }
+}

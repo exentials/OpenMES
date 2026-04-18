@@ -1,0 +1,18 @@
+﻿@page "/materialstock"
+@attribute [Authorize]
+@inherits BasePage<MaterialStockDto, int, Edit>
+@rendermode InteractiveServer
+
+<FluentDataGrid TGridItem="MaterialStockDto" ItemsProvider="@ItemsProvider"
+                GenerateHeader="GenerateHeaderOption.Sticky"
+                DisplayMode="DataGridDisplayMode.Table">
+    <PropertyColumnExt Property="@(p => p.PartNumber)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.PartDescription)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.StorageLocationCode)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.Warehouse)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.Quantity)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.UnitOfMeasure)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.LastMovementDate)" Sortable="true" Format="g" />
+</FluentDataGrid>
+
+<FluentPaginator State="@pagination" />

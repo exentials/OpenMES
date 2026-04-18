@@ -1,0 +1,24 @@
+﻿@page "/operator"
+@attribute [Authorize]
+@inherits BasePage<OperatorDto, int, Edit>
+@rendermode InteractiveServer
+
+<FluentToolbar>
+    <FluentButton Appearance="Appearance.Accent"
+                  IconStart="@(new Icons.Regular.Size20.Add())"
+                  OnClick="@AddInDialog">@UiResources.Button_Add</FluentButton>
+</FluentToolbar>
+
+<FluentDataGrid TGridItem="OperatorDto" ItemsProvider="@ItemsProvider"
+                GenerateHeader="GenerateHeaderOption.Sticky"
+                DisplayMode="DataGridDisplayMode.Table">
+    <PropertyColumnExt Property="@(p => p.EmployeeNumber)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.Name)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.Badge)" Sortable="true" />
+    <TemplateColumn Title="Actions">
+        <FluentButton Appearance="Appearance.Stealth" IconStart="@(new Icons.Regular.Size16.Edit())" OnClick="@(() => EditInDialog(context))" />
+        <FluentButton Appearance="Appearance.Stealth" IconStart="@(new Icons.Regular.Size16.Delete())" OnClick="@(() => DeleteItem(context))" />
+    </TemplateColumn>
+</FluentDataGrid>
+
+<FluentPaginator State="@pagination" />

@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<InvariantGlobalization>false</InvariantGlobalization>
+		<UserSecretsId>d481d95a-622c-4f0a-90c6-e9259b4ce1de</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<ContainerRepository>exentials/openmes-webadmin</ContainerRepository>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.5" />
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.14.0" />
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.DataGrid.EntityFrameworkAdapter" Version="4.14.0" />
+		<PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.14.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.17.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\OpenMES.Data.Dtos\OpenMES.Data.Dtos.csproj" />
+		<ProjectReference Include="..\OpenMES.Localization\OpenMES.Localization.csproj" />
+		<ProjectReference Include="..\OpenMES.ServiceDefaults\OpenMES.ServiceDefaults.csproj" />
+		<ProjectReference Include="..\OpenMES.WebApiClient\OpenMES.WebApiClient.csproj" />
+	</ItemGroup>
+
+</Project>

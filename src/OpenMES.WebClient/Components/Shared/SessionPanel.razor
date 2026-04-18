@@ -1,0 +1,73 @@
+@namespace OpenMES.WebClient.Components.Shared
+@using Microsoft.FluentUI.AspNetCore.Components
+@using OpenMES.Data.Dtos
+
+@* SessionPanel - Current Work Session Display
+    Shows active production session details
+
+    Used by: Action.razor (context display)
+    Features:
+    - Production order phase
+    - Session status
+    - Current progress
+    - Time elapsed
+*@
+
+<div style="padding: 16px; margin: 12px 0; border: 1px solid #e0e0e0; border-radius: 4px;">
+    <h4 style="margin: 0 0 12px 0; color: #0078d4;">Current Session</h4>
+
+    @if (Session != null)
+    {
+        <div style="margin-bottom: 12px;">
+            <strong>Session ID:</strong> @Session.Id
+        </div>
+
+        @if (PhaseInfo != null)
+        {
+            <div style="margin-bottom: 12px;">
+                <strong>Phase:</strong> @PhaseInfo.Id
+            </div>
+
+            <div style="background-color: #f0f0f0; padding: 12px; border-radius: 4px; margin-bottom: 12px;">
+                <div style="font-size: 12px; margin-bottom: 8px;">
+                    Progress: (under development)
+                </div>
+                <div style="width: 100%; height: 20px; background-color: #e0e0e0; border-radius: 2px; overflow: hidden;">
+                    <div style="width: 50%; height: 100%; background-color: #28a745;"></div>
+                </div>
+            </div>
+        }
+
+        @if (ElapsedTime.HasValue)
+        {
+            <div style="font-size: 12px; color: #666;">
+                Time Elapsed: @FormatDuration(ElapsedTime.Value)
+            </div>
+        }
+    }
+    else
+    {
+        <div>No active session</div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public WorkSessionDto? Session { get; set; }
+
+    [Parameter]
+    public PhasePickingListDto? PhaseInfo { get; set; }
+
+    [Parameter]
+    public TimeSpan? ElapsedTime { get; set; }
+
+    private string FormatDuration(TimeSpan duration)
+    {
+        if (duration.TotalHours >= 1)
+            return $"{(int)duration.TotalHours}h {duration.Minutes}m";
+        else if (duration.TotalMinutes >= 1)
+            return $"{(int)duration.TotalMinutes}m {duration.Seconds}s";
+        else
+            return $"{duration.Seconds}s";
+    }
+}

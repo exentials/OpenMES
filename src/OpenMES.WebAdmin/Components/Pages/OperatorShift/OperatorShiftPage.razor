@@ -1,0 +1,22 @@
+﻿@page "/operatorshift"
+@attribute [Authorize]
+@inherits BasePage<OperatorShiftDto, int, Edit>
+@rendermode InteractiveServer
+
+<FluentToolbar>
+    <FluentButton Appearance="Appearance.Accent"
+                  IconStart="@(new Icons.Regular.Size20.Add())"
+                  OnClick="@AddInDialog">Register Event</FluentButton>
+</FluentToolbar>
+
+<FluentDataGrid TGridItem="OperatorShiftDto" ItemsProvider="@ItemsProvider"
+                GenerateHeader="GenerateHeaderOption.Sticky"
+                DisplayMode="DataGridDisplayMode.Table">
+    <PropertyColumnExt Property="@(p => p.OperatorName)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.EventType)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.EventTime)" Format="g" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.Source)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.Notes)" />
+</FluentDataGrid>
+
+<FluentPaginator State="@pagination" />

@@ -1,0 +1,27 @@
+﻿@using OpenMES.WebClient.Services
+@inject IAuthorizationService AuthorizationService
+
+@* WEB-004: Enhanced routing with auth guards
+    Routes are protected by default (use ProtectedLayout)
+    Login and error routes are public (use MainLayout)
+*@
+
+<Router AppAssembly="typeof(Program).Assembly">
+    <Found Context="routeData">
+        @{
+            var isPublicRoute = routeData.PageType?.FullName?.Contains("Login") == true ||
+                                routeData.PageType?.FullName?.Contains("Error") == true ||
+                                routeData.PageType?.FullName?.Contains("NotFound") == true;
+            var layoutType = isPublicRoute ? typeof(Layout.MainLayout) : typeof(Layout.ProtectedLayout);
+        }
+
+        <RouteView RouteData="routeData" DefaultLayout="@layoutType" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(Layout.MainLayout)">
+            <Pages.NotFound />
+        </LayoutView>
+    </NotFound>
+</Router>
+

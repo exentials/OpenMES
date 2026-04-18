@@ -1,0 +1,45 @@
+@page "/"
+@using OpenMES.WebClient.Components.Machine
+@using OpenMES.WebClient.Components.Actions
+@using OpenMES.Data.Common
+@inherits ClientComponentBase<HomeViewModel>
+
+<div style="padding:16px;">
+
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
+        <FluentButton Appearance="Appearance.Outline" IconStart="@(new Icons.Regular.Size16.Person())" OnClick="OpenOperatorDeclarationAsync">
+            @UiResources.Action_Operator
+        </FluentButton>
+        <FluentButton Appearance="Appearance.Outline" IconStart="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="RefreshAsync">
+            Refresh
+        </FluentButton>
+    </div>
+
+    @if (IsOperatorDeclarationOpen)
+    {
+        <OperatorShiftScreen OnShiftChanged="@OnOperatorShiftChangedAsync"
+                             OnCancel="@CloseOperatorDeclarationAsync" />
+    }
+    else if (IsLoading)
+    {
+        <FluentProgressRing Style="margin:40px auto;display:block;" />
+    }
+    else if (!ViewModel.Machines.Any())
+    {
+        <FluentCard Style="text-align:center;padding:40px;color:var(--neutral-foreground-hint);">
+            <FluentIcon Value="@(new Icons.Regular.Size24.Desktop())" Style="margin-bottom:12px;" />
+            <div>@UiResources.NoOpenSessions</div>
+        </FluentCard>
+    }
+    else
+    {
+        @foreach (var machine in ViewModel.Machines)
+        {
+            <MachineCard Model="machine"
+                         Status="@ViewModel.GetStatus(machine.Id)"
+                         ActiveOperator="@ViewModel.GetActiveOperator(machine.Id)"
+                         SessionType="@ViewModel.GetSessionType(machine.Id)" />
+        }
+    }
+
+</div>

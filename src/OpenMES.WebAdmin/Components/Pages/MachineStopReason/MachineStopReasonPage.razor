@@ -1,0 +1,34 @@
+﻿@page "/machinestopreason"
+@attribute [Authorize]
+@inherits BasePage<MachineStopReasonDto, int, Edit>
+@rendermode InteractiveServer
+
+<FluentToolbar>
+    <FluentButton Appearance="Appearance.Accent"
+                  IconStart="@(new Icons.Regular.Size20.Add())"
+                  OnClick="@AddInDialog">@UiResources.Button_Add</FluentButton>
+</FluentToolbar>
+
+<FluentDataGrid TGridItem="MachineStopReasonDto" ItemsProvider="@ItemsProvider"
+                GenerateHeader="GenerateHeaderOption.Sticky"
+                DisplayMode="DataGridDisplayMode.Table">
+    <PropertyColumnExt Property="@(p => p.Code)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.Description)" Sortable="true" />
+    <PropertyColumnExt Property="@(p => p.Category)" Sortable="true" />
+    <TemplateColumn Title="@DtoResources.MachineStopReason_Disabled">
+        @if (context.Disabled)
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxChecked())" />
+        }
+        else
+        {
+            <FluentIcon Value="@(new Icons.Regular.Size16.CheckboxUnchecked())" />
+        }
+    </TemplateColumn>
+    <TemplateColumn Title="@UiResources.Label_Actions">
+        <FluentButton Appearance="Appearance.Stealth" IconStart="@(new Icons.Regular.Size16.Edit())" OnClick="@(() => EditInDialog(context))" />
+        <FluentButton Appearance="Appearance.Stealth" IconStart="@(new Icons.Regular.Size16.Delete())" OnClick="@(() => DeleteItem(context))" />
+    </TemplateColumn>
+</FluentDataGrid>
+
+<FluentPaginator State="@pagination" />

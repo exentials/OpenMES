@@ -1,0 +1,67 @@
+@namespace OpenMES.WebClient.Components.Dialogs
+@using Microsoft.FluentUI.AspNetCore.Components
+@using OpenMES.Data.Dtos
+@using OpenMES.Data.Dtos.Resources
+
+@if (IsOpen)
+{
+    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+        <FluentCard Style="padding: 24px; width: min(720px, 92vw); max-height: 80vh; overflow: auto;">
+            <h3 style="margin: 0 0 12px 0;">@UiResources.Action_SelectStopReason</h3>
+
+            <FluentSearch Placeholder="@UiResources.Action_SearchStopReason" @bind-Value="SearchText" />
+
+            <div style="display: grid; grid-template-columns: repeat(1, 1fr); gap: 8px; margin-top: 12px;">
+                @foreach (var item in FilteredReasons)
+                {
+                    var isSelected = SelectedReasonId == item.Id;
+                    <FluentButton Appearance="@(isSelected ? Appearance.Accent : Appearance.Outline)"
+                                  Style="min-height: 52px; justify-content: flex-start;"
+                                  OnClick="@(() => SelectedReasonId = item.Id)">
+                        @($"{item.Code} - {item.Description} ({item.Category})")
+                    </FluentButton>
+                }
+            </div>
+
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Style="justify-content: flex-end; margin-top: 16px;">
+                <FluentButton Appearance="Appearance.Outline" OnClick="OnCancel">@UiResources.Action_Cancel</FluentButton>
+                <FluentButton Appearance="Appearance.Accent" Disabled="@(SelectedReasonId is null)" OnClick="ConfirmAsync">@UiResources.Action_Confirm</FluentButton>
+            </FluentStack>
+        </FluentCard>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public IEnumerable<MachineStopReasonDto> Reasons { get; set; } = [];
+    [Parameter] public EventCallback<int> OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private string? SearchText { get; set; }
+    private int? SelectedReasonId { get; set; }
+
+    private IEnumerable<MachineStopReasonDto> FilteredReasons =>
+        string.IsNullOrWhiteSpace(SearchText)
+            ? Reasons
+            : Reasons.Where(r =>
+                r.Code.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                || r.Description.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
+                || r.Category.ToString().Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+
+    protected override void OnParametersSet()
+    {
+        if (!IsOpen)
+        {
+            SearchText = null;
+            SelectedReasonId = null;
+        }
+    }
+
+    private async Task ConfirmAsync()
+    {
+        if (SelectedReasonId is int id)
+        {
+            await OnConfirm.InvokeAsync(id);
+        }
+    }
+}

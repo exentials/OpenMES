@@ -1,0 +1,9 @@
+@inherits BaseEdit<WorkSessionDto>
+
+<EditDialogContainer Icon="@(new Icons.Regular.Size24.Timer())"
+                     Title="@Dialog.Instance.Parameters.Title"
+                     OnCancelAsync="@CancelAsync"
+                     CustomPrimaryLabel="Close"
+                     CustomPrimaryCallback="@(EventCallback.Factory.Create(this, CancelAsync))">
+    <FluentLabel>Work sessions are opened and closed from the shop floor terminal.</FluentLabel>
+</EditDialogContainer>
