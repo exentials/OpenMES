@@ -99,6 +99,7 @@ public static class UiResources
     public static string Action_PlacementPauseWork => GetString(nameof(Action_PlacementPauseWork));
     public static string Action_PlacementResumeWork => GetString(nameof(Action_PlacementResumeWork));
     public static string Action_PlacementClose => GetString(nameof(Action_PlacementClose));
+    public static string Action_PlacementCloseConfirm => GetString(nameof(Action_PlacementCloseConfirm));
     public static string Action_ConfirmedShort => GetString(nameof(Action_ConfirmedShort));
     public static string Action_ScrapShort => GetString(nameof(Action_ScrapShort));
 

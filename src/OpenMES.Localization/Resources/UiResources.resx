@@ -285,6 +285,7 @@
   <data name="Action_PlacementPauseWork" xml:space="preserve"><value>Pause work</value></data>
   <data name="Action_PlacementResumeWork" xml:space="preserve"><value>Resume work</value></data>
   <data name="Action_PlacementClose" xml:space="preserve"><value>Close</value></data>
+  <data name="Action_PlacementCloseConfirm" xml:space="preserve"><value>Do you want to close and unplace this work order from the machine?</value></data>
   <data name="Action_ConfirmedShort" xml:space="preserve"><value>Conf</value></data>
   <data name="Action_ScrapShort" xml:space="preserve"><value>Scrap</value></data>
 </root>

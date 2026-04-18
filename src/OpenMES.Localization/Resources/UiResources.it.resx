@@ -284,6 +284,7 @@
   <data name="Action_PlacementPauseWork" xml:space="preserve"><value>Sospendi lavoro</value></data>
   <data name="Action_PlacementResumeWork" xml:space="preserve"><value>Riprendi lavoro</value></data>
   <data name="Action_PlacementClose" xml:space="preserve"><value>Chiudi</value></data>
+  <data name="Action_PlacementCloseConfirm" xml:space="preserve"><value>Vuoi chiudere e spiazzare questa bolla dalla macchina?</value></data>
   <data name="Action_ConfirmedShort" xml:space="preserve"><value>Conf</value></data>
   <data name="Action_ScrapShort" xml:space="preserve"><value>Scarto</value></data>
 </root>

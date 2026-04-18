@@ -109,6 +109,7 @@
                                 <div style="font-size:14px;font-weight:600;">@placement.PhaseNumber — @placement.PhaseConfirmNumber</div>
                                 <div style="font-size:12px;opacity:0.85;">@PlacementStatusLabel(placement.Status)</div>
                             </button>
+                            <span style="@PlacementBadgeStyle(placement.Status)">@PlacementStatusLabel(placement.Status)</span>
                         </div>
 
                         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
@@ -136,7 +137,7 @@
                                 <button @onclick="() => ResumePlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementResumeWork</button>
                             }
 
-                            <button @onclick="() => ClosePlacementAsync(placement)" style="@MiniDangerBtnStyle">@UiResources.Action_PlacementClose</button>
+                            <button @onclick="() => AskClosePlacementAsync(placement)" style="@MiniDangerBtnStyle">@UiResources.Action_PlacementClose</button>
                         </div>
                     </div>
                 }
@@ -157,6 +158,24 @@
                     </div>
                     <div style="font-size:12px;color:var(--success-foreground);opacity:0.8;">
                         @ViewModel.OpenSession.OperatorName · @UiResources.Action_Started @ViewModel.OpenSession.StartTime.ToLocalTime().ToString("HH:mm")
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (IsClosePlacementDialogOpen && PlacementPendingClose is not null)
+        {
+            <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1100; display:flex; align-items:center; justify-content:center;">
+                <div style="width:min(520px,92vw); background:var(--neutral-layer-1); border:1px solid var(--neutral-stroke-layer-rest); border-radius:12px; padding:16px;">
+                    <div style="font-size:18px;font-weight:600;color:var(--neutral-foreground-rest);margin-bottom:10px;">
+                        @UiResources.Action_CloseSession
+                    </div>
+                    <div style="font-size:14px;color:var(--neutral-foreground-rest);margin-bottom:16px;">
+                        @UiResources.Action_PlacementCloseConfirm
+                    </div>
+                    <div style="display:flex;justify-content:flex-end;gap:8px;">
+                        <button @onclick="CancelClosePlacementAsync" style="@MiniActionBtnStyle">@UiResources.Action_Cancel</button>
+                        <button @onclick="ConfirmClosePlacementAsync" style="@MiniDangerBtnStyle">@UiResources.Action_Confirm</button>
                     </div>
                 </div>
             </div>
@@ -360,4 +379,16 @@
     private static string MiniDangerBtnStyle =>
         "padding:6px 10px;border-radius:8px;border:1px solid var(--error-border);" +
         "background:var(--error-background);color:var(--error-foreground);font-size:12px;cursor:pointer;";
+
+    private static string PlacementBadgeStyle(MachinePhasePlacementStatus status) =>
+        "font-size:11px;font-weight:600;padding:4px 8px;border-radius:999px;border:1px solid transparent;" +
+        status switch
+        {
+            MachinePhasePlacementStatus.Placed => "background:var(--neutral-layer-2);color:var(--neutral-foreground-rest);border-color:var(--neutral-stroke-layer-rest);",
+            MachinePhasePlacementStatus.InSetup => "background:var(--warning-background);color:var(--warning-foreground);border-color:var(--warning-border);",
+            MachinePhasePlacementStatus.SetupPaused => "background:var(--neutral-layer-2);color:var(--warning-foreground);border-color:var(--warning-border);",
+            MachinePhasePlacementStatus.InWork => "background:var(--success-background);color:var,--success-foreground);border-color:var(--success-border);",
+            MachinePhasePlacementStatus.WorkPaused => "background:var(--neutral-layer-2);color:var(--success-foreground);border-color:var(--success-border);",
+            _ => "background:var(--neutral-layer-2);color:var(--neutral-foreground-hint);border-color:var(--neutral-stroke-layer-rest);"
+        };
 }

@@ -17,15 +17,27 @@ partial class Action(
 {
     [Parameter] public int Id { get; set; }
 
+    private enum PendingOperation
+    {
+        None,
+        StartMainFlow,
+        StartSetupForPlacement,
+        StartWorkForPlacement,
+        ResumePlacement,
+    }
+
     private bool IsOperatorDialogOpen { get; set; }
     private bool IsStopReasonDialogOpen { get; set; }
-    private bool ResumeStartWorkAfterOperatorSelection { get; set; }
+    private bool IsClosePlacementDialogOpen { get; set; }
 
     private List<OperatorDto> AvailableOperators { get; set; } = [];
     private List<MachineStopReasonDto> AvailableStopReasons { get; set; } = [];
     private List<ProductionOrderPhaseDto> AvailablePhases { get; set; } = [];
 
     private int? SelectedOperatorId { get; set; }
+    private MachinePhasePlacementDto? PlacementPendingClose { get; set; }
+    private PendingOperation CurrentPendingOperation { get; set; } = PendingOperation.None;
+    private int? PendingPlacementId { get; set; }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -63,18 +75,22 @@ partial class Action(
             }
             else if (ViewModel.OpenPlacements.Count > 0)
             {
-                var placement = ViewModel.OpenPlacements.FirstOrDefault(x => x.Id == ViewModel.SelectedPlacementId)
-                    ?? ViewModel.OpenPlacements[0];
+                // No implicit phase auto-selection: user must explicitly select bolla from list.
+                if (ViewModel.SelectedPlacementId.HasValue)
+                {
+                    var selectedPlacement = ViewModel.OpenPlacements.FirstOrDefault(x => x.Id == ViewModel.SelectedPlacementId.Value);
+                    if (selectedPlacement is null)
+                    {
+                        ViewModel.SelectedPlacementId = null;
+                    }
+                }
 
-                ViewModel.SelectedPlacementId = placement.Id;
-                SelectedOperatorId = placement.PlacedByOperatorId;
-
-                var phaseResult = await MesClient.ProductionOrderPhase.ReadAsync(placement.ProductionOrderPhaseId, ct);
-                ViewModel.ActivePhase = phaseResult.Data;
+                ViewModel.ActivePhase = null;
             }
             else
             {
                 ViewModel.SelectedPlacementId = null;
+                ViewModel.ActivePhase = null;
             }
 
             if (SelectedOperatorId.HasValue)
@@ -127,12 +143,7 @@ partial class Action(
             return false;
         }
 
-        if (AvailablePhases.Count == 1)
-        {
-            ViewModel.ActivePhase = AvailablePhases[0];
-            return true;
-        }
-
+        // Business requirement: phase/bolla must always be explicitly selected from available list.
         ViewModel.Screen = ActionScreen.PhasePicker;
         ViewModel.Notify();
         return false;
@@ -193,14 +204,19 @@ partial class Action(
         {
             if (!await EnsureOperatorSelectedAsync(ct, forceSelection: true, onlyPresent: true))
             {
-                ResumeStartWorkAfterOperatorSelection = IsOperatorDialogOpen;
+                CurrentPendingOperation = PendingOperation.StartMainFlow;
+                PendingPlacementId = null;
                 return;
             }
 
             if (!await EnsureActivePhaseAsync(ct))
+            {
+                CurrentPendingOperation = PendingOperation.StartMainFlow;
+                PendingPlacementId = null;
                 return;
+            }
 
-            ResumeStartWorkAfterOperatorSelection = false;
+            CurrentPendingOperation = PendingOperation.None;
             ViewModel.Screen = ActionScreen.SessionTypePicker;
             ViewModel.Notify();
         });
@@ -212,7 +228,13 @@ partial class Action(
         {
             ViewModel.PendingSessionType = type;
 
-            if (!await EnsureOperatorSelectedAsync(ct, onlyPresent: true)) return;
+            if (!await EnsureOperatorSelectedAsync(ct, onlyPresent: true))
+            {
+                CurrentPendingOperation = PendingOperation.StartMainFlow;
+                PendingPlacementId = null;
+                return;
+            }
+
             if (!await EnsureActivePhaseAsync(ct)) return;
 
             var placement = await EnsurePlacementForActivePhaseAsync(ct);
@@ -239,6 +261,8 @@ partial class Action(
 
             ViewModel.Screen = ActionScreen.Main;
             ViewModel.PendingSessionType = null;
+            CurrentPendingOperation = PendingOperation.None;
+            PendingPlacementId = null;
             await LoadContextAsync();
         });
     }
@@ -288,7 +312,28 @@ partial class Action(
         await RunAsync(async ct =>
         {
             await SelectPlacementAsync(placement, ct);
-            await StartSessionOfType(WorkSessionType.Setup);
+
+            if (!await EnsureOperatorSelectedAsync(ct, onlyPresent: true))
+            {
+                CurrentPendingOperation = PendingOperation.StartSetupForPlacement;
+                PendingPlacementId = placement.Id;
+                return;
+            }
+
+            var result = placement.Status switch
+            {
+                MachinePhasePlacementStatus.Placed => await MesClient.MachinePhasePlacement.StartSetupAsync(placement.Id, SelectedOperatorId, ct),
+                MachinePhasePlacementStatus.SetupPaused => await MesClient.MachinePhasePlacement.ResumeSetupAsync(placement.Id, SelectedOperatorId, ct),
+                _ => null,
+            };
+
+            if (result is null)
+            {
+                ErrorService.AddError(UiResources.Action_ErrorOpenSessionFailed);
+                return;
+            }
+
+            await LoadContextAsync();
         });
     }
 
@@ -297,7 +342,29 @@ partial class Action(
         await RunAsync(async ct =>
         {
             await SelectPlacementAsync(placement, ct);
-            await StartSessionOfType(WorkSessionType.Work);
+
+            if (!await EnsureOperatorSelectedAsync(ct, onlyPresent: true))
+            {
+                CurrentPendingOperation = PendingOperation.StartWorkForPlacement;
+                PendingPlacementId = placement.Id;
+                return;
+            }
+
+            var result = placement.Status switch
+            {
+                MachinePhasePlacementStatus.WorkPaused => await MesClient.MachinePhasePlacement.ResumeWorkAsync(placement.Id, SelectedOperatorId, ct),
+                MachinePhasePlacementStatus.Placed or MachinePhasePlacementStatus.InSetup or MachinePhasePlacementStatus.SetupPaused =>
+                    await MesClient.MachinePhasePlacement.StartWorkAsync(placement.Id, SelectedOperatorId, ct),
+                _ => null,
+            };
+
+            if (result is null)
+            {
+                ErrorService.AddError(UiResources.Action_ErrorOpenSessionFailed);
+                return;
+            }
+
+            await LoadContextAsync();
         });
     }
 
@@ -327,6 +394,14 @@ partial class Action(
         await RunAsync(async ct =>
         {
             await SelectPlacementAsync(placement, ct);
+
+            if (!await EnsureOperatorSelectedAsync(ct, onlyPresent: true))
+            {
+                CurrentPendingOperation = PendingOperation.ResumePlacement;
+                PendingPlacementId = placement.Id;
+                return;
+            }
+
             var result = placement.Status switch
             {
                 MachinePhasePlacementStatus.SetupPaused => await MesClient.MachinePhasePlacement.ResumeSetupAsync(placement.Id, SelectedOperatorId, ct),
@@ -340,6 +415,8 @@ partial class Action(
                 return;
             }
 
+            CurrentPendingOperation = PendingOperation.None;
+            PendingPlacementId = null;
             await LoadContextAsync();
         });
     }
@@ -359,11 +436,38 @@ partial class Action(
         });
     }
 
-    private Task ShowShiftScreenAsync()
+    private Task AskClosePlacementAsync(MachinePhasePlacementDto placement)
+    {
+        PlacementPendingClose = placement;
+        IsClosePlacementDialogOpen = true;
+        return Task.CompletedTask;
+    }
+
+    private Task CancelClosePlacementAsync()
+    {
+        PlacementPendingClose = null;
+        IsClosePlacementDialogOpen = false;
+        return Task.CompletedTask;
+    }
+
+    private async Task ConfirmClosePlacementAsync()
+    {
+        if (PlacementPendingClose is null)
+        {
+            IsClosePlacementDialogOpen = false;
+            return;
+        }
+
+        var placement = PlacementPendingClose;
+        PlacementPendingClose = null;
+        IsClosePlacementDialogOpen = false;
+        await ClosePlacementAsync(placement);
+    }
+
+    private async Task ShowShiftScreenAsync()
     {
         ViewModel.Screen = ActionScreen.CheckIn;
         ViewModel.Notify();
-        return Task.CompletedTask;
     }
 
     private async Task OnShiftChangedAsync()
@@ -462,17 +566,39 @@ partial class Action(
         IsOperatorDialogOpen = false;
         SelectedOperatorId = operatorId;
 
-        if (ResumeStartWorkAfterOperatorSelection)
+        if (CurrentPendingOperation == PendingOperation.None)
+            return;
+
+        var pendingOp = CurrentPendingOperation;
+        var pendingPlacement = ViewModel.OpenPlacements.FirstOrDefault(x => x.Id == PendingPlacementId);
+
+        CurrentPendingOperation = PendingOperation.None;
+        PendingPlacementId = null;
+
+        switch (pendingOp)
         {
-            ResumeStartWorkAfterOperatorSelection = false;
-            await StartWorkAsync();
+            case PendingOperation.StartMainFlow:
+                await StartWorkAsync();
+                break;
+            case PendingOperation.StartSetupForPlacement when pendingPlacement is not null:
+                await StartSetupForPlacementAsync(pendingPlacement);
+                break;
+            case PendingOperation.StartWorkForPlacement when pendingPlacement is not null:
+                await StartWorkForPlacementAsync(pendingPlacement);
+                break;
+            case PendingOperation.ResumePlacement when pendingPlacement is not null:
+                await ResumePlacementAsync(pendingPlacement);
+                break;
+            default:
+                break;
         }
     }
 
     private Task CloseOperatorDialog()
     {
         IsOperatorDialogOpen = false;
-        ResumeStartWorkAfterOperatorSelection = false;
+        CurrentPendingOperation = PendingOperation.None;
+        PendingPlacementId = null;
         return Task.CompletedTask;
     }
 
@@ -526,6 +652,14 @@ partial class Action(
         {
             var type = ViewModel.PendingSessionType.Value;
             await StartSessionOfType(type);
+            return;
+        }
+
+        if (CurrentPendingOperation == PendingOperation.StartMainFlow)
+        {
+            CurrentPendingOperation = PendingOperation.None;
+            ViewModel.Screen = ActionScreen.SessionTypePicker;
+            ViewModel.Notify();
             return;
         }
 
