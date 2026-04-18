@@ -52,6 +52,7 @@ public class OpenMESDbContext : DbContext
 	public DbSet<OperatorShift>  OperatorShifts  { get; set; }
 	public DbSet<WorkSession>    WorkSessions    { get; set; }
 	public DbSet<MachineState>   MachineStates   { get; set; }
+	public DbSet<MachinePhasePlacement> MachinePhasePlacements { get; set; }
 
 	public override int SaveChanges()
 	{
@@ -102,7 +103,7 @@ public class OpenMESDbContext : DbContext
 		modelBuilder.Entity<ClientDevice>()
 			.HasIndex(m => m.Name).IsUnique();
 
-		// Master Data
+        // Master Data
 		modelBuilder.Entity<Plant>()
 			.HasIndex(m => m.Code).IsUnique();		
 		modelBuilder.Entity<Material>()
@@ -133,6 +134,10 @@ public class OpenMESDbContext : DbContext
 			.HasIndex(m => m.Code).IsUnique();
 		modelBuilder.Entity<MaterialStock>()
 			.HasIndex(m => new { m.MaterialId, m.StorageLocationId }).IsUnique();
+
+		// Declarations
+		modelBuilder.Entity<MachinePhasePlacement>()
+			.HasIndex(m => new { m.MachineId, m.ProductionOrderPhaseId, m.UnplacedAt });
 
 		foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
 		{

@@ -53,6 +53,7 @@ public class MesClient(HttpClient httpClient)
 	// ── Declarations ──────────────────────────────────────────────────────────
 	public OperatorShiftService OperatorShift { get; } = new OperatorShiftService(httpClient, "operatorshift");
 	public WorkSessionService WorkSession { get; } = new WorkSessionService(httpClient, "worksession");
+	public MachinePhasePlacementService MachinePhasePlacement { get; } = new MachinePhasePlacementService(httpClient, "machinephaseplacement");
 	public ErpExportService ErpExport { get; } = new ErpExportService(httpClient);
 	public MachineStateService MachineState { get; } = new MachineStateService(httpClient, "machinestate");
 

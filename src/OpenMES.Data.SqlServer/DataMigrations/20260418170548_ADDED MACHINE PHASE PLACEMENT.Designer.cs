@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OpenMES.Data.Contexts;
 
@@ -11,9 +12,11 @@ using OpenMES.Data.Contexts;
 namespace OpenMES.Data.SqlServer.DataMigrations
 {
     [DbContext(typeof(OpenMESDbContext))]
-    partial class OpenMESDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260418170548_ADDED MACHINE PHASE PLACEMENT")]
+    partial class ADDEDMACHINEPHASEPLACEMENT
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

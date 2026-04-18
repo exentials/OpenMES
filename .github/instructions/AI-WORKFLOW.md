@@ -19,6 +19,8 @@ This workflow is designed for AI coding agents (GitHub Copilot, Claude, Gemini) 
 - Solution file path: `OpenMES.slnx` (repository root)
 - Automation scripts path: `tools/` (repository root)
 - Example script invocation (PowerShell): `pwsh ./tools/scan-localization.ps1 -Root .`
+- Data migrations (both providers): `pwsh ./tools/migrateData.ps1 -MigrationName "YOUR_NAME"`
+- Identity migrations (both providers): `pwsh ./tools/migrateIdentity.ps1 -MigrationName "YOUR_NAME"`
 
 ## Documentation protocol
 - All contributor/AI instructions live under `.github/instructions/`.

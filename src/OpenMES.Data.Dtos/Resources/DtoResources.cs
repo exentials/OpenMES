@@ -344,6 +344,32 @@ public static class DtoResources
     /// <summary>Display name for <see cref="WorkSessionDto.MachineCode"/>.</summary>
     public static string WorkSession_MachineCode             => GetString(nameof(WorkSession_MachineCode));
 
+    // ── MachinePhasePlacementDto ─────────────────────────────────────────────
+    /// <summary>Display name for <see cref="MachinePhasePlacementDto.MachineId"/>.</summary>
+    public static string MachinePhasePlacement_MachineId               => GetString(nameof(MachinePhasePlacement_MachineId));
+    /// <summary>Display name for <see cref="MachinePhasePlacementDto.ProductionOrderPhaseId"/>.</summary>
+    public static string MachinePhasePlacement_ProductionOrderPhaseId  => GetString(nameof(MachinePhasePlacement_ProductionOrderPhaseId));
+    /// <summary>Display name for <see cref="MachinePhasePlacementDto.PlacedByOperatorId"/>.</summary>
+    public static string MachinePhasePlacement_PlacedByOperatorId      => GetString(nameof(MachinePhasePlacement_PlacedByOperatorId));
+    /// <summary>Display name for <see cref="MachinePhasePlacementDto.PlacedAt"/>.</summary>
+    public static string MachinePhasePlacement_PlacedAt                => GetString(nameof(MachinePhasePlacement_PlacedAt));
+    /// <summary>Display name for <see cref="MachinePhasePlacementDto.UnplacedAt"/>.</summary>
+    public static string MachinePhasePlacement_UnplacedAt              => GetString(nameof(MachinePhasePlacement_UnplacedAt));
+    /// <summary>Display name for <see cref="MachinePhasePlacementDto.Status"/>.</summary>
+    public static string MachinePhasePlacement_Status                  => GetString(nameof(MachinePhasePlacement_Status));
+    /// <summary>Display name for <see cref="MachinePhasePlacementDto.Source"/>.</summary>
+    public static string MachinePhasePlacement_Source                  => GetString(nameof(MachinePhasePlacement_Source));
+    /// <summary>Display name for <see cref="MachinePhasePlacementDto.Notes"/>.</summary>
+    public static string MachinePhasePlacement_Notes                   => GetString(nameof(MachinePhasePlacement_Notes));
+    /// <summary>Display name for <see cref="MachinePhasePlacementDto.MachineCode"/>.</summary>
+    public static string MachinePhasePlacement_MachineCode             => GetString(nameof(MachinePhasePlacement_MachineCode));
+    /// <summary>Display name for <see cref="MachinePhasePlacementDto.PhaseNumber"/>.</summary>
+    public static string MachinePhasePlacement_PhaseNumber             => GetString(nameof(MachinePhasePlacement_PhaseNumber));
+    /// <summary>Display name for <see cref="MachinePhasePlacementDto.PhaseConfirmNumber"/>.</summary>
+    public static string MachinePhasePlacement_PhaseConfirmNumber      => GetString(nameof(MachinePhasePlacement_PhaseConfirmNumber));
+    /// <summary>Display name for <see cref="MachinePhasePlacementDto.PlacedByOperatorName"/>.</summary>
+    public static string MachinePhasePlacement_PlacedByOperatorName    => GetString(nameof(MachinePhasePlacement_PlacedByOperatorName));
+
     // ── WarehouseDto ─────────────────────────────────────────────────────────
     /// <summary>Display name for <see cref="WarehouseDto.PlantId"/>.</summary>
     public static string Warehouse_PlantId      => GetString(nameof(Warehouse_PlantId));

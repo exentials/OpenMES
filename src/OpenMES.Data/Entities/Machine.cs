@@ -74,6 +74,9 @@ public class Machine : IKey<int>, IDtoAdapter<Machine, MachineDto>, IBaseDates, 
 	[InverseProperty(nameof(MachineState.Machine))]
 	public virtual ICollection<MachineState> MachineStates { get; set; } = [];
 
+	[InverseProperty(nameof(MachinePhasePlacement.Machine))]
+	public virtual ICollection<MachinePhasePlacement> PhasePlacements { get; set; } = [];
+
 	public static MachineDto AsDto(Machine entity) => new()
 	{
 		Id = entity.Id,

@@ -198,6 +198,20 @@
   <data name="WorkSession_PhaseNumber" xml:space="preserve"><value>Fase</value></data>
   <data name="WorkSession_MachineCode" xml:space="preserve"><value>Macchina</value></data>
 
+  <!-- MachinePhasePlacementDto -->
+  <data name="MachinePhasePlacement_MachineId" xml:space="preserve"><value>Macchina</value></data>
+  <data name="MachinePhasePlacement_ProductionOrderPhaseId" xml:space="preserve"><value>Fase ordine di produzione</value></data>
+  <data name="MachinePhasePlacement_PlacedByOperatorId" xml:space="preserve"><value>Piazzata da operatore</value></data>
+  <data name="MachinePhasePlacement_PlacedAt" xml:space="preserve"><value>Piazzata il</value></data>
+  <data name="MachinePhasePlacement_UnplacedAt" xml:space="preserve"><value>Spiazzata il</value></data>
+  <data name="MachinePhasePlacement_Status" xml:space="preserve"><value>Stato</value></data>
+  <data name="MachinePhasePlacement_Source" xml:space="preserve"><value>Origine</value></data>
+  <data name="MachinePhasePlacement_Notes" xml:space="preserve"><value>Note</value></data>
+  <data name="MachinePhasePlacement_MachineCode" xml:space="preserve"><value>Macchina</value></data>
+  <data name="MachinePhasePlacement_PhaseNumber" xml:space="preserve"><value>Fase</value></data>
+  <data name="MachinePhasePlacement_PhaseConfirmNumber" xml:space="preserve"><value>Numero conferma fase</value></data>
+  <data name="MachinePhasePlacement_PlacedByOperatorName" xml:space="preserve"><value>Piazzata da</value></data>
+
   <!-- WarehouseDto -->
   <data name="Warehouse_PlantId" xml:space="preserve"><value>Stabilimento</value></data>
   <data name="Warehouse_Code" xml:space="preserve"><value>Codice</value></data>

@@ -306,6 +306,58 @@ namespace OpenMES.Data.Pgsql.DataMigrations
                     b.ToTable("Machine");
                 });
 
+            modelBuilder.Entity("OpenMES.Data.Entities.MachinePhasePlacement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("MachineId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTimeOffset>("PlacedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PlacedByOperatorId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductionOrderPhaseId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTimeOffset?>("UnplacedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlacedByOperatorId");
+
+                    b.HasIndex("ProductionOrderPhaseId");
+
+                    b.HasIndex("MachineId", "ProductionOrderPhaseId", "UnplacedAt");
+
+                    b.ToTable("MachinePhasePlacement");
+                });
+
             modelBuilder.Entity("OpenMES.Data.Entities.MachineState", b =>
                 {
                     b.Property<int>("Id")
@@ -1399,6 +1451,33 @@ namespace OpenMES.Data.Pgsql.DataMigrations
                     b.Navigation("WorkCenter");
                 });
 
+            modelBuilder.Entity("OpenMES.Data.Entities.MachinePhasePlacement", b =>
+                {
+                    b.HasOne("OpenMES.Data.Entities.Machine", "Machine")
+                        .WithMany("PhasePlacements")
+                        .HasForeignKey("MachineId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("OpenMES.Data.Entities.Operator", "PlacedByOperator")
+                        .WithMany()
+                        .HasForeignKey("PlacedByOperatorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("OpenMES.Data.Entities.ProductionOrderPhase", "ProductionOrderPhase")
+                        .WithMany("MachinePhasePlacements")
+                        .HasForeignKey("ProductionOrderPhaseId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Machine");
+
+                    b.Navigation("PlacedByOperator");
+
+                    b.Navigation("ProductionOrderPhase");
+                });
+
             modelBuilder.Entity("OpenMES.Data.Entities.MachineState", b =>
                 {
                     b.HasOne("OpenMES.Data.Entities.Machine", "Machine")
@@ -1765,6 +1844,8 @@ namespace OpenMES.Data.Pgsql.DataMigrations
             modelBuilder.Entity("OpenMES.Data.Entities.Machine", b =>
                 {
                     b.Navigation("MachineStates");
+
+                    b.Navigation("PhasePlacements");
                 });
 
             modelBuilder.Entity("OpenMES.Data.Entities.MachineStopReason", b =>
@@ -1805,6 +1886,8 @@ namespace OpenMES.Data.Pgsql.DataMigrations
             modelBuilder.Entity("OpenMES.Data.Entities.ProductionOrderPhase", b =>
                 {
                     b.Navigation("InspectionReadings");
+
+                    b.Navigation("MachinePhasePlacements");
 
                     b.Navigation("NonConformities");
 

@@ -81,6 +81,9 @@ public class ProductionOrderPhase : IKey<int>, IDtoAdapter<ProductionOrderPhase,
 	[InverseProperty(nameof(WorkSession.ProductionOrderPhase))]
 	public virtual ICollection<WorkSession> WorkSessions { get; set; } = [];
 
+	[InverseProperty(nameof(MachinePhasePlacement.ProductionOrderPhase))]
+	public virtual ICollection<MachinePhasePlacement> MachinePhasePlacements { get; set; } = [];
+
 
 	public static ProductionOrderPhaseDto AsDto(ProductionOrderPhase entity) => new()
 	{
