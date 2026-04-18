@@ -7,6 +7,8 @@
 - `ProductionDeclarationTests`
 - `WorkSessionOpenValidationTests`
 - `OperatorShiftTests`
+- `OperatorShiftPresentTests`
+- `WebClientShiftAndDeclarationFlowTests`
 - `QuantityValidationTests`
 
 ## Test design rules
@@ -19,5 +21,6 @@
 - If seed model changes, update `TestDbFactory` once, then all impacted tests.
 
 ## Current gaps to close
-- Add tests for `operatorshift/present` endpoint filtering.
-- Add WebClient-focused declaration flow tests (component or e2e).
+- Add UI-level tests (bUnit/Playwright) for WebClient start-work flow continuity after operator selection.
+- Add UI coverage for phase-picker branching (single phase auto-select vs multi-phase explicit selection).
+- Expand `operatorshift/present` scenarios for plant/terminal scoping once rules are finalized.

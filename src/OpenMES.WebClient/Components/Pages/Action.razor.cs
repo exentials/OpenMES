@@ -20,6 +20,7 @@ partial class Action(
 
     private bool IsOperatorDialogOpen { get; set; }
     private bool IsStopReasonDialogOpen { get; set; }
+    private bool ResumeStartWorkAfterOperatorSelection { get; set; }
 
     private List<OperatorDto> AvailableOperators { get; set; } = [];
     private List<MachineStopReasonDto> AvailableStopReasons { get; set; } = [];
@@ -177,10 +178,15 @@ partial class Action(
     {
         await RunAsync(async ct =>
         {
-            if (!await EnsureOperatorSelectedAsync(ct, forceSelection: true, onlyPresent: true)) return;
+            if (!await EnsureOperatorSelectedAsync(ct, forceSelection: true, onlyPresent: true))
+            {
+                ResumeStartWorkAfterOperatorSelection = IsOperatorDialogOpen;
+                return;
+            }
             if (!await EnsureActivePhaseAsync(ct)) return;
 
             // Phase resolved — show session type picker
+            ResumeStartWorkAfterOperatorSelection = false;
             ViewModel.Screen = ActionScreen.SessionTypePicker;
             ViewModel.Notify();
         });
@@ -357,12 +363,21 @@ partial class Action(
     {
         IsOperatorDialogOpen = false;
         SelectedOperatorId = operatorId;
+
+        if (ResumeStartWorkAfterOperatorSelection)
+        {
+            ResumeStartWorkAfterOperatorSelection = false;
+            await StartWorkAsync();
+            return;
+        }
+
         await Task.CompletedTask;
     }
 
     private Task CloseOperatorDialog()
     {
         IsOperatorDialogOpen = false;
+        ResumeStartWorkAfterOperatorSelection = false;
         return Task.CompletedTask;
     }
 

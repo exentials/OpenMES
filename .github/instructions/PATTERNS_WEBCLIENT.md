@@ -122,6 +122,7 @@ public enum ActionScreen
     CheckIn,
     StopReason,
     SessionTypePicker,
+    PhasePicker,
 }
 ```
 
@@ -136,6 +137,12 @@ Route: `@page "/action/{Id:int}"`
 | Top-right | Declare qty (disabled) | Declare qty (enabled if Work+Phase) |
 | Bottom-left | Machine stop / Start | Machine stop / Start |
 | Bottom-right | Check-in | Check-out |
+
+**Start work flow**:
+- Select a present operator
+- Resolve active phase (auto-select if only one, otherwise show `PhasePicker`)
+- Show `SessionTypePicker` (`Work` / `Setup`)
+- Open session and return to Main
 
 **Declare screen** — activated by "Declare qty":
 - `NumericPad` for `ConfirmedQty`
