@@ -102,6 +102,14 @@ public static class UiResources
     public static string Action_PlacementCloseConfirm => GetString(nameof(Action_PlacementCloseConfirm));
     public static string Action_ConfirmedShort => GetString(nameof(Action_ConfirmedShort));
     public static string Action_ScrapShort => GetString(nameof(Action_ScrapShort));
+    public static string Action_GuideTitle => GetString(nameof(Action_GuideTitle));
+    public static string Action_GuideStepOperator => GetString(nameof(Action_GuideStepOperator));
+    public static string Action_GuideStepOperatorSelected => GetString(nameof(Action_GuideStepOperatorSelected));
+    public static string Action_GuideStepPhase => GetString(nameof(Action_GuideStepPhase));
+    public static string Action_GuideStepPhaseSelected => GetString(nameof(Action_GuideStepPhaseSelected));
+    public static string Action_GuideStepSession => GetString(nameof(Action_GuideStepSession));
+    public static string Action_GuideStepSessionOpen => GetString(nameof(Action_GuideStepSessionOpen));
+    public static string Action_GuideSelectPhaseCta => GetString(nameof(Action_GuideSelectPhaseCta));
 
     public static string Tab_Department => GetString(nameof(Tab_Department));
     public static string Tab_OperatorsMachines => GetString(nameof(Tab_OperatorsMachines));

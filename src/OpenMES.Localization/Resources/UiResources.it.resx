@@ -287,4 +287,12 @@
   <data name="Action_PlacementCloseConfirm" xml:space="preserve"><value>Vuoi chiudere e spiazzare questa bolla dalla macchina?</value></data>
   <data name="Action_ConfirmedShort" xml:space="preserve"><value>Conf</value></data>
   <data name="Action_ScrapShort" xml:space="preserve"><value>Scarto</value></data>
+  <data name="Action_GuideTitle" xml:space="preserve"><value>Flusso guidato</value></data>
+  <data name="Action_GuideStepOperator" xml:space="preserve"><value>Seleziona operatore attivo</value></data>
+  <data name="Action_GuideStepOperatorSelected" xml:space="preserve"><value>Operatore selezionato</value></data>
+  <data name="Action_GuideStepPhase" xml:space="preserve"><value>Seleziona fase bolla</value></data>
+  <data name="Action_GuideStepPhaseSelected" xml:space="preserve"><value>Fase selezionata</value></data>
+  <data name="Action_GuideStepSession" xml:space="preserve"><value>Avvia sessione setup/lavoro</value></data>
+  <data name="Action_GuideStepSessionOpen" xml:space="preserve"><value>Sessione aperta</value></data>
+  <data name="Action_GuideSelectPhaseCta" xml:space="preserve"><value>Seleziona fase</value></data>
 </root>

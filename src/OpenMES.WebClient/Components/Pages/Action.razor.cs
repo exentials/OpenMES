@@ -38,6 +38,21 @@ partial class Action(
     private MachinePhasePlacementDto? PlacementPendingClose { get; set; }
     private PendingOperation CurrentPendingOperation { get; set; } = PendingOperation.None;
     private int? PendingPlacementId { get; set; }
+    private int? BusyPlacementId { get; set; }
+
+    private bool IsPlacementBusy(MachinePhasePlacementDto placement)
+        => BusyPlacementId.HasValue && BusyPlacementId.Value == placement.Id;
+
+    private IDisposable BeginPlacementBusy(MachinePhasePlacementDto placement)
+    {
+        BusyPlacementId = placement.Id;
+        StateHasChanged();
+        return new BusyPlacementScope(() =>
+        {
+            BusyPlacementId = null;
+            StateHasChanged();
+        });
+    }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -114,9 +129,13 @@ partial class Action(
             return false;
         }
 
-        if (!forceSelection && SelectedOperatorId.HasValue && AvailableOperators.Any(x => x.Id == SelectedOperatorId.Value))
+        // If the current selection is still valid, continue the flow.
+        // This prevents reopening the dialog after operator confirmation.
+        if (SelectedOperatorId.HasValue && AvailableOperators.Any(x => x.Id == SelectedOperatorId.Value))
             return true;
 
+        // forceSelection keeps semantic meaning for callers (explicit selection request),
+        // but dialog is only shown when no valid selected operator is available.
         IsOperatorDialogOpen = true;
         StateHasChanged();
         return false;
@@ -127,6 +146,11 @@ partial class Action(
         if (ViewModel.ActivePhase is not null)
             return true;
 
+        return await ShowPhasePickerAsync(ct);
+    }
+
+    private async Task<bool> ShowPhasePickerAsync(CancellationToken ct)
+    {
         if (ViewModel.Machine is null)
             return false;
 
@@ -147,6 +171,14 @@ partial class Action(
         ViewModel.Screen = ActionScreen.PhasePicker;
         ViewModel.Notify();
         return false;
+    }
+
+    private async Task OpenPhasePickerAsync()
+    {
+        await RunAsync(async ct =>
+        {
+            await ShowPhasePickerAsync(ct);
+        });
     }
 
     private async Task<MachinePhasePlacementDto?> EnsurePlacementForActivePhaseAsync(CancellationToken ct)
@@ -309,6 +341,7 @@ partial class Action(
 
     private async Task StartSetupForPlacementAsync(MachinePhasePlacementDto placement)
     {
+        using var busy = BeginPlacementBusy(placement);
         await RunAsync(async ct =>
         {
             await SelectPlacementAsync(placement, ct);
@@ -339,6 +372,7 @@ partial class Action(
 
     private async Task StartWorkForPlacementAsync(MachinePhasePlacementDto placement)
     {
+        using var busy = BeginPlacementBusy(placement);
         await RunAsync(async ct =>
         {
             await SelectPlacementAsync(placement, ct);
@@ -370,6 +404,7 @@ partial class Action(
 
     private async Task PausePlacementAsync(MachinePhasePlacementDto placement)
     {
+        using var busy = BeginPlacementBusy(placement);
         await RunAsync(async ct =>
         {
             var result = placement.Status switch
@@ -391,6 +426,7 @@ partial class Action(
 
     private async Task ResumePlacementAsync(MachinePhasePlacementDto placement)
     {
+        using var busy = BeginPlacementBusy(placement);
         await RunAsync(async ct =>
         {
             await SelectPlacementAsync(placement, ct);
@@ -415,14 +451,13 @@ partial class Action(
                 return;
             }
 
-            CurrentPendingOperation = PendingOperation.None;
-            PendingPlacementId = null;
             await LoadContextAsync();
         });
     }
 
     private async Task ClosePlacementAsync(MachinePhasePlacementDto placement)
     {
+        using var busy = BeginPlacementBusy(placement);
         await RunAsync(async ct =>
         {
             var result = await MesClient.MachinePhasePlacement.CloseAsync(placement.Id, ct);
@@ -686,4 +721,15 @@ partial class Action(
     }
 
     private void NavigateHome() => Navigation.NavigateTo("/");
+
+    private sealed class BusyPlacementScope(global::System.Action onDispose) : IDisposable
+    {
+        private global::System.Action? _onDispose = onDispose;
+
+        public void Dispose()
+        {
+            _onDispose?.Invoke();
+            _onDispose = null;
+        }
+    }
 }

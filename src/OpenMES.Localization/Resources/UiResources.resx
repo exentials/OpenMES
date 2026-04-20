@@ -288,4 +288,12 @@
   <data name="Action_PlacementCloseConfirm" xml:space="preserve"><value>Do you want to close and unplace this work order from the machine?</value></data>
   <data name="Action_ConfirmedShort" xml:space="preserve"><value>Conf</value></data>
   <data name="Action_ScrapShort" xml:space="preserve"><value>Scrap</value></data>
+  <data name="Action_GuideTitle" xml:space="preserve"><value>Guided flow</value></data>
+  <data name="Action_GuideStepOperator" xml:space="preserve"><value>Select active operator</value></data>
+  <data name="Action_GuideStepOperatorSelected" xml:space="preserve"><value>Operator selected</value></data>
+  <data name="Action_GuideStepPhase" xml:space="preserve"><value>Select work order phase</value></data>
+  <data name="Action_GuideStepPhaseSelected" xml:space="preserve"><value>Phase selected</value></data>
+  <data name="Action_GuideStepSession" xml:space="preserve"><value>Start setup/work session</value></data>
+  <data name="Action_GuideStepSessionOpen" xml:space="preserve"><value>Session open</value></data>
+  <data name="Action_GuideSelectPhaseCta" xml:space="preserve"><value>Select phase</value></data>
 </root>

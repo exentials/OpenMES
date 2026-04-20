@@ -54,6 +54,19 @@
     }
     else
     {
+        <div style="margin-top:8px;padding:12px 14px;background:var(--neutral-layer-2);border:1px solid var(--neutral-stroke-layer-rest);border-radius:10px;">
+            <div style="font-size:13px;font-weight:600;color:var(--neutral-foreground-rest);margin-bottom:8px;">@UiResources.Action_GuideTitle</div>
+            <div style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--neutral-foreground-hint);">
+                <span>@(SelectedOperatorId.HasValue ? $"✓ {UiResources.Action_GuideStepOperatorSelected}" : $"1. {UiResources.Action_GuideStepOperator}")</span>
+                <span>@(ViewModel.ActivePhase is not null ? $"✓ {UiResources.Action_GuideStepPhaseSelected}" : $"2. {UiResources.Action_GuideStepPhase}")</span>
+                <span>@(ViewModel.HasOpenSession ? $"✓ {UiResources.Action_GuideStepSessionOpen}" : $"3. {UiResources.Action_GuideStepSession}")</span>
+            </div>
+            @if (ViewModel.ActivePhase is null)
+            {
+                <button @onclick="OpenPhasePickerAsync" style="margin-top:10px;@MiniActionBtnStyle">@UiResources.Action_GuideSelectPhaseCta</button>
+            }
+        </div>
+
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">
 
             @if (!ViewModel.HasOpenSession)
@@ -102,9 +115,11 @@
                 @foreach (var placement in ViewModel.OpenPlacements)
                 {
                     var isSelected = ViewModel.SelectedPlacementId == placement.Id;
-                    <div style="padding:10px;border-radius:8px;border:1px solid @(isSelected ? "var(--accent-stroke-control-rest)" : "var(--neutral-stroke-layer-rest)");margin-bottom:8px;background:@(isSelected ? "var(--accent-fill-rest)" : "var(--neutral-layer-1)");color:@(isSelected ? "var(--foreground-on-accent-rest)" : "var(--neutral-foreground-rest)");">
+                    var isBusy = IsPlacementBusy(placement);
+                    <div style="padding:10px;border-radius:8px;border:1px solid @(isSelected ? "var(--accent-stroke-control-rest)" : "var(--neutral-stroke-layer-rest)");margin-bottom:8px;background:@(isSelected ? "var(--accent-fill-rest)" : "var(--neutral-layer-1)");color:@(isSelected ? "var(--foreground-on-accent-rest)" : "var(--neutral-foreground-rest)");opacity:@(isBusy ? "0.75" : "1");">
                         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
                             <button @onclick="() => OnPlacementSelectedAsync(placement)"
+                                    disabled="@isBusy"
                                     style="background:transparent;border:none;color:inherit;cursor:pointer;text-align:left;padding:0;flex:1;">
                                 <div style="font-size:14px;font-weight:600;">@placement.PhaseNumber — @placement.PhaseConfirmNumber</div>
                                 <div style="font-size:12px;opacity:0.85;">@PlacementStatusLabel(placement.Status)</div>
@@ -115,29 +130,33 @@
                         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
                             @if (placement.Status == MachinePhasePlacementStatus.Placed)
                             {
-                                <button @onclick="() => StartSetupForPlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementSetup</button>
-                                <button @onclick="() => StartWorkForPlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementWork</button>
+                                <button @onclick="() => StartSetupForPlacementAsync(placement)" disabled="@isBusy" style="@MiniActionBtnStyle">@UiResources.Action_PlacementSetup</button>
+                                <button @onclick="() => StartWorkForPlacementAsync(placement)" disabled="@isBusy" style="@MiniActionBtnStyle">@UiResources.Action_PlacementWork</button>
                             }
                             else if (placement.Status == MachinePhasePlacementStatus.InSetup)
                             {
-                                <button @onclick="() => PausePlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementPauseSetup</button>
-                                <button @onclick="() => StartWorkForPlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementSwitchToWork</button>
+                                <button @onclick="() => PausePlacementAsync(placement)" disabled="@isBusy" style="@MiniActionBtnStyle">@UiResources.Action_PlacementPauseSetup</button>
+                                <button @onclick="() => StartWorkForPlacementAsync(placement)" disabled="@isBusy" style="@MiniActionBtnStyle">@UiResources.Action_PlacementSwitchToWork</button>
                             }
                             else if (placement.Status == MachinePhasePlacementStatus.SetupPaused)
                             {
-                                <button @onclick="() => ResumePlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementResumeSetup</button>
-                                <button @onclick="() => StartWorkForPlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementStartWork</button>
+                                <button @onclick="() => ResumePlacementAsync(placement)" disabled="@isBusy" style="@MiniActionBtnStyle">@UiResources.Action_PlacementResumeSetup</button>
+                                <button @onclick="() => StartWorkForPlacementAsync(placement)" disabled="@isBusy" style="@MiniActionBtnStyle">@UiResources.Action_PlacementStartWork</button>
                             }
                             else if (placement.Status == MachinePhasePlacementStatus.InWork)
                             {
-                                <button @onclick="() => PausePlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementPauseWork</button>
+                                <button @onclick="() => PausePlacementAsync(placement)" disabled="@isBusy" style="@MiniActionBtnStyle">@UiResources.Action_PlacementPauseWork</button>
                             }
                             else if (placement.Status == MachinePhasePlacementStatus.WorkPaused)
                             {
-                                <button @onclick="() => ResumePlacementAsync(placement)" style="@MiniActionBtnStyle">@UiResources.Action_PlacementResumeWork</button>
+                                <button @onclick="() => ResumePlacementAsync(placement)" disabled="@isBusy" style="@MiniActionBtnStyle">@UiResources.Action_PlacementResumeWork</button>
                             }
 
-                            <button @onclick="() => AskClosePlacementAsync(placement)" style="@MiniDangerBtnStyle">@UiResources.Action_PlacementClose</button>
+                            <button @onclick="() => AskClosePlacementAsync(placement)" disabled="@isBusy" style="@MiniDangerBtnStyle">@UiResources.Action_PlacementClose</button>
+                            @if (isBusy)
+                            {
+                                <span style="font-size:12px;color:var(--neutral-foreground-hint);align-self:center;">...</span>
+                            }
                         </div>
                     </div>
                 }
