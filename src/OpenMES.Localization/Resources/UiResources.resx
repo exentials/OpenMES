@@ -35,6 +35,7 @@
   <data name="Action_CloseSession" xml:space="preserve"><value>Close session</value></data>
   <data name="Action_DeclareQty" xml:space="preserve"><value>Declare qty</value></data>
   <data name="Action_MachineStop" xml:space="preserve"><value>Machine stop</value></data>
+  <data name="Action_MachineStart" xml:space="preserve"><value>Start machine</value></data>
   <data name="Action_CheckIn" xml:space="preserve"><value>Check-in</value></data>
   <data name="Action_CheckOut" xml:space="preserve"><value>Check-out</value></data>
   <data name="Action_ChooseSessionType" xml:space="preserve"><value>Choose session type</value></data>

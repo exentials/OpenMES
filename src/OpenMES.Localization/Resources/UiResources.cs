@@ -38,6 +38,7 @@ public static class UiResources
     public static string Action_DeclareQty => GetString(nameof(Action_DeclareQty));
     public static string Action_GoodPieces => GetString(nameof(Action_GoodPieces));
     public static string Action_MachineStop => GetString(nameof(Action_MachineStop));
+    public static string Action_MachineStart => GetString(nameof(Action_MachineStart));
     public static string Action_Order => GetString(nameof(Action_Order));
     public static string Action_ScanOrTypeBarcode => GetString(nameof(Action_ScanOrTypeBarcode));
     public static string Action_ScrapOptional => GetString(nameof(Action_ScrapOptional));

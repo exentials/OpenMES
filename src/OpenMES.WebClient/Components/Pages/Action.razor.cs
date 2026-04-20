@@ -97,10 +97,19 @@ partial class Action(
                     if (selectedPlacement is null)
                     {
                         ViewModel.SelectedPlacementId = null;
+                        ViewModel.ActivePhase = null;
+                    }
+                    else
+                    {
+                        // Re-fetch the active phase to pick up updated ConfirmedQuantity/ScrapQuantity after declarations.
+                        var phaseResult = await MesClient.ProductionOrderPhase.ReadAsync(selectedPlacement.ProductionOrderPhaseId, ct);
+                        ViewModel.ActivePhase = phaseResult.Data;
                     }
                 }
-
-                ViewModel.ActivePhase = null;
+                else
+                {
+                    ViewModel.ActivePhase = null;
+                }
             }
             else
             {
@@ -577,7 +586,7 @@ partial class Action(
 
         await RunAsync(async ct =>
         {
-            if (!await EnsureOperatorSelectedAsync(ct, onlyPresent: true)) return;
+            if (!await EnsureOperatorSelectedAsync(ct, onlyPresent: false)) return;
 
             var result = await MesClient.MachineState.CreateAsync(new MachineStateDto
             {
@@ -594,6 +603,8 @@ partial class Action(
                 ViewModel.Notify();
             }
         });
+
+        await LoadContextAsync();
     }
 
     private async Task OnOperatorSelectedAsync(int operatorId)
@@ -668,9 +679,9 @@ partial class Action(
                 StartDate = now,
                 EndDate = null,
             }, ct);
-
-            ViewModel.Notify();
         });
+
+        await LoadContextAsync();
     }
 
     private Task CloseStopReasonDialog()

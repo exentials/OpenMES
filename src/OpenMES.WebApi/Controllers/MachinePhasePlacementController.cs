@@ -161,6 +161,7 @@ public class MachinePhasePlacementController(OpenMESDbContext dbContext, ILogger
         if (placement.Status is MachinePhasePlacementStatus.InSetup or MachinePhasePlacementStatus.SetupPaused)
         {
             await CloseOpenSessionsAsync(placement, WorkSessionType.Setup, ct);
+            await DbContext.SaveChangesAsync(ct); // flush before opening Work session to avoid stale open-session check
         }
 
         var openError = await OpenSessionForPlacementAsync(placement, WorkSessionType.Work, resolvedOperatorId, ct);
@@ -230,14 +231,11 @@ public class MachinePhasePlacementController(OpenMESDbContext dbContext, ILogger
         if (placement.UnplacedAt is not null || placement.Status == MachinePhasePlacementStatus.Closed)
             return BadRequest("Placement is already closed.");
 
-        var hasOpenSessions = await DbContext.WorkSessions
-            .AnyAsync(x =>
-                x.MachineId == placement.MachineId &&
-                x.ProductionOrderPhaseId == placement.ProductionOrderPhaseId &&
-                x.Status == WorkSessionStatus.Open, ct);
+        // Auto-close any open sessions before closing the placement
+        foreach (WorkSessionType type in Enum.GetValues<WorkSessionType>())
+            await CloseOpenSessionsAsync(placement, type, ct);
 
-        if (hasOpenSessions)
-            return BadRequest("Cannot close placement: there are active work sessions for this phase on this machine.");
+        await DbContext.SaveChangesAsync(ct);
 
         placement.UnplacedAt = DateTimeOffset.UtcNow;
         placement.Status = MachinePhasePlacementStatus.Closed;

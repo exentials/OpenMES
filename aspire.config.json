@@ -1,0 +1,5 @@
+{
+  "appHost": {
+    "path": "src/OpenMES.AppHost/OpenMES.AppHost.csproj"
+  }
+}

@@ -315,9 +315,8 @@
     private string MachineStateActionLabel => ViewModel.Status switch
     {
         MachineStatus.Running => UiResources.Action_MachineStop,
-        MachineStatus.Setup   => UiResources.Action_Resume,
-        MachineStatus.Stopped => UiResources.Action_Start,
-        _                     => UiResources.Action_Start,
+        MachineStatus.Setup   => UiResources.Action_MachineStop,
+        _                     => UiResources.Action_MachineStart,
     };
 
     private string ShiftActionLabel => ViewModel.IsOperatorPresent
