@@ -15,22 +15,29 @@ Public-facing documentation (README, docs/, user guides) must NOT contain:
 ### 1. **Global Development Workflow**
 - **AI-WORKFLOW.md** — Day-to-day workflow for Copilot-assisted development
 
-### 2. **Architectural Patterns**
+### 2. **Copilot custom instruction files (`*.instructions.md`)**
+- **solution.instructions.md** — Rules on solution files (`*.sln`, `*.slnx`)
+- **project.instructions.md** — Rules on project files (`*.csproj`)
+- **issues.instructions.md** — Mandatory issue tracking format and categories
+- **tests.instructions.md** — Test quality and coverage-gap analysis
+- **windows.instructions.md** — Windows + PowerShell execution constraints
+
+### 3. **Architectural Patterns**
 - **PATTERNS.md** — Technology stack, entities, DTOs, enums, controllers, authentication
 - **PATTERNS_WEBADMIN.md** — Blazor WebAdmin patterns, forms, grids, components
 - **PATTERNS_WEBCLIENT.md** — WebClient patterns, ViewModels, terminal UI
 - **PATTERNS_EDIT_DIALOG_CONTAINER.md** — Unified Edit dialog component pattern
 
-### 3. **Domain Model & Business Rules**
+### 4. **Domain Model & Business Rules**
 - **DECLARATIONS.md** — Operator presence, work sessions, machine state, ERP export
 
-### 4. **Project Status**
+### 5. **Project Status**
 - **ROADMAP_SESSION_STATUS.md** — Development status, completed work, remaining tasks
 
-### 5. **Product Documentation (Read-Only for Context)**
+### 6. **Product Documentation (Read-Only for Context)**
 - `../../docs/` — Functional wiki for end-users and operators
 
-### 6. **Project-Specific Instructions**
+### 7. **Project-Specific Instructions**
 - `projects/OpenMES.WebApi.md` — API controller guidelines and operational rules
 - `projects/OpenMES.WebClient.md` — terminal UI flow and operator presence integration
 - `projects/OpenMES.WebAdmin.md` — admin UI behavior and page-level conventions
@@ -51,6 +58,11 @@ Public-facing documentation (README, docs/, user guides) must NOT contain:
 
 | Situation | File |
 |-----------|------|
+| Working on solution-level docs/structure | solution.instructions.md |
+| Working on a project file | project.instructions.md |
+| Tracking defects and risks | issues.instructions.md |
+| Reviewing tests/coverage gaps | tests.instructions.md |
+| Enforcing Windows shell/path rules | windows.instructions.md |
 | Adding new entity or DTO | PATTERNS.md § 3-5 |
 | Building WebAdmin page | PATTERNS_WEBADMIN.md § 11 |
 | Building WebClient screen | PATTERNS_WEBCLIENT.md |
@@ -93,6 +105,11 @@ Public-facing documentation (README, docs/, user guides) must NOT contain:
   instructions/
     README.md                       ← You are here
     AI-WORKFLOW.md                  → Daily workflow
+    solution.instructions.md        → Solution-scope copilot rules
+    project.instructions.md         → Project-scope copilot rules
+    issues.instructions.md          → Issues tracking rules
+    tests.instructions.md           → Test analysis rules
+    windows.instructions.md         → Windows execution rules
     PATTERNS.md                     → Core patterns
     PATTERNS_WEBADMIN.md            → WebAdmin UI patterns
     PATTERNS_WEBCLIENT.md           → WebClient UI patterns
@@ -113,10 +130,11 @@ Public-facing documentation (README, docs/, user guides) must NOT contain:
 
 1. **Read DOCUMENTATION_POLICY.md** — Understand what goes in public docs
 2. **Read AI-WORKFLOW.md** — Understand the daily development process
-3. **Read PATTERNS.md** — Foundation of architectural patterns
-4. **Read domain-specific pattern** — PATTERNS_WEBADMIN.md, PATTERNS_WEBCLIENT.md, DECLARATIONS.md as needed
-5. **Read project-specific instruction** — Select the touched project file under `instructions/projects/`
-6. **Check ROADMAP_SESSION_STATUS.md** — Know what's completed and what's next
+3. **Read `*.instructions.md` relevant to file scope** — Enforce Copilot rule binding
+4. **Read PATTERNS.md** — Foundation of architectural patterns
+5. **Read domain-specific pattern** — PATTERNS_WEBADMIN.md, PATTERNS_WEBCLIENT.md, DECLARATIONS.md as needed
+6. **Read project-specific instruction** — Select the touched project file under `instructions/projects/`
+7. **Check ROADMAP_SESSION_STATUS.md** — Know what's completed and what's next
 
 ---
 
@@ -127,5 +145,5 @@ Public-facing documentation (README, docs/, user guides) must NOT contain:
 
 ---
 
-**Last Updated**: 2026-04-18  
+**Last Updated**: 2026-04-21
 **Status**: Complete

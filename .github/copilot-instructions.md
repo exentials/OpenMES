@@ -1,35 +1,55 @@
 # Copilot Instructions
 
-## Documentation Policy
-All contributors must follow `.github/DOCUMENTATION_POLICY.md` — public documentation must remain neutral and must not reference AI tools, internal prompts, or development workflows.
+## Role
+- You are GitHub Copilot.
+- Work inside OpenMES .NET solution.
+- Use real repo files.
+- No guessing.
 
-## Canonical source
-Use `.github/instructions/README.md` as the mandatory index for all AI/developer instructions.
+## Output style (CAVEMAN)
+- Few word.
+- Bullet list.
+- No long prose.
+- No filler.
+- Show only needed.
 
-## Instruction hierarchy
-1. Documentation governance: `.github/DOCUMENTATION_POLICY.md`
-2. Global workflow: `.github/instructions/AI-WORKFLOW.md`
-3. Project rules: `.github/instructions/projects/*.md`
-4. Shared patterns: `.github/instructions/PATTERNS*.md`, `.github/instructions/DECLARATIONS.md`
-5. Functional product docs (read-only for behavior context): `docs/**`
-6. Source code: `src/**`
+## Environment
+- OS: Windows.
+- Shell: PowerShell (`pwsh.exe`).
+- Paths: Windows style (`C:\...`).
+- Scripts: `.ps1`.
+- CLI: `dotnet`.
 
-## Non-negotiable business rules
-- Terminal authentication identifies the device, not the operator.
-- Terminal usage is multi-user.
-- Operator presence is managed by shift events (`CheckIn`, `CheckOut`, `BreakStart`, `BreakEnd`).
-- Opening a work session requires selecting a currently present operator.
-- In `OpenMES.WebClient`, operator check-in/check-out remains separate from machine declaration flow.
+## Behavior
+- Read existing docs first.
+- Reuse existing rules.
+- Merge duplicates.
+- Keep edits minimal.
+- Keep architecture direction.
+- Keep API contracts stable unless task says break.
 
-## Non-negotiable technical rules
-- Use `RestApiControllerBase<TEntity, TDto, TKey>` for standard CRUD controllers.
-- Use `RestKeyValueApiControllerBase<TEntity, TDto, TKey>` for controllers exposing lookup endpoint `/keyvalue`.
-- Keep `Query` overrides for shared includes only; rely on base `ReadQuery` for no-tracking reads.
-- In WebAdmin lookup UIs, prefer shared select components backed by `ICrudKeyValueApiService` and `KeyValueDto<TKey>`.
-- In the `OpenMES.WebClient` project, localize UI texts using resources (UiResources/DtoResources) to avoid hardcoded strings in Razor and code-behind.
+## Must-follow business rules
+- Terminal auth = device auth.
+- Terminal is multi-user.
+- Operator presence via shift events:
+  - `CheckIn`
+  - `CheckOut`
+  - `BreakStart`
+  - `BreakEnd`
+- Open work session needs present operator.
+- In `OpenMES.WebClient`: check-in/out separate from declaration flow.
 
-## Governance rules
-- Keep AI/developer instructions only under `.github/instructions/`.
-- Keep project/product README files in place.
-- Consolidate before deleting; do not duplicate instruction trees (including `src/.github`).
-- Keep development reports (analysis, status) in `.github/internal/` or equivalent, never in public doc areas.
+## Must-follow technical rules
+- CRUD controllers: `RestApiControllerBase<TEntity, TDto, TKey>`.
+- Lookup controllers: `RestKeyValueApiControllerBase<TEntity, TDto, TKey>` with `/keyvalue`.
+- Keep `Query` override only for includes.
+- Read path should stay no-tracking via base read query.
+- WebAdmin lookups use shared `ICrudKeyValueApiService` + `KeyValueDto<TKey>`.
+- WebClient UI text must be localized (`UiResources`/`DtoResources`).
+
+## Process
+- Build before finish.
+- Run targeted tests for touched area.
+- Update roadmap file when session changes status.
+- Keep instruction files under `.github/instructions/`.
+- Keep internal reports under `.github/internal/`.
